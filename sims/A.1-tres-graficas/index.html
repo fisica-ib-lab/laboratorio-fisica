@@ -30,16 +30,28 @@
     <button class="nivel activo" data-nivel="1" aria-pressed="true"><b>Nivel 1</b> Velocidad constante</button>
     <button class="nivel" data-nivel="2" disabled aria-disabled="true"><b>Nivel 2</b> Con aceleración <span class="proximamente">próximamente</span></button>
     <button class="nivel" data-nivel="3" disabled aria-disabled="true"><b>Nivel 3</b> Por tramos <span class="proximamente">próximamente</span></button>
+    <details class="observar">
+      <summary class="boton">Para observar</summary>
+      <div class="observar-texto">
+        <ol>
+          <li>Aumenta y disminuye <span class="var">v</span>. ¿Qué le pasa a la inclinación de la gráfica <span class="var">s</span>–<span class="var">t</span>? ¿Y a la gráfica <span class="var">v</span>–<span class="var">t</span>?</li>
+          <li>Pon una velocidad negativa. ¿Hacia dónde se mueve el carrito? ¿Cómo cambia cada gráfica?</li>
+          <li>Cambia solo <span class="var">s</span>₀. ¿Qué gráficas cambian y cuáles no? ¿Por qué?</li>
+          <li>Pausa en un instante. Compara el desplazamiento con el producto <span class="var">v</span> × <span class="var">t</span>. ¿Qué figura de la gráfica <span class="var">v</span>–<span class="var">t</span> tiene esa misma área?</li>
+          <li>¿Cuándo coinciden el desplazamiento y la distancia recorrida? ¿Cuándo no?</li>
+        </ol>
+      </div>
+    </details>
   </div>
 
   <div class="explorar">
     <!-- Escena -->
-    <div class="caja escena-caja" style="grid-area: escena">
+    <div class="caja escena-caja">
       <canvas id="escena" aria-label="Pista con el carrito"></canvas>
     </div>
 
     <!-- Reproducción -->
-    <div class="reproduccion" style="grid-area: reproduccion">
+    <div class="reproduccion">
       <button class="boton" id="btnReiniciar" title="Volver a t = 0" aria-label="Volver al inicio">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="2.5" height="12" fill="currentColor"/><polygon points="14,2 14,14 5.5,8" fill="currentColor"/></svg>
       </button>
@@ -64,62 +76,56 @@
       </label>
     </div>
 
-    <!-- Valores en vivo -->
-    <div class="caja valores" style="grid-area: valores" aria-live="off">
-      <h2>Valores en este instante</h2>
-      <table>
-        <tr><th><span class="var">t</span></th><td id="valT"></td><td class="u">s</td></tr>
-        <tr class="c-pos"><th><span class="var">s</span> <small>posición</small></th><td id="valS"></td><td class="u">m</td></tr>
-        <tr class="c-vel"><th><span class="var">v</span> <small>velocidad</small></th><td id="valV"></td><td class="u">m s⁻¹</td></tr>
-        <tr class="c-ace"><th><span class="var">a</span> <small>aceleración</small></th><td id="valA"></td><td class="u">m s⁻²</td></tr>
-        <tr class="c-des"><th>Desplazamiento <small>(desde <span class="var">t</span> = 0)</small></th><td id="valDes"></td><td class="u">m</td></tr>
-        <tr><th>Distancia recorrida</th><td id="valDist"></td><td class="u">m</td></tr>
-      </table>
+    <!-- Gráficas, una al lado de la otra -->
+    <div class="caja graficas">
+      <div class="trio">
+        <div class="grafica"><canvas id="gS" aria-label="Gráfica posición–tiempo"></canvas></div>
+        <div class="grafica"><canvas id="gV" aria-label="Gráfica velocidad–tiempo"></canvas></div>
+        <div class="grafica"><canvas id="gA" aria-label="Gráfica aceleración–tiempo"></canvas></div>
+      </div>
+      <div class="pie-graficas">
+        <p class="ayuda">Haz clic o arrastra sobre una gráfica para ir a ese instante.</p>
+        <label class="casilla"><input type="checkbox" id="chkAnterior" checked> Ver el movimiento anterior (gris)</label>
+        <label class="casilla"><input type="checkbox" id="chkCompleta"> Ver las gráficas completas</label>
+      </div>
     </div>
 
-    <!-- Ajustes -->
-    <div class="caja ajustes" style="grid-area: ajustes">
-      <h2>Elige un movimiento</h2>
-      <div class="casos" id="casos">
-        <button class="boton caso" data-s0="0" data-v="0">En reposo</button>
-        <button class="boton caso" data-s0="-10" data-v="2">Hacia la derecha (<span class="var">v</span> &gt; 0)</button>
-        <button class="boton caso" data-s0="10" data-v="-2">Hacia la izquierda (<span class="var">v</span> &lt; 0)</button>
+    <!-- Columna derecha -->
+    <aside class="lateral">
+      <div class="caja valores">
+        <h2>Valores en este instante</h2>
+        <table>
+          <tr><th><span class="var">t</span></th><td id="valT"></td><td class="u">s</td></tr>
+          <tr class="c-pos"><th><span class="var">s</span> <small>posición</small></th><td id="valS"></td><td class="u">m</td></tr>
+          <tr class="c-vel"><th><span class="var">v</span> <small>velocidad</small></th><td id="valV"></td><td class="u">m s⁻¹</td></tr>
+          <tr class="c-ace"><th><span class="var">a</span> <small>aceleración</small></th><td id="valA"></td><td class="u">m s⁻²</td></tr>
+          <tr class="c-des"><th>Desplazamiento</th><td id="valDes"></td><td class="u">m</td></tr>
+          <tr><th>Distancia recorrida</th><td id="valDist"></td><td class="u">m</td></tr>
+        </table>
+        <p class="nota">Desplazamiento y distancia: desde <span class="var">t</span> = 0.</p>
       </div>
 
-      <div class="deslizador c-pos">
-        <div class="fila"><label for="desS0">Posición inicial <span class="var">s</span>₀</label><output id="outS0"></output></div>
-        <input type="range" id="desS0" min="-10" max="10" step="1" value="-10">
-        <div class="extremos"><span>−10 m</span><span>0</span><span>10 m</span></div>
+      <div class="caja ajustes">
+        <h2>Elige un movimiento</h2>
+        <div class="casos" id="casos">
+          <button class="boton caso" data-s0="0" data-v="0">En reposo</button>
+          <button class="boton caso" data-s0="-10" data-v="2">Derecha<br>(<span class="var">v</span> &gt; 0)</button>
+          <button class="boton caso" data-s0="10" data-v="-2">Izquierda<br>(<span class="var">v</span> &lt; 0)</button>
+        </div>
+
+        <div class="deslizador c-pos">
+          <div class="fila"><label for="desS0">Posición inicial <span class="var">s</span>₀</label><output id="outS0"></output></div>
+          <input type="range" id="desS0" min="-10" max="10" step="1" value="-10" aria-describedby="rangoS0">
+          <span class="sr" id="rangoS0">de −10 m a 10 m</span>
+        </div>
+        <div class="deslizador c-vel">
+          <div class="fila"><label for="desV">Velocidad <span class="var">v</span></label><output id="outV"></output></div>
+          <input type="range" id="desV" min="-2" max="2" step="0.1" value="1.5" aria-describedby="rangoV">
+          <span class="sr" id="rangoV">de −2 m s⁻¹ a 2 m s⁻¹</span>
+        </div>
+
       </div>
-      <div class="deslizador c-vel">
-        <div class="fila"><label for="desV">Velocidad <span class="var">v</span></label><output id="outV"></output></div>
-        <input type="range" id="desV" min="-2" max="2" step="0.1" value="1.5">
-        <div class="extremos"><span>−2 m s⁻¹</span><span>0</span><span>2 m s⁻¹</span></div>
-      </div>
-
-      <label class="casilla"><input type="checkbox" id="chkAnterior" checked> Mostrar el movimiento anterior (línea gris)</label>
-      <label class="casilla"><input type="checkbox" id="chkCompleta"> Ver las gráficas completas desde el principio</label>
-    </div>
-
-    <!-- Gráficas -->
-    <div class="caja graficas" style="grid-area: graficas">
-      <div class="grafica"><canvas id="gS" aria-label="Gráfica posición–tiempo"></canvas></div>
-      <div class="grafica"><canvas id="gV" aria-label="Gráfica velocidad–tiempo"></canvas></div>
-      <div class="grafica"><canvas id="gA" aria-label="Gráfica aceleración–tiempo"></canvas></div>
-      <p class="ayuda">Haz clic o arrastra sobre una gráfica para ir a ese instante.</p>
-    </div>
-
-    <!-- Para observar -->
-    <div class="caja observar" style="grid-area: observar">
-      <h2>Para observar</h2>
-      <ol>
-        <li>Aumenta y disminuye <span class="var">v</span>. ¿Qué le pasa a la inclinación de la gráfica <span class="var">s</span>–<span class="var">t</span>? ¿Y a la gráfica <span class="var">v</span>–<span class="var">t</span>?</li>
-        <li>Pon una velocidad negativa. ¿Hacia dónde se mueve el carrito? ¿Cómo cambia cada gráfica?</li>
-        <li>Cambia solo <span class="var">s</span>₀. ¿Qué gráficas cambian y cuáles no? ¿Por qué?</li>
-        <li>Pausa en un instante. Compara el desplazamiento con el producto <span class="var">v</span> × <span class="var">t</span>. ¿Qué figura de la gráfica <span class="var">v</span>–<span class="var">t</span> tiene esa misma área?</li>
-        <li>¿Cuándo coinciden el desplazamiento y la distancia recorrida? ¿Cuándo no?</li>
-      </ol>
-    </div>
+    </aside>
   </div>
 </section>
 
