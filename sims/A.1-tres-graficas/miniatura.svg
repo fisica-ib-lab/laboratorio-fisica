@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" font-family="Calibri, Carlito, Arial, sans-serif">
+  <rect width="320" height="200" fill="#FFFFFF"/>
+  <!-- pista -->
+  <line x1="18" y1="66" x2="302" y2="66" stroke="#1F2A36" stroke-width="2"/>
+  <g stroke="#8A97A6" stroke-width="1">
+    <line x1="30" y1="66" x2="30" y2="72"/><line x1="70" y1="66" x2="70" y2="72"/><line x1="110" y1="66" x2="110" y2="72"/>
+    <line x1="150" y1="66" x2="150" y2="74"/><line x1="190" y1="66" x2="190" y2="72"/><line x1="230" y1="66" x2="230" y2="72"/>
+    <line x1="270" y1="66" x2="270" y2="72"/>
+  </g>
+  <text x="150" y="85" font-size="11" text-anchor="middle" fill="#1F4D78" font-weight="700">0</text>
+  <!-- carrito -->
+  <rect x="168" y="40" width="44" height="18" rx="4" fill="#EEF3F9" stroke="#2E74B5" stroke-width="2"/>
+  <circle cx="178" cy="61" r="5" fill="#1F2A36"/><circle cx="202" cy="61" r="5" fill="#1F2A36"/>
+  <!-- flecha v -->
+  <line x1="190" y1="30" x2="240" y2="30" stroke="#1E7B4F" stroke-width="4"/>
+  <polygon points="250,30 238,23 238,37" fill="#1E7B4F"/>
+  <text x="255" y="34" font-size="13" font-style="italic" font-weight="700" fill="#1E7B4F">v</text>
+  <!-- tres mini gráficas -->
+  <g transform="translate(14,104)">
+    <rect width="92" height="80" fill="#FFF" stroke="#C9D3DF"/>
+    <line x1="8" y1="72" x2="88" y2="72" stroke="#1F2A36" stroke-width="1.2"/><line x1="8" y1="72" x2="8" y2="6" stroke="#1F2A36" stroke-width="1.2"/>
+    <line x1="8" y1="58" x2="84" y2="14" stroke="#2E74B5" stroke-width="3"/>
+    <text x="12" y="16" font-size="12" font-style="italic" fill="#1F4D78">s</text>
+  </g>
+  <g transform="translate(114,104)">
+    <rect width="92" height="80" fill="#FFF" stroke="#C9D3DF"/>
+    <line x1="8" y1="72" x2="88" y2="72" stroke="#1F2A36" stroke-width="1.2"/><line x1="8" y1="72" x2="8" y2="6" stroke="#1F2A36" stroke-width="1.2"/>
+    <line x1="8" y1="34" x2="84" y2="34" stroke="#1E7B4F" stroke-width="3"/>
+    <text x="12" y="16" font-size="12" font-style="italic" fill="#1E7B4F">v</text>
+  </g>
+  <g transform="translate(214,104)">
+    <rect width="92" height="80" fill="#FFF" stroke="#C9D3DF"/>
+    <line x1="8" y1="72" x2="88" y2="72" stroke="#1F2A36" stroke-width="1.2"/><line x1="8" y1="72" x2="8" y2="6" stroke="#1F2A36" stroke-width="1.2"/>
+    <line x1="8" y1="70" x2="84" y2="70" stroke="#C00000" stroke-width="3"/>
+    <text x="12" y="16" font-size="12" font-style="italic" fill="#C00000">a</text>
+  </g>
+</svg>

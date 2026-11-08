@@ -1,0 +1,116 @@
+/* Laboratorio de Física IB — estilos comunes
+   Identidad de las fichas: fondo blanco, Calibri/Carlito, paleta por función. */
+
+@font-face { font-family: "Carlito"; src: url("../fuentes/Carlito-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Carlito"; src: url("../fuentes/Carlito-Italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Carlito"; src: url("../fuentes/Carlito-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Carlito"; src: url("../fuentes/Carlito-BoldItalic.woff2") format("woff2"); font-weight: 700; font-style: italic; font-display: swap; }
+
+:root {
+  /* Estructura */
+  --azul-oscuro: #1F4D78;
+  --azul: #2E74B5;
+  --azul-fondo: #EEF3F9;
+  --gris-fila: #F6F8FB;
+  --gris-borde: #C9D3DF;
+  --gris-suave: #E6EBF1;
+  --tinta: #1F2A36;
+  --tinta-suave: #5A6B7D;
+  /* Magnitudes (figuras de teoría) */
+  --posicion: #2E74B5;
+  --desplazamiento: #C25E0C;
+  --velocidad: #1E7B4F;
+  --aceleracion: #C00000;
+  /* Funciones */
+  --ns: #7B1E3A;
+  --ns-fondo: #F6ECEF;
+  --fuente: Calibri, Carlito, "Segoe UI", Arial, sans-serif;
+  --radio: 10px;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body {
+  font-family: var(--fuente);
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--tinta);
+  background: #FFFFFF;
+}
+a { color: var(--azul); }
+button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+.var { font-style: italic; }
+
+/* Píldora: rótulo como en las figuras de las fichas */
+.pildora {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1.5px solid var(--azul);
+  border-radius: 999px;
+  background: var(--azul-fondo);
+  color: var(--azul-oscuro);
+  font-weight: 700;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+.etiqueta-ns {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 4px;
+  background: var(--ns);
+  color: #FFF;
+  font-weight: 700;
+  font-size: 0.78em;
+  letter-spacing: 0.04em;
+}
+.proximamente {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 4px;
+  background: var(--gris-suave);
+  color: var(--tinta-suave);
+  font-size: 0.78em;
+}
+
+/* Barra superior */
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  background: var(--azul-oscuro);
+  color: #FFF;
+}
+.barra a { color: #FFF; }
+.barra .marca {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 42px; height: 30px; padding: 0 8px;
+  border-radius: 6px; background: #FFF; color: var(--azul-oscuro);
+  font-weight: 700;
+}
+.barra h1 { margin: 0; font-size: 22px; font-weight: 700; line-height: 1.15; }
+.barra .sub { font-size: 14px; opacity: 0.85; }
+
+.boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 38px; padding: 6px 14px;
+  border: 1.5px solid var(--azul); border-radius: 8px;
+  background: #FFF; color: var(--azul-oscuro);
+  font-weight: 700; cursor: pointer; text-decoration: none;
+}
+.boton:hover { background: var(--azul-fondo); }
+.boton:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid #F2B84B; outline-offset: 2px;
+}
+.boton.primario { background: var(--azul); border-color: var(--azul); color: #FFF; }
+.boton.primario:hover { background: var(--azul-oscuro); }
+.boton[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+.pie {
+  margin-top: 32px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--gris-borde);
+  color: var(--tinta-suave);
+  font-size: 14px;
+}

@@ -1,0 +1,135 @@
+/* Simulación A.1 · Un movimiento, tres gráficas */
+
+.barra .volver { background: transparent; color: #FFF; border-color: rgba(255,255,255,.8); }
+.barra .volver:hover { background: rgba(255,255,255,.12); }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Pestañas */
+.pestanas {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  padding: 10px 20px 0; border-bottom: 2px solid var(--azul);
+  background: #FFF;
+}
+.pestanas button {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border: 1.5px solid var(--gris-borde); border-bottom: 0;
+  border-radius: 10px 10px 0 0; background: var(--gris-fila);
+  font-weight: 700; color: var(--tinta-suave); cursor: pointer;
+  margin-bottom: -2px;
+}
+.pestanas button[aria-selected="true"] {
+  background: #FFF; color: var(--azul-oscuro);
+  border-color: var(--azul); border-bottom: 2px solid #FFF;
+}
+
+.panel { padding: 16px 20px 0; }
+
+/* Niveles */
+.niveles { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.nivel {
+  display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 7px 14px; border: 1.5px solid var(--gris-borde); border-radius: 999px;
+  background: #FFF; color: var(--tinta-suave); cursor: pointer;
+}
+.nivel b { color: inherit; }
+.nivel.activo { border-color: var(--azul); background: var(--azul-fondo); color: var(--azul-oscuro); }
+.nivel[disabled] { cursor: not-allowed; opacity: .75; }
+
+/* Distribución */
+.explorar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-areas:
+    "escena valores"
+    "reproduccion valores"
+    "graficas ajustes"
+    "graficas observar";
+  grid-template-rows: auto auto auto 1fr;
+  gap: 12px 18px;
+  align-items: start;
+}
+.caja {
+  border: 1.5px solid var(--gris-borde); border-radius: var(--radio);
+  background: #FFF; padding: 12px 14px;
+}
+.caja h2 { margin: 0 0 8px; font-size: 17px; color: var(--azul-oscuro); }
+
+.escena-caja { padding: 6px; }
+.escena-caja canvas { display: block; width: 100%; height: 200px; }
+
+/* Reproducción */
+.reproduccion {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.reproduccion .boton { min-width: 44px; }
+#btnPlay { min-width: 140px; }
+.barra-tiempo { flex: 1 1 180px; display: flex; }
+.barra-tiempo input { width: 100%; }
+.rapidez { display: inline-flex; align-items: center; gap: 6px; color: var(--tinta-suave); }
+.rapidez select { padding: 6px 8px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; }
+
+input[type="range"] { accent-color: var(--azul); height: 28px; cursor: pointer; }
+
+/* Valores */
+.valores table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.valores th { text-align: left; font-weight: 400; padding: 5px 4px; }
+.valores th small { color: var(--tinta-suave); font-size: 13px; }
+.valores td { text-align: right; font-weight: 700; padding: 5px 2px 5px 8px; white-space: nowrap; }
+.valores td.u { text-align: left; font-weight: 400; color: var(--tinta-suave); width: 52px; padding-left: 6px; }
+.valores tr + tr { border-top: 1px solid var(--gris-suave); }
+.valores .var { font-weight: 700; font-size: 1.1em; }
+.c-pos .var, .c-pos td:not(.u), .c-pos output { color: var(--posicion); }
+.c-vel .var, .c-vel td:not(.u), .c-vel output { color: var(--velocidad); }
+.c-ace .var, .c-ace td:not(.u) { color: var(--aceleracion); }
+.c-des th, .c-des td:not(.u) { color: var(--desplazamiento); }
+
+/* Ajustes */
+.casos { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.casos .boton { display: block; text-align: left; font-weight: 400; }
+.casos .boton.activo { background: var(--azul-fondo); font-weight: 700; }
+.deslizador { margin: 10px 0 12px; }
+.deslizador .fila { display: flex; justify-content: space-between; align-items: baseline; }
+.deslizador label { font-weight: 700; }
+.deslizador label .var { font-size: 1.1em; }
+.deslizador output { font-weight: 700; font-variant-numeric: tabular-nums; }
+.deslizador input { width: 100%; }
+.deslizador.c-vel input { accent-color: var(--velocidad); }
+.deslizador .extremos { display: flex; justify-content: space-between; font-size: 13px; color: var(--tinta-suave); margin-top: -2px; }
+.casilla { display: flex; gap: 8px; align-items: flex-start; font-size: 15px; margin-top: 6px; cursor: pointer; }
+.casilla input { margin-top: 3px; width: 17px; height: 17px; accent-color: var(--azul); }
+
+/* Gráficas */
+.graficas { padding: 8px 8px 4px; }
+.grafica canvas { display: block; width: 100%; height: 190px; cursor: crosshair; touch-action: none; }
+.grafica + .grafica { margin-top: 4px; }
+.ayuda { margin: 4px 6px 4px; font-size: 13px; color: var(--tinta-suave); }
+
+/* Para observar */
+.observar ol { margin: 0; padding-left: 20px; font-size: 15px; }
+.observar li + li { margin-top: 6px; }
+
+.pronto { max-width: 720px; }
+.pronto p { margin: 0; }
+
+@media (max-width: 900px) {
+  .explorar {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "escena" "reproduccion" "ajustes" "valores" "graficas" "observar";
+    grid-template-rows: none;
+  }
+  .panel { padding: 12px 12px 0; }
+  .pestanas { padding: 8px 12px 0; }
+  .pestanas button { padding: 8px 12px; }
+  .escena-caja canvas { height: 190px; }
+  .grafica canvas { height: 160px; }
+  .barra h1 { font-size: 18px; }
+  .barra .sub { font-size: 13px; }
+  .barra { gap: 10px; padding: 8px 12px; flex-wrap: wrap; }
+}
+@media (max-width: 520px) {
+  .reproduccion .barra-tiempo { order: 10; flex-basis: 100%; }
+  #btnPlay { min-width: 0; flex: 1; }
+  .barra .marca { display: none; }
+  .pestanas .proximamente { display: none; }
+}

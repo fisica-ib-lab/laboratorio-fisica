@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio de Física IB</title>
+<meta name="description" content="Simulaciones interactivas de Física IB (Programa del Diploma) para practicar.">
+<link rel="stylesheet" href="comun/estilo.css">
+<style>
+  .portal { display: grid; grid-template-columns: 290px 1fr; min-height: calc(100vh - 56px); }
+  .menu {
+    border-right: 1px solid var(--gris-borde);
+    background: var(--gris-fila);
+    padding: 16px 12px 24px;
+  }
+  .menu h2 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--tinta-suave); margin: 4px 8px 10px; }
+  .menu details { margin-bottom: 4px; }
+  .menu summary {
+    list-style: none; cursor: pointer;
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 8px 8px; border-radius: 8px;
+    font-weight: 700; color: var(--azul-oscuro);
+  }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu summary::before { content: "▸"; color: var(--azul); width: 10px; flex: none; }
+  .menu details[open] > summary::before { content: "▾"; }
+  .menu summary:hover { background: var(--azul-fondo); }
+  .menu .letra { flex: none; }
+  .menu ul { list-style: none; margin: 0 0 6px; padding: 0 0 0 18px; }
+  .menu li button {
+    width: 100%; text-align: left; cursor: pointer;
+    display: flex; align-items: baseline; gap: 8px;
+    padding: 6px 8px; border: 0; border-radius: 8px; background: none;
+    font-size: 16px;
+  }
+  .menu li button:hover { background: var(--azul-fondo); }
+  .menu li button.activo { background: var(--azul); color: #FFF; }
+  .menu li button.activo .num { color: #FFF; }
+  .menu li button.vacio { color: #8A97A6; }
+  .menu .num { font-weight: 700; color: var(--azul-oscuro); min-width: 30px; flex: none; }
+  .menu .nom { flex: 1; }
+  .menu .nom .etiqueta-ns, .menu .nom .proximamente { vertical-align: 1px; }
+  .menu li button.vacio .num { color: #8A97A6; }
+  .menu .contador {
+    margin-left: auto; font-size: 13px; font-weight: 700;
+    min-width: 20px; text-align: center; border-radius: 999px;
+    background: var(--azul-fondo); color: var(--azul-oscuro); border: 1px solid var(--azul);
+  }
+  .menu .todas { margin: 0 0 8px; }
+  .menu .enlace-fijo {
+    display: flex; align-items: center; gap: 8px;
+    margin: 14px 4px 0; padding: 10px 12px;
+    border: 1.5px solid var(--azul); border-radius: 10px;
+    background: #FFF; color: var(--azul-oscuro); font-weight: 700; text-decoration: none;
+  }
+  .menu .enlace-fijo:hover { background: var(--azul-fondo); }
+  .menu .enlace-fijo small { display: block; font-weight: 400; color: var(--tinta-suave); }
+
+  .contenido { padding: 22px 28px; }
+  .cabecera { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .cabecera h2 { margin: 0; font-size: 26px; color: var(--azul-oscuro); }
+  .cabecera p { margin: 2px 0 0; color: var(--tinta-suave); }
+  .buscador { position: relative; width: min(340px, 100%); }
+  .buscador input {
+    width: 100%; padding: 9px 12px 9px 36px;
+    border: 1.5px solid var(--gris-borde); border-radius: 999px; background: #FFF;
+  }
+  .buscador svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); }
+
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+  .tarjeta {
+    display: flex; flex-direction: column;
+    border: 1.5px solid var(--gris-borde); border-radius: 12px; overflow: hidden;
+    background: #FFF; color: inherit; text-decoration: none;
+    transition: box-shadow .15s, border-color .15s, transform .15s;
+  }
+  .tarjeta:hover { border-color: var(--azul); box-shadow: 0 6px 18px rgba(31,77,120,.15); transform: translateY(-2px); }
+  .tarjeta img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-bottom: 1px solid var(--gris-suave); background: #FFF; }
+  .tarjeta .cuerpo { padding: 12px 14px 14px; }
+  .tarjeta .ref { font-size: 13px; color: var(--azul); font-weight: 700; }
+  .tarjeta h3 { margin: 2px 0 6px; font-size: 19px; color: var(--azul-oscuro); }
+  .tarjeta p { margin: 0; font-size: 15px; color: var(--tinta-suave); }
+
+  .vacio-msg {
+    padding: 28px; border: 1.5px dashed var(--gris-borde); border-radius: 12px;
+    color: var(--tinta-suave); text-align: center;
+  }
+
+  .boton-menu { display: none; }
+
+  @media (max-width: 820px) {
+    .portal { grid-template-columns: 1fr; }
+    .menu { border-right: 0; border-bottom: 1px solid var(--gris-borde); display: none; }
+    .menu.abierto { display: block; }
+    .boton-menu { display: inline-flex; margin-left: auto; background: transparent; color: #FFF; border-color: #FFF; }
+    .boton-menu:hover { background: rgba(255,255,255,.12); }
+    .contenido { padding: 16px; }
+    .barra { padding: 10px 16px; }
+    .barra .sub { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="barra">
+  <span class="marca">IB</span>
+  <div>
+    <h1>Laboratorio de Física</h1>
+    <div class="sub">Programa del Diploma · Simulaciones para practicar</div>
+  </div>
+  <button class="boton boton-menu" id="botonMenu" aria-expanded="false" aria-controls="menu">Temas</button>
+</header>
+
+<div class="portal">
+  <nav class="menu" id="menu" aria-label="Temas y subtemas">
+    <div class="todas"><button class="boton" id="verTodas" style="width:100%">Todas las simulaciones</button></div>
+    <h2>Temas</h2>
+    <div id="listaTemas"></div>
+    <div id="enlacesFijos"></div>
+  </nav>
+
+  <main class="contenido">
+    <div class="cabecera">
+      <div>
+        <h2 id="tituloVista">Todas las simulaciones</h2>
+        <p id="subtituloVista">Elige una simulación para abrirla.</p>
+      </div>
+      <label class="buscador">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="5" fill="none" stroke="#5A6B7D" stroke-width="2"/><line x1="10.2" y1="10.2" x2="15" y2="15" stroke="#5A6B7D" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="search" id="buscar" placeholder="Buscar (por ejemplo, velocidad)" aria-label="Buscar simulaciones">
+      </label>
+    </div>
+    <div class="tarjetas" id="tarjetas"></div>
+  </main>
+</div>
+
+<footer class="pie">Física · Programa del Diploma · Prof. Guillermo Escalante</footer>
+
+<script src="catalogo.js"></script>
+<script>
+(function () {
+  const C = window.CATALOGO;
+  const porSubtema = {};
+  C.simulaciones.forEach(s => (porSubtema[s.subtema] = porSubtema[s.subtema] || []).push(s));
+
+  let filtro = null; // código de subtema o null
+  const lista = document.getElementById('listaTemas');
+  const tarjetas = document.getElementById('tarjetas');
+  const buscar = document.getElementById('buscar');
+
+  function nombreSubtema(cod) {
+    for (const t of C.temas) for (const s of t.subtemas) if (s.codigo === cod) return s;
+    return null;
+  }
+
+  // Menú lateral
+  C.temas.forEach(t => {
+    const total = t.subtemas.reduce((n, s) => n + (porSubtema[s.codigo] || []).length, 0);
+    const d = document.createElement('details');
+    if (total > 0) d.open = true;
+    const sum = document.createElement('summary');
+    sum.innerHTML = `<span class="letra">${t.codigo}</span><span>${t.nombre}</span>`;
+    d.appendChild(sum);
+    const ul = document.createElement('ul');
+    t.subtemas.forEach(s => {
+      const n = (porSubtema[s.codigo] || []).length;
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.dataset.subtema = s.codigo;
+      if (n === 0) b.classList.add('vacio');
+      b.innerHTML = `<span class="num">${s.codigo}</span><span class="nom">${s.nombre}` +
+        (s.ns ? ' <span class="etiqueta-ns">NS</span>' : '') +
+        (n > 0 ? '</span>' + `<span class="contador">${n}</span>` : ' <span class="proximamente">próximamente</span></span>');
+      b.addEventListener('click', () => { filtro = s.codigo; buscar.value = ''; pintar(); cerrarMenuMovil(); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+    d.appendChild(ul);
+    lista.appendChild(d);
+  });
+
+  C.enlaces.forEach(e => {
+    const a = document.createElement('a');
+    a.className = 'enlace-fijo';
+    a.href = e.url; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="2" fill="none" stroke="#2E74B5" stroke-width="2"/><path d="M5.5 6.5h7M5.5 9.5h7M5.5 12.5h4" stroke="#2E74B5" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>${e.titulo}<small>Se abre en una pestaña nueva</small></span>`;
+    document.getElementById('enlacesFijos').appendChild(a);
+  });
+
+  document.getElementById('verTodas').addEventListener('click', () => { filtro = null; buscar.value = ''; pintar(); cerrarMenuMovil(); });
+  buscar.addEventListener('input', () => { filtro = null; pintar(); });
+
+  const menu = document.getElementById('menu');
+  const botonMenu = document.getElementById('botonMenu');
+  botonMenu.addEventListener('click', () => {
+    const abierto = menu.classList.toggle('abierto');
+    botonMenu.setAttribute('aria-expanded', abierto);
+  });
+  function cerrarMenuMovil() { menu.classList.remove('abierto'); botonMenu.setAttribute('aria-expanded', false); }
+
+  function normalizar(x) { return x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+  function pintar() {
+    document.querySelectorAll('.menu li button').forEach(b => b.classList.toggle('activo', b.dataset.subtema === filtro));
+    const q = normalizar(buscar.value.trim());
+    let sims = C.simulaciones;
+    const titulo = document.getElementById('tituloVista');
+    const sub = document.getElementById('subtituloVista');
+    if (filtro) {
+      const s = nombreSubtema(filtro);
+      sims = sims.filter(x => x.subtema === filtro);
+      titulo.textContent = `${s.codigo} ${s.nombre}`;
+      sub.textContent = sims.length ? 'Elige una simulación para abrirla.' : '';
+    } else if (q) {
+      sims = sims.filter(x => normalizar(`${x.subtema} ${x.titulo} ${x.descripcion} ${x.palabras || ''}`).includes(q));
+      titulo.textContent = 'Resultados de la búsqueda';
+      sub.textContent = `${sims.length} ${sims.length === 1 ? 'simulación' : 'simulaciones'}`;
+    } else {
+      titulo.textContent = 'Todas las simulaciones';
+      sub.textContent = 'Elige una simulación para abrirla.';
+    }
+    tarjetas.innerHTML = '';
+    if (!sims.length) {
+      tarjetas.innerHTML = `<div class="vacio-msg">${filtro ? 'Este subtema todavía no tiene simulaciones. Próximamente.' : 'No se encontró ninguna simulación.'}</div>`;
+      return;
+    }
+    sims.forEach(x => {
+      const a = document.createElement('a');
+      a.className = 'tarjeta';
+      a.href = x.ruta;
+      a.innerHTML = `<img src="${x.miniatura}" alt="" loading="lazy">
+        <div class="cuerpo"><div class="ref">${x.ficha}</div><h3>${x.titulo}</h3><p>${x.descripcion}</p></div>`;
+      tarjetas.appendChild(a);
+    });
+  }
+  pintar();
+})();
+</script>
+</body>
+</html>
