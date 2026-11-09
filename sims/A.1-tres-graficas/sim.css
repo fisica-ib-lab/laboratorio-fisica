@@ -142,7 +142,7 @@ input[type="range"] { accent-color: var(--azul); height: 26px; cursor: pointer; 
     grid-template-rows: auto auto minmax(0, 1fr);
   }
   /* la escena ocupa una parte fija de la altura; las gráficas, el resto */
-  .escena-caja canvas { height: clamp(180px, 25vh, 230px); }
+  .escena-caja canvas { height: clamp(180px, 27vh, 285px); }
   .graficas { min-height: 0; }
   .grafica canvas { position: absolute; inset: 0; height: 100%; }
   .lateral { overflow-y: auto; }

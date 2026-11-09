@@ -125,89 +125,211 @@
     return numero(r, Number.isInteger(r) ? 0 : (Number.isInteger(r * 10) ? 1 : 2));
   }
 
-  // ---------- Escena: pista, regla y carrito ----------
+  // ---------- Escena: mesa de laboratorio, pista, sensor de movimiento y carrito ----------
+  // El banderín es solo decorativo: cuelga en reposo y ondea hacia atrás cuando el carrito se mueve.
+  const bandera = { phi: 0, om: 0, ultimo: null };
+  let escenaPendiente = false;
+  const QUIETO = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const MET = { claro: '#E4E9EF', brillo: '#F6F8FA', medio: '#8A97A6', oscuro: '#5A6B7D', pizarra: '#2F3E4E' };
+
   function dibujarEscena() {
     const cv = $('escena');
-    const { ctx, w, h } = prepararLienzo(cv);
+    const lienzo = prepararLienzo(cv);
+    const ctx = lienzo.ctx;
+    // En pantallas altas, todo el dibujo se amplía (hasta 1,5 veces) para que se vea bien al proyectar
+    const k = Math.max(1, Math.min(1.5, lienzo.h / 190));
+    ctx.scale(k, k);
+    const w = lienzo.w / k, h = lienzo.h / k;
     const { min, max } = nivel.pista;
-    const margen = 24;
-    const X = (s) => margen + (s - min) / (max - min) * (w - 2 * margen);
-    const pxm = (w - 2 * margen) / (max - min);
-    const yPista = h - 70;
-
-    // Indicador de sentido positivo
-    pildora(ctx, [['derecha +', false]], margen + 44, 18, 13, COL.azul, COL.azulFondo, COL.azulOsc);
-    flecha(ctx, margen + 92, 18, margen + 132, 18, COL.azul, 2.5, 10);
-
-    // Pista
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(X(min) - 6, yPista); ctx.lineTo(X(max) + 6, yPista); ctx.stroke();
-    // Topes
-    ctx.fillStyle = '#B8C3CF';
-    ctx.fillRect(X(min) - 10, yPista - 16, 5, 16);
-    ctx.fillRect(X(max) + 5, yPista - 16, 5, 16);
-
-    // Regla
-    const pasoEtiqueta = pxm >= 13 ? 5 : 10;
-    ctx.strokeStyle = COL.gris; ctx.lineWidth = 1;
-    for (let s = min; s <= max; s++) {
-      const largo = s === 0 ? 12 : s % 5 === 0 ? 8 : 4;
-      if (pxm < 6 && s % 5 !== 0) continue;
-      ctx.beginPath(); ctx.moveTo(X(s), yPista); ctx.lineTo(X(s), yPista + largo); ctx.stroke();
-    }
-    for (let s = min; s <= max; s += pasoEtiqueta) {
-      const cero = s === 0;
-      ctx.font = `${cero ? '700 ' : ''}13px ${LETRA}`;
-      ctx.fillStyle = cero ? COL.azulOsc : COL.suave;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText(s < 0 ? MENOS + Math.abs(s) : String(s), X(s), yPista + 14);
-    }
-    textoRico(ctx, [['s', true], [' / m', false]], X(max) + 4, yPista + 38, 13, COL.suave, 'right');
+    const ancha = w >= 640;
+    const mIzq = ancha ? 112 : 70, mDer = 56;
+    const X = (s) => mIzq + (s - min) / (max - min) * (w - mIzq - mDer);
+    const pxm = (w - mIzq - mDer) / (max - min);
+    const yP = h - 62;                    // superficie de la pista (donde ruedan las ruedas)
+    const ahora = performance.now();
+    const linea = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+    ctx.lineJoin = 'round';
 
     const s = estado.mov.s(estado.t);
     const v = estado.mov.v(estado.t);
     const a = estado.mov.a(estado.t);
     const s0 = estado.mov.s0;
+    const xc = X(s);
+
+    // Indicador de sentido positivo
+    pildora(ctx, [['derecha +', false]], 52, 15, 13, COL.azul, COL.azulFondo, COL.azulOsc);
+    flecha(ctx, 100, 15, 140, 15, COL.azul, 2.5, 10);
+
+    // Mesa de laboratorio
+    ctx.fillStyle = '#EFE8DC'; ctx.fillRect(0, yP + 17, w, 3);
+    ctx.fillStyle = '#D3AC84'; ctx.fillRect(0, yP + 20, w, 5);
+
+    // Pista de aluminio con su escala
+    const rx0 = mIzq - 58, rx1 = w - 8;
+    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2;
+    for (const xp of (ancha ? [rx0 + 16, (rx0 + rx1) / 2, rx1 - 16] : [rx0 + 14, rx1 - 14])) {   // patas niveladoras
+      ctx.beginPath(); ctx.moveTo(xp - 6, yP + 11); ctx.lineTo(xp + 6, yP + 11); ctx.lineTo(xp + 9, yP + 17); ctx.lineTo(xp - 9, yP + 17); ctx.closePath();
+      ctx.fillStyle = MET.oscuro; ctx.fill(); ctx.stroke();
+    }
+    ctx.fillStyle = MET.claro; ctx.fillRect(rx0, yP, rx1 - rx0, 11);
+    ctx.fillStyle = MET.brillo; ctx.fillRect(rx0, yP, rx1 - rx0, 3);
+    ctx.strokeRect(rx0, yP, rx1 - rx0, 11);
+    for (let m = min; m <= max; m++) {
+      if (pxm < 6 && m % 5 !== 0) continue;
+      const largo = m === 0 ? 10 : m % 5 === 0 ? 6 : 3;
+      ctx.strokeStyle = m === 0 ? COL.azulOsc : MET.oscuro; ctx.lineWidth = m === 0 ? 2 : 1;
+      linea(X(m), yP + 10.5, X(m), yP + 10.5 - largo);
+    }
+    // Tope del extremo derecho
+    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2;
+    ctx.fillStyle = MET.medio; ctx.fillRect(rx1 - 7, yP - 14, 6, 14); ctx.strokeRect(rx1 - 7, yP - 14, 6, 14);
+    ctx.fillStyle = COL.tinta; ctx.fillRect(rx1 - 10, yP - 11, 3, 7);
+
+    // Números de la escala (bajo la mesa)
+    const pasoEtiqueta = pxm >= 13 ? 5 : 10;
+    for (let m = min; m <= max; m += pasoEtiqueta) {
+      const cero = m === 0;
+      ctx.font = `${cero ? '700 ' : ''}13px ${LETRA}`;
+      ctx.fillStyle = cero ? COL.azulOsc : COL.suave;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(m < 0 ? MENOS + Math.abs(m) : String(m), X(m), yP + 28);
+    }
+    textoRico(ctx, [['s', true], [' / m', false]], w - 6, yP + 35, 13, COL.suave, 'right');
+
+    // Interfaz y cable del sensor
+    const sx = rx0 + 4;                     // borde izquierdo del sensor
+    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(sx + 1, yP - 15);
+    if (ancha) ctx.bezierCurveTo(sx - 16, yP - 17, sx - 4, yP + 17, 40, yP + 9);
+    else ctx.bezierCurveTo(sx - 9, yP - 16, sx - 2, yP + 15, 0, yP + 13);
+    ctx.stroke(); ctx.lineCap = 'butt';
+    if (ancha) {
+      ctx.lineWidth = 1.2;
+      rectRedondo(ctx, 10, yP - 6, 31, 23, 3); ctx.fillStyle = MET.pizarra; ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#E8F1F8'; ctx.fillRect(14, yP - 2, 23, 11);
+      ctx.strokeStyle = COL.pos; ctx.lineWidth = 1.3;              // mini gráfica en la pantalla
+      ctx.beginPath(); ctx.moveTo(16, yP + 6); ctx.lineTo(23, yP + 4); ctx.lineTo(28, yP + 1); ctx.lineTo(35, yP); ctx.stroke();
+      ctx.fillStyle = MET.medio;
+      for (const bx of [18, 25.5, 33]) { ctx.beginPath(); ctx.arc(bx, yP + 13, 1.4, 0, 2 * Math.PI); ctx.fill(); }
+    }
+
+    // Sensor de movimiento (ultrasonidos) sujeto al extremo de la pista
+    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2;
+    ctx.fillStyle = MET.oscuro; ctx.fillRect(sx + 4, yP - 5, 10, 5); ctx.strokeRect(sx + 4, yP - 5, 10, 5);
+    rectRedondo(ctx, sx, yP - 27, 18, 22, 4); ctx.fillStyle = MET.pizarra; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(sx + 18, yP - 16, 2.6, 7, 0, 0, 2 * Math.PI);
+    ctx.fillStyle = '#E2B045'; ctx.fill(); ctx.lineWidth = 1; ctx.stroke();
+    const parpadeo = estado.jugando && (QUIETO || Math.floor(ahora / 350) % 2 === 0);
+    ctx.beginPath(); ctx.arc(sx + 6, yP - 22, 1.8, 0, 2 * Math.PI);
+    ctx.fillStyle = parpadeo ? '#4FD08A' : MET.medio; ctx.fill();
+    // Pulsos de ultrasonidos mientras se mide
+    if (estado.jugando && !QUIETO) {
+      ctx.lineWidth = 1.3; ctx.strokeStyle = MET.oscuro;
+      for (let k = 0; k < 3; k++) {
+        const fase = (ahora / 900 + k / 3) % 1;
+        ctx.globalAlpha = 0.75 * (1 - fase);
+        ctx.beginPath(); ctx.arc(sx + 14, yP - 16, 9 + fase * 30, -0.55, 0.55); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+    // Rótulo del sensor (se atenúa si el carrito está encima)
+    ctx.font = `12px ${LETRA}`;
+    const medio = Math.max(ctx.measureText('movimiento').width, ctx.measureText('sensor de').width) / 2;
+    const xr = Math.max(4 + medio, sx + 9);
+    const visible = Math.max(0, Math.min(1, (xc - 34 - (xr + medio)) / 24));
+    if (visible > 0) {
+      ctx.globalAlpha = visible;
+      ctx.fillStyle = COL.suave; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('sensor de', xr, yP - 56); ctx.fillText('movimiento', xr, yP - 44);
+      ctx.strokeStyle = COL.suave; ctx.lineWidth = 1; linea(sx + 9, yP - 36, sx + 9, yP - 29);
+      ctx.globalAlpha = 1;
+    }
 
     // Posición inicial (marca discontinua)
     ctx.save();
     ctx.setLineDash([4, 3]); ctx.strokeStyle = COL.pos; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(X(s0), yPista - 30); ctx.lineTo(X(s0), yPista + 10);
-    ctx.moveTo(X(s0), yPista + 32); ctx.lineTo(X(s0), yPista + 58); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(X(s0), yP - 36); ctx.lineTo(X(s0), yP);
+    ctx.moveTo(X(s0), yP + 43); ctx.lineTo(X(s0), yP + 58); ctx.stroke();
     ctx.restore();
-    textoRico(ctx, [['s', true], ['₀', false]], X(s0) - 4, yPista - 36, 13, COL.pos, 'right', true);
+    // el rótulo s₀ va abajo, en el lado contrario al desplazamiento
+    if (xc >= X(s0)) textoRico(ctx, [['s', true], ['₀', false]], X(s0) - 5, yP + 51, 13, COL.pos, 'right', true);
+    else textoRico(ctx, [['s', true], ['₀', false]], X(s0) + 5, yP + 51, 13, COL.pos, 'left', true);
 
     // Desplazamiento (naranja), desde s0 hasta s
-    const yDes = yPista + 52;
-    if (Math.abs(X(s) - X(s0)) > 3) {
-      flecha(ctx, X(s0), yDes, X(s), yDes, COL.des, 3, Math.min(11, Math.abs(X(s) - X(s0))));
+    const yDes = yP + 51;
+    if (Math.abs(xc - X(s0)) > 3) {
+      flecha(ctx, X(s0), yDes, xc, yDes, COL.des, 3, Math.min(11, Math.abs(xc - X(s0))));
       ctx.font = `700 12px ${LETRA}`;
-      ctx.fillStyle = COL.des; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      const xm = (X(s0) + X(s)) / 2;
-      const etiqueta = 'desplazamiento';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const xm = (X(s0) + xc) / 2, etiqueta = 'desplazamiento';
       const ancho = ctx.measureText(etiqueta).width;
-      if (Math.abs(X(s) - X(s0)) > ancho + 16) {
+      if (Math.abs(xc - X(s0)) > ancho + 16) {
         ctx.fillStyle = '#FFF'; ctx.fillRect(xm - ancho / 2 - 3, yDes - 7, ancho + 6, 14);
         ctx.fillStyle = COL.des; ctx.fillText(etiqueta, xm, yDes);
       }
     }
 
-    // Carrito (el punto de referencia es su centro)
-    const xc = X(s), anchoC = 58, altoC = 24, rRueda = 7;
-    const yBase = yPista - 2 * rRueda + 2;
-    rectRedondo(ctx, xc - anchoC / 2, yBase - altoC, anchoC, altoC, 5);
-    ctx.fillStyle = COL.azulFondo; ctx.fill();
-    ctx.strokeStyle = COL.azul; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = COL.tinta;
-    for (const dx of [-17, 17]) { ctx.beginPath(); ctx.arc(xc + dx, yPista - rRueda, rRueda, 0, 2 * Math.PI); ctx.fill(); }
-    // marca del centro sobre la regla
+    // ----- Carrito de laboratorio (su posición es la de su centro) -----
+    const yT = yP - 28, yB = yP - 8, rR = 6.5;
+    // Ruedas: giran sin deslizar (ángulo = recorrido / radio)
+    const giro = (s * pxm) / rR;
+    for (const dx of [-18, 18]) {
+      const cx = xc + dx, cy = yP - rR;
+      ctx.beginPath(); ctx.arc(cx, cy, rR, 0, 2 * Math.PI); ctx.fillStyle = COL.tinta; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 3.4, 0, 2 * Math.PI); ctx.fillStyle = '#C9D3DF'; ctx.fill();
+      ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.1;
+      for (let k = 0; k < 3; k++) {
+        const ang = giro + k * 2 * Math.PI / 3;
+        linea(cx, cy, cx + 3.4 * Math.cos(ang), cy + 3.4 * Math.sin(ang));
+      }
+    }
+    // Topes de los extremos y cuerpo
+    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2; ctx.fillStyle = MET.medio;
+    for (const lado of [-1, 1]) {
+      const x0 = lado < 0 ? xc - 33 : xc + 29;
+      ctx.fillRect(x0, yT + 7, 4, 6); ctx.strokeRect(x0, yT + 7, 4, 6);
+    }
+    rectRedondo(ctx, xc - 29, yT, 58, yB - yT, 4);
+    ctx.fillStyle = '#B5CFEC'; ctx.fill();
+    ctx.save(); ctx.clip(); ctx.fillStyle = COL.azul; ctx.fillRect(xc - 29, yT, 58, 5); ctx.restore();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = COL.tinta; ctx.stroke();
+    // Marca del centro y su índice sobre la escala
+    ctx.strokeStyle = COL.azulOsc; ctx.lineWidth = 1.5; linea(xc, yT + 8, xc, yB - 2);
     ctx.fillStyle = COL.azulOsc;
-    ctx.beginPath(); ctx.moveTo(xc, yPista + 1); ctx.lineTo(xc - 5, yPista + 9); ctx.lineTo(xc + 5, yPista + 9); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = COL.azulOsc; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(xc, yBase - altoC + 4); ctx.lineTo(xc, yBase - 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(xc, yP + 1); ctx.lineTo(xc - 4.5, yP + 9); ctx.lineTo(xc + 4.5, yP + 9); ctx.closePath(); ctx.fill();
+
+    // Banderín: resorte amortiguado hacia su ángulo de equilibrio (decorativo)
+    const objetivo = estado.jugando ? -Math.sign(v) * 1.43 * (1 - Math.exp(-Math.abs(v) / 0.5)) : 0.3;
+    const dt = bandera.ultimo === null ? 0 : Math.min(0.05, (ahora - bandera.ultimo) / 1000);
+    bandera.ultimo = ahora;
+    if (QUIETO) { bandera.phi = objetivo; bandera.om = 0; }
+    else {
+      for (let i = 0; i < 4; i++) {
+        const acc = 100 * (objetivo - bandera.phi) - 6 * bandera.om;
+        bandera.om += acc * dt / 4; bandera.phi += bandera.om * dt / 4;
+      }
+    }
+    const phi = bandera.phi;
+    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5; linea(xc, yT, xc, yT - 21);
+    ctx.beginPath(); ctx.arc(xc, yT - 21, 1.6, 0, 2 * Math.PI); ctx.fillStyle = COL.tinta; ctx.fill();
+    // phi = 0: cuelga; phi < 0: ondea hacia la izquierda (el carrito va a la derecha)
+    const dir = [Math.sin(phi), Math.cos(phi)], nor = [Math.cos(phi), -Math.sin(phi)];
+    const onda = (estado.jugando && !QUIETO) ? 2.2 * Math.min(1, Math.abs(v)) : 0;
+    const arriba = [], abajo = [];
+    for (let i = 0; i <= 5; i++) {
+      const f = i / 5, d = 17 * f, medioAncho = 3.6 * (1 - f);
+      const riz = onda * f * Math.sin(ahora / 70 - i * 1.3);
+      const px = xc + dir[0] * d + nor[0] * riz, py = (yT - 17) + dir[1] * d + nor[1] * riz;
+      arriba.push([px + nor[0] * medioAncho, py + nor[1] * medioAncho]);
+      abajo.push([px - nor[0] * medioAncho, py - nor[1] * medioAncho]);
+    }
+    ctx.beginPath(); ctx.moveTo(arriba[0][0], arriba[0][1]);
+    for (let i = 1; i <= 5; i++) ctx.lineTo(arriba[i][0], arriba[i][1]);
+    for (let i = 4; i >= 0; i--) ctx.lineTo(abajo[i][0], abajo[i][1]);
+    ctx.closePath(); ctx.fillStyle = '#F2B84B'; ctx.fill(); ctx.lineWidth = 1.1; ctx.stroke();
 
     // Flecha de velocidad (verde) a escala: 30 px por cada m s⁻¹
-    const yV = yBase - altoC - 16;
+    const yV = yT - 30;
     const kV = 30;
     if (Math.abs(v) > 1e-9) flecha(ctx, xc, yV, xc + v * kV, yV, COL.vel, 4, 12);
     const textoV = [['v', true], [' = ' + num(v, 1) + ' m s⁻¹', false]];
@@ -221,6 +343,13 @@
     const anchoA = medirRico(ctx, textoA, 13, true) + 18;
     if (xA + anchoA > w - 4) xA = xc - anchoPV / 2 - 8 - anchoA;
     pildora(ctx, textoA, xA + anchoA / 2, yPV, 13, COL.ace, COL.aceFondo, COL.ace, 4, w - 4);
+
+    // Mientras el banderín no esté quieto, seguir dibujando aunque la simulación esté en pausa
+    const inquieto = Math.abs(objetivo - bandera.phi) > 0.004 || Math.abs(bandera.om) > 0.004;
+    if (!estado.jugando && inquieto && !escenaPendiente && w > 10) {
+      escenaPendiente = true;
+      requestAnimationFrame(() => { escenaPendiente = false; dibujarEscena(); });
+    }
   }
 
   // ---------- Gráficas ----------
