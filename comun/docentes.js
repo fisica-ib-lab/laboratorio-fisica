@@ -1,13 +1,19 @@
-/* Muestra los accesos para docentes solo a quien entra con el enlace «?docentes» (o ya entró así antes).
-   Los alumnos ven el laboratorio sin anuncios. */
+/* Vista de docente: solo con el enlace «?docentes» y solo mientras esa pestaña siga abierta.
+   Los alumnos ven el laboratorio sin nada de docentes (pero con Past papers). */
 (function () {
-  var conEnlace = /[?&]docentes(=|&|$)/.test(location.search) || /\/materiales\//.test(location.pathname);
+  // Solo dura mientras la pestaña esté abierta (sessionStorage): al cerrarla, el sitio vuelve a la vista de alumnos.
+  // «?alumnos» en el enlace quita la vista de docente al instante.
+  var q = location.search;
+  var conEnlace = /[?&]docentes(=|&|$)/.test(q) || /\/materiales\//.test(location.pathname);
+  var quitar = /[?&]alumnos?(=|&|$)/.test(q);
+  try { localStorage.removeItem('ibseven-docente'); } catch (e) {}
+  var docente = conEnlace;
   try {
-    if (conEnlace) localStorage.setItem('ibseven-docente', '1');
-    if (conEnlace || localStorage.getItem('ibseven-docente')) document.documentElement.classList.add('docente');
-  } catch (e) {
-    if (conEnlace) document.documentElement.classList.add('docente');
-  }
+    if (quitar) sessionStorage.removeItem('ibseven-docente');
+    else if (conEnlace) sessionStorage.setItem('ibseven-docente', '1');
+    docente = !quitar && (conEnlace || sessionStorage.getItem('ibseven-docente') === '1');
+  } catch (e) {}
+  if (docente) document.documentElement.classList.add('docente');
 })();
 
 /* Para docentes, los enlaces a la plataforma de past papers abren el modo invitado (muestra de A.1). */
