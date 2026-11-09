@@ -9,3 +9,11 @@
     if (conEnlace) document.documentElement.classList.add('docente');
   }
 })();
+
+/* Para docentes, los enlaces a la plataforma de past papers abren el modo invitado (muestra de A.1). */
+document.addEventListener('DOMContentLoaded', function () {
+  if (!document.documentElement.classList.contains('docente')) return;
+  document.querySelectorAll('a[href*="script.google.com/macros"]').forEach(function (a) {
+    if (a.href.indexOf('invitado') < 0) a.href = a.href + (a.href.indexOf('?') < 0 ? '?' : '&') + 'invitado=1';
+  });
+});
