@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Materiales para docentes · IB Seven</title>
+<meta name="description" content="Fichas, solucionarios y presentaciones de Física IB (Programa del Diploma, NM y NS) en español, listos para clase.">
+<link rel="stylesheet" href="../comun/estilo.css">
+<style>
+  .pagina { max-width: 1080px; margin: 0 auto; padding: 24px 20px 48px; display: grid; gap: 34px; }
+  .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
+  .barra .volver:hover { background: rgba(255,255,255,.12); }
+
+  /* Portada */
+  .portada { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 28px; align-items: center; }
+  .portada h2 { font-size: 36px; line-height: 1.08; margin: 6px 0 12px; color: var(--azul-oscuro); text-wrap: balance; }
+  .portada p { margin: 0 0 14px; max-width: 58ch; color: var(--tinta); }
+  .antetitulo { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--azul); font-weight: 700; }
+  .llamadas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .principal { background: var(--azul-oscuro); color: #FFF; border-color: var(--azul-oscuro); }
+  .principal:hover { background: var(--azul); }
+  .pila { position: relative; height: 330px; }
+  .pila img {
+    position: absolute; width: 58%; border: 1px solid var(--gris-borde); border-radius: 4px;
+    box-shadow: 0 10px 26px rgba(31,77,120,.18); background: #FFF; cursor: zoom-in;
+  }
+  .pila img:nth-child(1) { left: 0; top: 18px; transform: rotate(-4deg); }
+  .pila img:nth-child(2) { left: 21%; top: 0; z-index: 2; }
+  .pila img:nth-child(3) { right: 0; top: 24px; transform: rotate(4deg); }
+
+  /* Qué incluye */
+  h3.seccion { font-size: 24px; margin: 0 0 12px; color: var(--azul-oscuro); }
+  .incluye { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+  .pieza { border: 1.5px solid var(--gris-borde); border-radius: 12px; padding: 14px 16px; background: #FFF; }
+  .pieza b { display: block; color: var(--azul-oscuro); font-size: 18px; margin-bottom: 4px; }
+  .pieza .tipo { font-size: 13px; color: var(--tinta-suave); }
+  .rasgos { margin: 14px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 6px 22px; }
+  .rasgos li { padding-left: 20px; position: relative; }
+  .rasgos li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 9px; height: 9px; border-radius: 50%; background: var(--azul); }
+
+  /* Muestra */
+  .muestra { background: var(--gris-fila); border: 1px solid var(--gris-suave); border-radius: 14px; padding: 20px; }
+  .muestra p { margin: 0 0 14px; color: var(--tinta-suave); }
+  .galeria { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
+  .galeria figure { margin: 0; }
+  .galeria button { padding: 0; border: 1px solid var(--gris-borde); border-radius: 4px; background: #FFF; cursor: zoom-in; display: block; width: 100%; }
+  .galeria img { display: block; width: 100%; border-radius: 4px; }
+  .galeria figcaption { font-size: 14px; color: var(--tinta-suave); margin-top: 6px; }
+
+  /* Catálogo */
+  .temas { display: grid; gap: 14px; }
+  .tema { border: 1.5px solid var(--gris-borde); border-radius: 12px; overflow: hidden; background: #FFF; }
+  .tema h4 { margin: 0; padding: 10px 16px; background: var(--azul-fondo); color: var(--azul-oscuro); font-size: 18px; display: flex; gap: 10px; align-items: baseline; }
+  .tema h4 .letra { font-size: 22px; }
+  .tema ul { list-style: none; margin: 0; padding: 0; }
+  .tema li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px; border-top: 1px solid var(--gris-suave); }
+  .tema li .cod { font-weight: 700; color: var(--azul-oscuro); min-width: 34px; }
+  .tema li .nom { flex: 1; min-width: 160px; }
+  .tema li .estado { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .disponible { display: inline-block; padding: 0 8px; border-radius: 4px; background: #E3F1E8; color: var(--velocidad); font-weight: 700; font-size: .78em; }
+  .tema li.vacio .nom, .tema li.vacio .cod { color: #8A97A6; }
+  .enlace-chico { font-size: 15px; font-weight: 700; color: var(--azul); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+  .precio { font-size: 15px; color: var(--tinta-suave); margin-top: 12px !important; }
+  .precio b { color: var(--azul-oscuro); font-size: 18px; }
+  .gratis { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; padding: 22px; border-radius: 14px; background: #FFF6E3; border: 1.5px solid #E0A33A; }
+  .gratis h3 { margin: 4px 0 8px; font-size: 26px; color: var(--azul-oscuro); text-wrap: balance; }
+  .gratis p { margin: 0; max-width: 60ch; }
+  .gratis .antetitulo { color: #9A5B00; }
+  .autor { display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; }
+  .autor .foto { width: 96px; height: 96px; border-radius: 50%; background: var(--azul-fondo); border: 2px solid var(--azul); display: grid; place-items: center; font-size: 32px; font-weight: 700; color: var(--azul-oscuro); }
+  .autor h3 { margin: 0 0 6px; font-size: 22px; color: var(--azul-oscuro); }
+  .autor p { margin: 0; max-width: 64ch; }
+
+  /* Plataforma */
+  .plataforma { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; border: 1.5px solid var(--azul); border-radius: 14px; padding: 18px 20px; background: var(--azul-fondo); }
+  .plataforma h3 { margin: 0 0 6px; color: var(--azul-oscuro); font-size: 22px; }
+  .plataforma p { margin: 0; max-width: 62ch; }
+
+  /* Contacto */
+  .contacto { background: var(--azul-oscuro); color: #FFF; border-radius: 14px; padding: 22px; display: grid; gap: 14px; }
+  .contacto h3 { margin: 0; font-size: 26px; }
+  .contacto p { margin: 0; max-width: 62ch; opacity: .92; }
+  .canales { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+  .canal { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.25); border-radius: 12px; padding: 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .canal .nombre { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; opacity: .8; font-weight: 700; }
+  .canal .dato { font-size: 19px; font-weight: 700; overflow-wrap: anywhere; user-select: all; }
+  .canal .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .canal a.boton, .canal button.boton { background: #F2B84B; border-color: #F2B84B; color: #1F2A36; min-height: 34px; }
+  .canal .boton.secundario { background: transparent; color: #FFF; border-color: rgba(255,255,255,.6); }
+  .canal.pronto { opacity: .6; }
+  .mensaje { background: rgba(255,255,255,.08); border-radius: 10px; padding: 12px 14px; font-size: 15px; }
+  .mensaje b { display: block; margin-bottom: 4px; }
+  .aviso { font-size: 13px; color: var(--tinta-suave); text-align: center; margin: 0; }
+
+  /* Visor de páginas */
+  .visor { position: fixed; inset: 0; background: rgba(15,25,38,.86); z-index: 50; display: grid; place-items: center; padding: 20px; }
+  .visor img { max-width: min(760px, 100%); max-height: calc(100vh - 110px); background: #FFF; border-radius: 4px; }
+  .visor .controles { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+  .visor .controles .boton { min-width: 44px; }
+  .visor .marco { display: grid; justify-items: center; }
+  .visor .pie { color: #FFF; text-align: center; font-size: 15px; margin-top: 6px; }
+
+  @media (max-width: 820px) {
+    .portada { grid-template-columns: 1fr; }
+    .portada h2 { font-size: 30px; }
+    .pila { display: none; }
+    .incluye, .canales { grid-template-columns: 1fr; }
+    .rasgos { grid-template-columns: 1fr; }
+    .galeria { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .plataforma, .gratis { grid-template-columns: 1fr; }
+    .autor { grid-template-columns: 72px 1fr; }
+    .autor .foto { width: 72px; height: 72px; font-size: 24px; }
+    .barra .sub { display: none; }
+    .barra { padding: 8px 12px; gap: 10px; }
+    .barra .marca, .txt-volver { display: none; }
+    .barra h1 { font-size: 18px; }
+    .barra .volver { min-height: 34px; padding: 4px 10px; }
+  }
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="boton volver" href="../" aria-label="Volver al laboratorio">←<span class="txt-volver"> Laboratorio</span></a>
+  <span class="marca">IB 7</span>
+  <div>
+    <h1>Materiales para docentes</h1>
+    <div class="sub">Física · Programa del Diploma · NM y NS</div>
+  </div>
+  <nav class="accesos" aria-label="Accesos">
+    <a class="acceso acceso-pp" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec" target="_blank" rel="noopener"><span class="largo">Plataforma de past papers</span><span class="corto">Past papers</span></a>
+  </nav>
+</header>
+
+<div class="pagina">
+
+  <section class="portada">
+    <div>
+      <div class="antetitulo">Para profesores de Física IB</div>
+      <h2>Fichas de Física IB en español, listas para dar clase</h2>
+      <p>Cada subtema viene con la ficha del alumno, el solucionario y la presentación de clase, alineados con la Guía de Física y el Cuadernillo de datos (primera evaluación 2025).</p>
+      <p>Todo está pensado para que el alumno practique un concepto a la vez, con preguntas de nivel creciente hasta llegar al nivel de examen.</p>
+      <div class="llamadas">
+        <a class="boton principal" href="#gratis">Recibe gratis un apartado completo</a>
+        <a class="boton" href="#muestra">Ver muestra</a>
+      </div>
+      <p class="precio">Desde <b>S/ 89</b> por subtema · licencias para colegios</p>
+    </div>
+    <div class="pila" aria-hidden="true">
+      <img src="muestras/A.1/pagina-1.jpg" alt="" data-i="0">
+      <img src="muestras/A.1/pagina-2.jpg" alt="" data-i="1">
+      <img src="muestras/A.1/pagina-3.jpg" alt="" data-i="2">
+    </div>
+  </section>
+
+  <section aria-labelledby="t-incluye">
+    <h3 class="seccion" id="t-incluye">Qué incluye cada subtema</h3>
+    <div class="incluye">
+      <div class="pieza"><b>Ficha del alumno</b><span class="tipo">Word editable y PDF · unas 70 páginas en A.1</span></div>
+      <div class="pieza"><b>Solucionario</b><span class="tipo">Resoluciones paso a paso en los mismos recuadros</span></div>
+      <div class="pieza"><b>Presentación</b><span class="tipo">PowerPoint con pizarras, soluciones ocultas y notas con tiempos</span></div>
+    </div>
+    <ul class="rasgos">
+      <li>Teoría por apartados, un concepto a la vez, con figuras propias</li>
+      <li>Ejemplo y «Ahora tú» en tres niveles de dificultad</li>
+      <li>Preguntas tipo examen: Prueba 1A, 1B y 2, con puntaje</li>
+      <li>Todos los términos de instrucción de la Guía</li>
+      <li>Contenido de NS marcado con su etiqueta</li>
+      <li>Errores frecuentes, ideas para la Evaluación Interna y autoevaluación</li>
+    </ul>
+  </section>
+
+  <section class="muestra" id="muestra" aria-labelledby="t-muestra">
+    <h3 class="seccion" id="t-muestra">Muestra: A.1 Cinemática</h3>
+    <p>Cuatro páginas de la ficha del alumno. Toca una página para verla en grande.</p>
+    <div class="galeria" id="galeria"></div>
+  </section>
+
+  <section class="gratis" id="gratis" aria-labelledby="t-gratis">
+    <div>
+      <div class="antetitulo">Gratis para docentes</div>
+      <h3 id="t-gratis">Prueba un apartado completo en tu clase</h3>
+      <p>Te envío el apartado <b>1.3.5 Gráfica velocidad–tiempo</b> de A.1 Cinemática: la parte de la ficha del alumno y sus diapositivas. El solucionario te lo envío cuando confirme que eres docente.</p>
+    </div>
+    <div class="llamadas">
+      <a class="boton principal" href="https://t.me/Ibsevenoficial" target="_blank" rel="noopener">Pedirla por Telegram</a>
+      <a class="boton" href="mailto:ibseven.oficial@gmail.com?subject=Muestra%20gratis%20A.1&amp;body=Hola%2C%20soy%20profesor(a)%20de%20F%C3%ADsica%20IB%20en%20(colegio%20y%20pa%C3%ADs).%20Me%20gustar%C3%ADa%20recibir%20la%20muestra%20gratis%20de%20A.1.">Pedirla por correo</a>
+    </div>
+  </section>
+
+  <section class="autor" aria-labelledby="t-autor">
+    <div class="foto" aria-hidden="true">GE</div>
+    <div>
+      <h3 id="t-autor">Quién prepara estos materiales</h3>
+      <p>Soy Guillermo Escalante, profesor de Física del Programa del Diploma, NM y NS. Preparo cada ficha para mis propias clases y la uso con mis alumnos antes de ofrecerla a otros docentes.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-catalogo">
+    <h3 class="seccion" id="t-catalogo">Catálogo por temas</h3>
+    <div class="temas" id="temas"></div>
+  </section>
+
+  <section class="plataforma" aria-labelledby="t-plataforma">
+    <div>
+      <h3 id="t-plataforma">Plataforma de práctica de past papers</h3>
+      <p>Los alumnos practican por subtema y por prueba (1A, 1B y 2), con temporizador, nota estimada y estadísticas para el profesor. Pide acceso para tus alumnos.</p>
+    </div>
+    <div class="llamadas">
+      <a class="boton" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec" target="_blank" rel="noopener">Abrir la plataforma</a>
+      <a class="boton" href="#contacto">Pedir acceso</a>
+    </div>
+  </section>
+
+  <section class="contacto" id="contacto" aria-labelledby="t-contacto">
+    <h3 id="t-contacto">Escríbeme</h3>
+    <p>Cuéntame qué subtemas te interesan, tu nivel (NM o NS) y si es para ti o para tu colegio. Te envío los detalles y el precio.</p>
+    <div class="canales">
+      <div class="canal">
+        <span class="nombre">Telegram</span>
+        <span class="dato">@Ibsevenoficial</span>
+        <div class="acciones"><a class="boton" href="https://t.me/Ibsevenoficial" target="_blank" rel="noopener">Abrir Telegram</a></div>
+      </div>
+      <div class="canal">
+        <span class="nombre">Correo</span>
+        <span class="dato" id="correo">ibseven.oficial@gmail.com</span>
+        <div class="acciones">
+          <button class="boton" type="button" id="copiarCorreo">Copiar correo</button>
+          <a class="boton secundario" href="mailto:ibseven.oficial@gmail.com?subject=Materiales%20de%20F%C3%ADsica%20IB">Escribir</a>
+        </div>
+      </div>
+      <div class="canal pronto">
+        <span class="nombre">WhatsApp</span>
+        <span class="dato">Próximamente</span>
+      </div>
+    </div>
+    <div class="mensaje">
+      <b>Mensaje para copiar</b>
+      <span id="textoMensaje">Hola, soy profesor(a) de Física IB en ___ (colegio y país). Me gustaría recibir la muestra gratis de A.1 y conocer los materiales de: ___ (NM/NS).</span>
+      <div class="acciones" style="margin-top:8px"><button class="boton" type="button" id="copiarMensaje" style="background:#F2B84B;border-color:#F2B84B;color:#1F2A36">Copiar mensaje</button></div>
+    </div>
+  </section>
+
+  <p class="aviso">IB Seven · Guillermo Escalante. Material independiente, sin afiliación con la Organización del Bachillerato Internacional.</p>
+</div>
+
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-label="Página de muestra">
+  <div class="marco">
+    <img id="visorImg" alt="">
+    <div class="pie" id="visorPie"></div>
+    <div class="controles">
+      <button class="boton" type="button" id="ant" aria-label="Página anterior">←</button>
+      <button class="boton" type="button" id="cerrar">Cerrar</button>
+      <button class="boton" type="button" id="sig" aria-label="Página siguiente">→</button>
+    </div>
+  </div>
+</div>
+
+<script src="../catalogo.js"></script>
+<script>
+  // Subtemas con materiales a la venta. Añadir uno = poner su código aquí y sus muestras en muestras/<código>/.
+  var DISPONIBLES = { "A.1": true };
+  var PAGINAS = [
+    { src: "muestras/A.1/pagina-1.jpg", pie: "Portada" },
+    { src: "muestras/A.1/pagina-2.jpg", pie: "Ejemplo y «Ahora tú» de nivel 1" },
+    { src: "muestras/A.1/pagina-3.jpg", pie: "Gráfica velocidad–tiempo" },
+    { src: "muestras/A.1/pagina-4.jpg", pie: "Preguntas tipo examen · Prueba 1A" }
+  ];
+
+  var gal = document.getElementById('galeria');
+  PAGINAS.forEach(function (p, i) {
+    var f = document.createElement('figure');
+    f.innerHTML = '<button type="button" aria-label="Ver en grande: ' + p.pie + '"><img loading="lazy" src="' + p.src + '" alt="Página de muestra: ' + p.pie + '"></button><figcaption>' + p.pie + '</figcaption>';
+    f.querySelector('button').addEventListener('click', function () { abrir(i); });
+    gal.appendChild(f);
+  });
+  document.querySelectorAll('.pila img').forEach(function (im) {
+    im.addEventListener('click', function () { abrir(+im.dataset.i); });
+  });
+
+  var temas = document.getElementById('temas');
+  window.CATALOGO.temas.forEach(function (t) {
+    var d = document.createElement('div'); d.className = 'tema';
+    var h = '<h4><span class="letra">' + t.codigo + '</span>' + t.nombre + '</h4><ul>';
+    t.subtemas.forEach(function (s) {
+      var ok = DISPONIBLES[s.codigo];
+      h += '<li class="' + (ok ? '' : 'vacio') + '"><span class="cod">' + s.codigo + '</span><span class="nom">' + s.nombre +
+        (s.ns ? ' <span class="etiqueta-ns">NS</span>' : '') + '</span><span class="estado">' +
+        (ok ? '<span class="disponible">Disponible</span><a class="enlace-chico" href="#muestra">Ver muestra</a><a class="enlace-chico" href="#contacto">Pedir información</a>'
+            : '<span class="proximamente">En preparación</span><a class="enlace-chico" href="#contacto">Avísame</a>') +
+        '</span></li>';
+    });
+    d.innerHTML = h + '</ul>';
+    temas.appendChild(d);
+  });
+
+  var visor = document.getElementById('visor'), vImg = document.getElementById('visorImg'), vPie = document.getElementById('visorPie'), actual = 0;
+  function mostrar() { vImg.src = PAGINAS[actual].src; vImg.alt = PAGINAS[actual].pie; vPie.textContent = (actual + 1) + ' / ' + PAGINAS.length + ' · ' + PAGINAS[actual].pie; }
+  function abrir(i) { actual = i; mostrar(); visor.hidden = false; document.getElementById('cerrar').focus(); }
+  function cerrar() { visor.hidden = true; }
+  document.getElementById('cerrar').onclick = cerrar;
+  document.getElementById('ant').onclick = function () { actual = (actual + PAGINAS.length - 1) % PAGINAS.length; mostrar(); };
+  document.getElementById('sig').onclick = function () { actual = (actual + 1) % PAGINAS.length; mostrar(); };
+  visor.addEventListener('click', function (e) { if (e.target === visor) cerrar(); });
+  document.addEventListener('keydown', function (e) {
+    if (visor.hidden) return;
+    if (e.key === 'Escape') cerrar();
+    if (e.key === 'ArrowRight') document.getElementById('sig').click();
+    if (e.key === 'ArrowLeft') document.getElementById('ant').click();
+  });
+
+  function copiar(texto, boton) {
+    var original = boton.textContent;
+    var hecho = function () { boton.textContent = 'Copiado'; setTimeout(function () { boton.textContent = original; }, 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(texto).then(hecho, function () { alert('Copia este texto: ' + texto); });
+    else alert('Copia este texto: ' + texto);
+  }
+  document.getElementById('copiarCorreo').onclick = function () { copiar('ibseven.oficial@gmail.com', this); };
+  document.getElementById('copiarMensaje').onclick = function () { copiar(document.getElementById('textoMensaje').textContent, this); };
+</script>
+</body>
+</html>

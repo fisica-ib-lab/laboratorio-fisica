@@ -6,6 +6,7 @@
 <title>Laboratorio de Física IB</title>
 <meta name="description" content="Simulaciones interactivas de Física IB (Programa del Diploma) para practicar.">
 <link rel="stylesheet" href="comun/estilo.css">
+<script src="comun/docentes.js"></script>
 <style>
   .portal { display: grid; grid-template-columns: 290px 1fr; min-height: calc(100vh - 56px); }
   .menu {
@@ -92,12 +93,18 @@
     .portal { grid-template-columns: 1fr; }
     .menu { border-right: 0; border-bottom: 1px solid var(--gris-borde); display: none; }
     .menu.abierto { display: block; }
-    .boton-menu { display: inline-flex; margin-left: auto; background: transparent; color: #FFF; border-color: #FFF; }
+    .boton-menu { display: inline-flex; margin-left: 0; background: transparent; color: #FFF; border-color: #FFF; }
     .boton-menu:hover { background: rgba(255,255,255,.12); }
     .contenido { padding: 16px; }
     .barra { padding: 10px 16px; }
     .barra .sub { display: none; }
   }
+  .anuncio { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 18px; padding: 12px 16px;
+    border: 1.5px solid #E0A33A; border-radius: 12px; background: #FFF6E3; color: var(--tinta); text-decoration: none; }
+  .anuncio:hover { background: #FDEFD0; }
+  .anuncio-etiqueta { background: #F2B84B; color: #1F2A36; font-weight: 700; font-size: 13px; padding: 2px 10px; border-radius: 999px; }
+  .anuncio-texto { flex: 1; min-width: 220px; }
+  .anuncio-flecha { font-weight: 700; color: var(--azul-oscuro); white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -107,6 +114,10 @@
     <h1>Laboratorio de Física</h1>
     <div class="sub">Programa del Diploma · Simulaciones para practicar</div>
   </div>
+  <nav class="accesos" aria-label="Accesos">
+    <a class="acceso acceso-materiales solo-docentes" href="materiales/"><span class="largo">Materiales para docentes</span><span class="corto">Docentes</span></a>
+    <a class="acceso acceso-pp" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec" target="_blank" rel="noopener"><span class="largo">Past papers</span><span class="corto">Past papers</span></a>
+  </nav>
   <button class="boton boton-menu" id="botonMenu" aria-expanded="false" aria-controls="menu">Temas</button>
 </header>
 
@@ -119,6 +130,11 @@
   </nav>
 
   <main class="contenido">
+    <a class="anuncio solo-docentes" href="materiales/">
+      <span class="anuncio-etiqueta">Para docentes</span>
+      <span class="anuncio-texto"><b>Fichas, solucionarios y presentaciones de Física IB en español.</b> Mira la muestra de A.1 Cinemática.</span>
+      <span class="anuncio-flecha">Ver materiales →</span>
+    </a>
     <div class="cabecera">
       <div>
         <h2 id="tituloVista">Todas las simulaciones</h2>
