@@ -1,37 +1,92 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" font-family="Calibri, Carlito, Arial, sans-serif">
   <rect width="320" height="200" fill="#FFFFFF"/>
-  <!-- pista -->
-  <line x1="18" y1="66" x2="302" y2="66" stroke="#1F2A36" stroke-width="2"/>
-  <g stroke="#8A97A6" stroke-width="1">
-    <line x1="30" y1="66" x2="30" y2="72"/><line x1="70" y1="66" x2="70" y2="72"/><line x1="110" y1="66" x2="110" y2="72"/>
-    <line x1="150" y1="66" x2="150" y2="74"/><line x1="190" y1="66" x2="190" y2="72"/><line x1="230" y1="66" x2="230" y2="72"/>
-    <line x1="270" y1="66" x2="270" y2="72"/>
+
+  <!-- mesa de laboratorio -->
+  <rect x="0" y="89" width="320" height="3" fill="#EFE8DC"/>
+  <rect x="0" y="92" width="320" height="5" fill="#D3AC84"/>
+
+  <!-- patas y pista de aluminio con escala -->
+  <g stroke="#1F2A36" stroke-width="1.2" stroke-linejoin="round">
+    <polygon points="58,83 70,83 73,89 55,89" fill="#5A6B7D"/>
+    <polygon points="284,83 296,83 299,89 281,89" fill="#5A6B7D"/>
+    <rect x="46" y="72" width="266" height="11" fill="#E4E9EF"/>
   </g>
-  <text x="150" y="85" font-size="11" text-anchor="middle" fill="#1F4D78" font-weight="700">0</text>
-  <!-- carrito -->
-  <rect x="168" y="40" width="44" height="18" rx="4" fill="#EEF3F9" stroke="#2E74B5" stroke-width="2"/>
-  <circle cx="178" cy="61" r="5" fill="#1F2A36"/><circle cx="202" cy="61" r="5" fill="#1F2A36"/>
-  <!-- flecha v -->
-  <line x1="190" y1="30" x2="240" y2="30" stroke="#1E7B4F" stroke-width="4"/>
-  <polygon points="250,30 238,23 238,37" fill="#1E7B4F"/>
-  <text x="255" y="34" font-size="13" font-style="italic" font-weight="700" fill="#1E7B4F">v</text>
+  <rect x="46.6" y="72.6" width="264.8" height="2.6" fill="#F6F8FA"/>
+  <g stroke="#5A6B7D" stroke-width="1">
+    <line x1="80" y1="82.4" x2="80" y2="77"/><line x1="100" y1="82.4" x2="100" y2="79.5"/>
+    <line x1="120" y1="82.4" x2="120" y2="77"/><line x1="140" y1="82.4" x2="140" y2="79.5"/>
+    <line x1="180" y1="82.4" x2="180" y2="79.5"/><line x1="200" y1="82.4" x2="200" y2="77"/>
+    <line x1="220" y1="82.4" x2="220" y2="79.5"/><line x1="240" y1="82.4" x2="240" y2="77"/>
+    <line x1="260" y1="82.4" x2="260" y2="79.5"/><line x1="280" y1="82.4" x2="280" y2="77"/>
+  </g>
+  <line x1="160" y1="82.4" x2="160" y2="72.6" stroke="#1F4D78" stroke-width="2"/>
+  <!-- tope -->
+  <rect x="305" y="58" width="6" height="14" fill="#8A97A6" stroke="#1F2A36" stroke-width="1.2"/>
+  <rect x="302" y="61" width="3" height="7" fill="#1F2A36"/>
+
+  <!-- interfaz, cable y sensor de movimiento -->
+  <path d="M51,57 C34,55 46,89 36,81" fill="none" stroke="#1F2A36" stroke-width="2.2" stroke-linecap="round"/>
+  <g stroke="#1F2A36" stroke-width="1.2">
+    <rect x="6" y="66" width="31" height="23" rx="3" fill="#2F3E4E"/>
+    <rect x="54" y="67" width="10" height="5" fill="#5A6B7D"/>
+    <rect x="50" y="45" width="18" height="22" rx="4" fill="#2F3E4E"/>
+  </g>
+  <rect x="10" y="70" width="23" height="11" fill="#E8F1F8"/>
+  <polyline points="12,78 19,76 24,73 31,72" fill="none" stroke="#2E74B5" stroke-width="1.3"/>
+  <circle cx="14" cy="85" r="1.4" fill="#8A97A6"/><circle cx="21.5" cy="85" r="1.4" fill="#8A97A6"/><circle cx="29" cy="85" r="1.4" fill="#8A97A6"/>
+  <ellipse cx="68" cy="56" rx="2.6" ry="7" fill="#E2B045" stroke="#1F2A36" stroke-width="1"/>
+  <circle cx="56" cy="50" r="1.8" fill="#4FD08A"/>
+  <g fill="none" stroke="#5A6B7D" stroke-width="1.3">
+    <path d="M74.2,50.3 A11,11 0 0 1 74.2,61.7" opacity="0.7"/>
+    <path d="M82.8,45 A21,21 0 0 1 82.8,67" opacity="0.45"/>
+    <path d="M91.3,39.8 A31,31 0 0 1 91.3,72.2" opacity="0.2"/>
+  </g>
+
+  <!-- carrito de laboratorio -->
+  <g>
+    <circle cx="172" cy="65.5" r="6.5" fill="#1F2A36"/><circle cx="172" cy="65.5" r="3.4" fill="#C9D3DF"/>
+    <circle cx="208" cy="65.5" r="6.5" fill="#1F2A36"/><circle cx="208" cy="65.5" r="3.4" fill="#C9D3DF"/>
+    <g stroke="#1F2A36" stroke-width="1.1">
+      <line x1="172" y1="65.5" x2="175.4" y2="65.5"/><line x1="172" y1="65.5" x2="170.3" y2="68.4"/><line x1="172" y1="65.5" x2="170.3" y2="62.6"/>
+      <line x1="208" y1="65.5" x2="211.4" y2="65.5"/><line x1="208" y1="65.5" x2="206.3" y2="68.4"/><line x1="208" y1="65.5" x2="206.3" y2="62.6"/>
+    </g>
+    <rect x="157" y="51" width="4" height="6" fill="#8A97A6" stroke="#1F2A36" stroke-width="1.2"/>
+    <rect x="219" y="51" width="4" height="6" fill="#8A97A6" stroke="#1F2A36" stroke-width="1.2"/>
+    <rect x="161" y="44" width="58" height="20" rx="4" fill="#B5CFEC"/>
+    <path d="M161,49 V48 a4,4 0 0 1 4,-4 h50 a4,4 0 0 1 4,4 V49 Z" fill="#2E74B5"/>
+    <rect x="161" y="44" width="58" height="20" rx="4" fill="none" stroke="#1F2A36" stroke-width="1.5"/>
+    <line x1="190" y1="52" x2="190" y2="62" stroke="#1F4D78" stroke-width="1.5"/>
+    <polygon points="190,73 185.5,81 194.5,81" fill="#1F4D78"/>
+    <!-- banderín -->
+    <line x1="190" y1="44" x2="190" y2="23" stroke="#1F2A36" stroke-width="1.5"/>
+    <circle cx="190" cy="23" r="1.6" fill="#1F2A36"/>
+    <path d="M190,24 C184,25 180,22 173,26 C180,27 184,31 190,31 Z" fill="#F2B84B" stroke="#1F2A36" stroke-width="1.1" stroke-linejoin="round"/>
+  </g>
+  <!-- flecha de velocidad -->
+  <line x1="190" y1="14" x2="228" y2="14" stroke="#1E7B4F" stroke-width="4"/>
+  <polygon points="239,14 227,7.5 227,20.5" fill="#1E7B4F"/>
+  <text x="244" y="18.5" font-size="14" font-style="italic" font-weight="700" fill="#1E7B4F">v</text>
+
   <!-- tres mini gráficas -->
-  <g transform="translate(14,104)">
-    <rect width="92" height="80" fill="#FFF" stroke="#C9D3DF"/>
-    <line x1="8" y1="72" x2="88" y2="72" stroke="#1F2A36" stroke-width="1.2"/><line x1="8" y1="72" x2="8" y2="6" stroke="#1F2A36" stroke-width="1.2"/>
-    <line x1="8" y1="58" x2="84" y2="14" stroke="#2E74B5" stroke-width="3"/>
-    <text x="12" y="16" font-size="12" font-style="italic" fill="#1F4D78">s</text>
+  <g transform="translate(14,110)">
+    <rect width="92" height="80" rx="4" fill="#FFF" stroke="#C9D3DF"/>
+    <line x1="10" y1="70" x2="86" y2="70" stroke="#1F2A36" stroke-width="1.2"/><line x1="10" y1="70" x2="10" y2="8" stroke="#1F2A36" stroke-width="1.2"/>
+    <line x1="10" y1="58" x2="82" y2="16" stroke="#2E74B5" stroke-width="3" stroke-linecap="round"/>
+    <text x="15" y="18" font-size="13" font-style="italic" font-weight="700" fill="#2E74B5">s</text>
+    <text x="80" y="66" font-size="11" font-style="italic" fill="#5A6B7D">t</text>
   </g>
-  <g transform="translate(114,104)">
-    <rect width="92" height="80" fill="#FFF" stroke="#C9D3DF"/>
-    <line x1="8" y1="72" x2="88" y2="72" stroke="#1F2A36" stroke-width="1.2"/><line x1="8" y1="72" x2="8" y2="6" stroke="#1F2A36" stroke-width="1.2"/>
-    <line x1="8" y1="34" x2="84" y2="34" stroke="#1E7B4F" stroke-width="3"/>
-    <text x="12" y="16" font-size="12" font-style="italic" fill="#1E7B4F">v</text>
+  <g transform="translate(114,110)">
+    <rect width="92" height="80" rx="4" fill="#FFF" stroke="#C9D3DF"/>
+    <line x1="10" y1="70" x2="86" y2="70" stroke="#1F2A36" stroke-width="1.2"/><line x1="10" y1="70" x2="10" y2="8" stroke="#1F2A36" stroke-width="1.2"/>
+    <line x1="10" y1="34" x2="82" y2="34" stroke="#1E7B4F" stroke-width="3" stroke-linecap="round"/>
+    <text x="15" y="18" font-size="13" font-style="italic" font-weight="700" fill="#1E7B4F">v</text>
+    <text x="80" y="66" font-size="11" font-style="italic" fill="#5A6B7D">t</text>
   </g>
-  <g transform="translate(214,104)">
-    <rect width="92" height="80" fill="#FFF" stroke="#C9D3DF"/>
-    <line x1="8" y1="72" x2="88" y2="72" stroke="#1F2A36" stroke-width="1.2"/><line x1="8" y1="72" x2="8" y2="6" stroke="#1F2A36" stroke-width="1.2"/>
-    <line x1="8" y1="70" x2="84" y2="70" stroke="#C00000" stroke-width="3"/>
-    <text x="12" y="16" font-size="12" font-style="italic" fill="#C00000">a</text>
+  <g transform="translate(214,110)">
+    <rect width="92" height="80" rx="4" fill="#FFF" stroke="#C9D3DF"/>
+    <line x1="10" y1="40" x2="86" y2="40" stroke="#1F2A36" stroke-width="1.2"/><line x1="10" y1="70" x2="10" y2="8" stroke="#1F2A36" stroke-width="1.2"/>
+    <line x1="10" y1="40" x2="82" y2="40" stroke="#C00000" stroke-width="3" stroke-linecap="round"/>
+    <text x="15" y="18" font-size="13" font-style="italic" font-weight="700" fill="#C00000">a</text>
+    <text x="80" y="54" font-size="11" font-style="italic" fill="#5A6B7D">t</text>
   </g>
 </svg>

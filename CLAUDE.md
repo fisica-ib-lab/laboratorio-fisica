@@ -24,6 +24,28 @@ El sitio acompaña las fichas del proyecto «Material de trabajo 2027» (carpeta
 - Tipografía Calibri con alternativa métrica Carlito; variables en cursiva; flechas con punta triangular sólida y trazo grueso.
 - Coma decimal, unidades del SI, convención de signos: derecha y arriba +, izquierda y abajo −. Nada en inglés.
 
+## Estilo de las animaciones (obligatorio en todas las simulaciones y miniaturas)
+
+Referencia viva: la escena de `sims/A.1-tres-graficas/sim.js` (`dibujarEscena`) y su `miniatura.svg`.
+Ilustración plana de montaje de laboratorio, con «un poquito» de detalle y sin recargar.
+
+- **Trazo y relleno:** objetos con contorno oscuro `#1F2A36` de 1,2–1,5 px y rellenos planos, sin degradados ni sombras.
+  Metal: claro `#E4E9EF`, brillo `#F6F8FA`, medio `#8A97A6`, oscuro `#5A6B7D`; aparatos electrónicos en pizarra `#2F3E4E`
+  con detalle dorado `#E2B045`; cuerpos móviles en azul claro `#B5CFEC` con franja `#2E74B5`; banderín ámbar `#F2B84B`.
+- **Mesa de laboratorio:** franja clara `#EFE8DC` (3 px) sobre franja madera `#D3AC84` (5 px) a todo el ancho.
+- **Material real de laboratorio:** pista de aluminio con escala grabada, patas niveladoras y tope; carrito de laboratorio
+  con topes y ruedas con rayos; sensor genérico (de movimiento, fuerza, puerta fotoeléctrica…) con cable e interfaz con pantalla.
+  Sin marcas ni logotipos (nada de «Vernier», «PASCO»…).
+- **Movimiento natural:** las ruedas giran sin deslizar (ángulo = recorrido / radio); un elemento decorativo con resorte
+  amortiguado (banderín, cable, cuerda) que reacciona al movimiento y se asienta al pausar; pulsos o luz del sensor solo
+  mientras se reproduce. Lo decorativo nunca altera la física ni sugiere una fuerza que no existe; respetar
+  `prefers-reduced-motion`.
+- **Rótulos:** pocos, en gris `#5A6B7D` a 12 px con línea guía corta («sensor de movimiento»); se atenúan si un objeto pasa encima.
+  Magnitudes en píldora con su color (verde *v*, rojo *a*, naranja desplazamiento, azul posición).
+- **Tamaño:** dibujar a tamaño base y ampliar todo el dibujo hasta 1,5 veces en pantallas altas; en celular se quita lo
+  accesorio (interfaz) y se conserva lo esencial.
+- **Miniatura del catálogo:** SVG 320 × 200 con el mismo montaje arriba y las gráficas o el resultado abajo.
+
 ## Primera simulación: «Un movimiento, tres gráficas» (A.1)
 
 Carrito en una pista con regla (origen y «derecha +»), flechas de v (verde) y a (roja) a escala, panel de valores en vivo
