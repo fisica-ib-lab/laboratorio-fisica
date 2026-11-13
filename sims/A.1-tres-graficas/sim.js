@@ -31,6 +31,7 @@
         'Pon una velocidad negativa. ¿Hacia dónde se mueve el carrito? ¿Cómo cambia cada gráfica?',
         `Cambia solo ${S}₀. ¿Qué gráficas cambian y cuáles no? ¿Por qué?`,
         `Activa «Área» y pausa en un instante. Compara el área bajo la ${V}–${T} con el desplazamiento.`,
+        'Activa «Huellas». ¿Cómo quedan las marcas de cada segundo cuando la velocidad es constante?',
         '¿Cuándo coinciden el desplazamiento y la distancia recorrida? ¿Cuándo no?'
       ]
     },
@@ -49,6 +50,8 @@
         `En «Va y vuelve», ¿cuánto vale ${V} en el punto más alejado? ¿Y ${A} en ese mismo instante?`,
         `Activa «Pendiente». ¿Qué magnitud da la pendiente de la ${S}–${T}? ¿Y la de la ${V}–${T}?`,
         `Activa «Área». ¿Con qué coincide el área bajo la ${V}–${T}? ¿Qué pasa con el área cuando ${V} es negativa?`,
+        'Activa «Huellas». ¿Qué les pasa a las marcas cuando el carrito acelera? ¿Y cuando frena?',
+        'Activa «Vel. media» y acerca los dos puntos hasta casi juntarlos. ¿A qué se parece entonces la secante?',
         `¿En qué casos la rapidez aumenta aunque ${A} sea negativa?`
       ]
     },
@@ -60,7 +63,7 @@
         { html: 'Dos aceleraciones', def: { s0: -20, u: 0, tramos: [{ duracion: 4, a: 0.5 }, { duracion: 4, a: 1 }, { duracion: 2, a: 0 }] } }
       ],
       observar: [
-        `Antes de reproducir, predice la forma de la ${S}–${T} en cada tramo: ¿recta o curva?, ¿sube o baja?`,
+        `Activa «Predecir», elige un movimiento y míralo. Dibuja en tu cuaderno sus tres gráficas y luego pulsa «Revelar».`,
         `¿Cómo se ve un tramo en reposo en la ${V}–${T}? ¿Y en la ${S}–${T}?`,
         'En «Va, espera y vuelve», compara el desplazamiento total con la distancia recorrida.',
         `¿En qué instantes cambia ${A}? ¿Cambia ${V} de golpe en esos instantes?`,
@@ -85,7 +88,9 @@
     plan: JSON.parse(JSON.stringify(PLAN_INICIAL)),
     mov: null, anterior: null, pts: null, ptsAnt: null, ejes: null,
     t: 0, jugando: false, rapidez: 1,
-    ver: { anterior: true, completa: false, pendiente: false, area: false }
+    ver: { anterior: true, completa: false, pendiente: false, area: false, secante: false, huellas: false, prediccion: false },
+    sec: [2, 6],                   // instantes de los dos puntos de la secante
+    revelado: false                // modo predicción: gráficas ya mostradas
   };
   const escena = D.crearEscena($('escena'));
   const GRAFICAS = [{ id: 'gS', mag: 's' }, { id: 'gV', mag: 'v' }, { id: 'gA', mag: 'a' }];
@@ -107,6 +112,9 @@
     if (guardarAnterior && estado.mov) { estado.anterior = estado.mov; estado.ptsAnt = estado.pts; }
     estado.mov = nuevo; estado.pts = puntosDe(nuevo);
     estado.t = Math.min(estado.t, nuevo.duracion);
+    estado.revelado = false;
+    estado.sec[1] = Math.min(estado.sec[1], nuevo.duracion);
+    estado.sec[0] = Math.max(0, Math.min(estado.sec[0], estado.sec[1] - 0.5));
     calcularEjes();
     $('barraTiempo').max = nuevo.duracion;
     pintarTablaTramos();
@@ -124,8 +132,15 @@
   // ---------- Dibujo ----------
   function velocidadesNodo(m) { const r = m.tramos.map(tr => tr.v0); r.push(m.v(m.duracion)); return r; }
 
+  // Modo predicción: las gráficas quedan ocultas hasta pulsar «Revelar»
+  function oculto() { return estado.modo === 'explorar' && estado.ver.prediccion && !estado.revelado; }
+
   function opcionesGrafica(mag) {
     const m = estado.mov, t = estado.t, construir = estado.modo === 'construir';
+    if (oculto()) {
+      return { mag, eje: estado.ejes[mag], tMax: TMAX, curvas: [], extraArr: extraArr(),
+        vacio: '¿Qué forma tendrá esta gráfica?\nPiénsalo y pulsa «Revelar».' };
+    }
     const valor = mag === 's' ? m.s(t) : mag === 'v' ? m.v(t) : m.a(t);
     const curvas = [];
     if (!construir && estado.ver.anterior && estado.ptsAnt) curvas.push({ puntos: estado.ptsAnt[mag], color: COL.gris, ancho: 2, raya: [6, 4] });
@@ -134,6 +149,11 @@
     const o = { mag, eje: estado.ejes[mag], tMax: TMAX, curvas, cursor: { t, y: valor }, tramos: m.tramos.length > 1 ? m.tramos : null, extraArr: extraArr() };
     if (estado.ver.pendiente && mag === 's') {
       o.tangente = { t, y: valor, m: m.v(t), color: COL.vel, texto: [['pendiente = ', false], ['v', true], [' = ' + numero(m.v(t), 2) + ' m s⁻¹', false]] };
+    }
+    if (estado.ver.secante && mag === 's') {
+      const [t1, t2] = estado.sec, y1 = m.s(t1), y2 = m.s(t2);
+      o.secante = { t1, y1, t2, y2, color: COL.violeta,
+        texto: [['velocidad media = ' + numero((y2 - y1) / (t2 - t1), 2) + ' m s⁻¹', false]] };
     }
     if (estado.ver.pendiente && mag === 'v') {
       o.tangente = { t, y: valor, m: m.a(t), color: COL.ace, texto: [['pendiente = ', false], ['a', true], [' = ' + numero(m.a(t), 2) + ' m s⁻²', false]] };
@@ -154,7 +174,12 @@
   }
 
   // con «Pendiente» y «Área» a la vez, la v–t lleva dos rótulos: las tres gráficas dejan una línea más arriba
-  function extraArr() { return estado.ver.pendiente && estado.ver.area ? 17 : 0; }
+  function extraArr() {
+    if (oculto()) return 0;
+    const v = estado.ver;
+    const lineas = Math.max((v.pendiente ? 1 : 0) + (v.secante ? 1 : 0), (v.pendiente ? 1 : 0) + (v.area ? 1 : 0));
+    return lineas > 1 ? 17 : 0;
+  }
 
   function textoRapidez(v, a) {
     if (Math.abs(v) < 1e-9) return a === 0 ? 'en reposo' : 'cero en este instante';
@@ -184,13 +209,27 @@
     }
   }
 
+  // Posición del carrito en cada segundo entero ya transcurrido
+  function huellas() {
+    const r = [];
+    for (let k = 0; k <= estado.t + 1e-9 && k <= estado.mov.duracion + 1e-9; k++) r.push(estado.mov.s(k));
+    return r;
+  }
+  function pintarRevelar() {
+    const b = $('btnRevelar');
+    b.hidden = !(estado.modo === 'explorar' && estado.ver.prediccion);
+    b.textContent = estado.revelado ? 'Ocultar' : 'Revelar';
+  }
+
   function dibujarTodo() {
     if ($('panel-visor').hidden) return;
+    pintarRevelar();
     const m = estado.mov;
     escena.dibujar({
       mov: m, t: estado.t, jugando: estado.jugando, pista: PISTA,
       vMax: estado.ejes.v.max, aMax: estado.ejes.a.max,
-      aviso: m.recortado && estado.t >= m.duracion - 1e-9 ? 'Fin de la pista' : null
+      aviso: m.recortado && estado.t >= m.duracion - 1e-9 ? 'Fin de la pista' : null,
+      huellas: estado.ver.huellas ? huellas() : null
     });
     GRAFICAS.forEach(g => D.dibujarGrafica($(g.id), opcionesGrafica(g.mag)));
     actualizarTextos();
@@ -315,10 +354,16 @@
     $(id).addEventListener('change', () => { arrastrando = false; reproducir(); });
   });
 
-  [['chkAnterior', 'anterior'], ['chkCompleta', 'completa'], ['chkPendiente', 'pendiente'], ['chkArea', 'area']].forEach(([id, k]) => {
+  [['chkAnterior', 'anterior'], ['chkCompleta', 'completa'], ['chkPendiente', 'pendiente'], ['chkArea', 'area'],
+   ['chkSecante', 'secante'], ['chkHuellas', 'huellas'], ['chkPrediccion', 'prediccion']].forEach(([id, k]) => {
     estado.ver[k] = $(id).checked;
-    $(id).addEventListener('change', (e) => { estado.ver[k] = e.target.checked; calcularEjes(); dibujarTodo(); });
+    $(id).addEventListener('change', (e) => {
+      estado.ver[k] = e.target.checked;
+      if (k === 'prediccion') estado.revelado = false;
+      calcularEjes(); dibujarTodo();
+    });
   });
+  $('btnRevelar').addEventListener('click', () => { estado.revelado = !estado.revelado; dibujarTodo(); });
 
   // ---------- Construir: tabla de tramos ----------
   function paso(campo, i, valor, unidad) {
@@ -399,11 +444,19 @@
   // ---------- Clic y arrastre sobre las gráficas ----------
   GRAFICAS.forEach(g => {
     const cv = $(g.id);
-    let abajo = false, nodo = -1;
+    let abajo = false, nodo = -1, punto = -1;
     const geo = () => { const r = cv.getBoundingClientRect(); return { r, G: D.geometria(r.width, r.height, estado.ejes[g.mag], TMAX, false, extraArr()) }; };
     cv.addEventListener('pointerdown', (e) => {
       const { r, G } = geo(), x = e.clientX - r.left, y = e.clientY - r.top;
-      abajo = true; nodo = -1; cv.setPointerCapture(e.pointerId); pausar();
+      abajo = true; nodo = -1; punto = -1; cv.setPointerCapture(e.pointerId); pausar();
+      if (g.mag === 's' && estado.ver.secante && !oculto()) {       // ¿se tomó un punto de la secante?
+        let mejor = 18;
+        estado.sec.forEach((ts, i) => {
+          const d = Math.hypot(G.X(ts) - x, G.Y(estado.mov.s(ts)) - y);
+          if (d < mejor) { mejor = d; punto = i; }
+        });
+        if (punto >= 0) return;
+      }
       if (estado.modo === 'construir' && g.mag === 'v') {
         const m = estado.mov, vs = velocidadesNodo(m);
         let mejor = 18;
@@ -417,9 +470,15 @@
     cv.addEventListener('pointermove', (e) => {
       if (!abajo) return;
       const { r, G } = geo();
-      if (nodo >= 0) moverNodo(nodo, G.V(e.clientY - r.top)); else irA(G.T(e.clientX - r.left));
+      if (punto >= 0) {
+        // el punto se mueve sobre la curva, de 0,1 en 0,1 s, sin cruzarse con el otro
+        let ts = Math.round(G.T(e.clientX - r.left) * 10) / 10;
+        const fin = estado.mov.duracion;
+        ts = punto === 0 ? Math.max(0, Math.min(ts, estado.sec[1] - 0.2)) : Math.min(fin, Math.max(ts, estado.sec[0] + 0.2));
+        if (ts !== estado.sec[punto]) { estado.sec[punto] = ts; dibujarTodo(); }
+      } else if (nodo >= 0) moverNodo(nodo, G.V(e.clientY - r.top)); else irA(G.T(e.clientX - r.left));
     });
-    const soltar = () => { abajo = false; nodo = -1; };
+    const soltar = () => { abajo = false; nodo = -1; punto = -1; };
     cv.addEventListener('pointerup', soltar);
     cv.addEventListener('pointercancel', soltar);
   });
@@ -442,7 +501,7 @@
     document.querySelectorAll('.solo-construir').forEach(el => { el.hidden = modo !== 'construir'; });
     $('ayudaGraficas').textContent = modo === 'construir'
       ? 'Arrastra los puntos de la gráfica v–t o cambia la tabla. Clic en una gráfica: ir a ese instante.'
-      : 'Haz clic o arrastra sobre una gráfica para ir a ese instante.';
+      : 'Clic en una gráfica: ir a ese instante.';
     if (modo === 'construir') pintarEditor(); else pintarControles();
     pintarObservar();
     recalcular(false);

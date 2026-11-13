@@ -274,6 +274,14 @@
         }
       }
 
+      // Huellas: dónde estaba el carrito en cada segundo entero
+      if (E.huellas) {
+        for (const sh of E.huellas) {
+          ctx.beginPath(); ctx.arc(X(sh), yP - 4, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = COL.violeta; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = '#FFF'; ctx.stroke();
+        }
+      }
+
       // ----- Carrito de laboratorio (su posición es la de su centro) -----
       const yT = yP - 28, yB = yP - 8, rR = 6.5;
       // Ruedas: giran sin deslizar (ángulo = recorrido / radio)
@@ -382,6 +390,7 @@
            cursor: { t, y }                línea vertical y punto
            area: { puntos, hasta, texto }  área con signo entre la curva y el eje
            tangente: { t, y, m, color, texto }
+           secante: { t1, y1, t2, y2, color, texto }   recta por dos puntos arrastrables (pendiente = valor medio)
            marcas: [{ t, y, nombre }]      puntos con letra (P)
            nodos: [{ t, y, mal, bien }]    puntos arrastrables
            niveles: [{ t0, t1, y, mal, bien }]   barras arrastrables
@@ -473,6 +482,15 @@
       ctx.beginPath(); ctx.moveTo(G.X(g.t - d), G.Y(g.y - g.m * d)); ctx.lineTo(G.X(g.t + d), G.Y(g.y + g.m * d)); ctx.stroke();
       ctx.setLineDash([]);
     }
+    // Secante: recta por los dos puntos, con su triángulo Δt–Δs
+    if (o.secante) {
+      const q = o.secante, m = (q.y2 - q.y1) / (q.t2 - q.t1);
+      ctx.strokeStyle = q.color; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(G.X(0), G.Y(q.y1 - m * q.t1)); ctx.lineTo(G.X(tMax), G.Y(q.y1 + m * (tMax - q.t1))); ctx.stroke();
+      ctx.setLineDash([3, 3]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(G.X(q.t1), G.Y(q.y1)); ctx.lineTo(G.X(q.t2), G.Y(q.y1)); ctx.lineTo(G.X(q.t2), G.Y(q.y2)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
     // Barras arrastrables (velocidad constante por tramo)
     if (o.niveles) {
       for (const n of o.niveles) {
@@ -484,6 +502,7 @@
 
     // Rótulos de la pendiente y del área: en el margen superior, a la derecha (el de más abajo comparte línea con el título del eje)
     const rotulos = [];
+    if (o.secante && o.secante.texto) rotulos.push([o.secante.texto, o.secante.color]);
     if (o.tangente && o.tangente.texto) rotulos.push([o.tangente.texto, o.tangente.color]);
     if (o.area && o.area.texto) rotulos.push([o.area.texto, o.area.colorTexto]);
     rotulos.forEach((rt, i) => textoRico(ctx, rt[0], w - 4, G.y0 - 9 - 17 * (rotulos.length - 1 - i), 13, rt[1], 'right', true));
@@ -498,6 +517,14 @@
       if (o.cursor.y !== undefined) {
         ctx.fillStyle = info.color; ctx.strokeStyle = '#FFF'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.arc(xt, G.Y(o.cursor.y), 5.5, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+      }
+    }
+    // Puntos arrastrables de la secante
+    if (o.secante) {
+      const q = o.secante;
+      for (const [t, y] of [[q.t1, q.y1], [q.t2, q.y2]]) {
+        ctx.beginPath(); ctx.arc(G.X(t), G.Y(y), 7, 0, 2 * Math.PI);
+        ctx.fillStyle = '#FFF'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = q.color; ctx.stroke();
       }
     }
     // Puntos con letra

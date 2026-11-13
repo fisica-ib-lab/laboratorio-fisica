@@ -67,8 +67,9 @@ en todas las situaciones y en 1000 ejercicios aleatorios: pendiente s–t = v, p
 
 **Estado (13 nov 2026): simulación completa, pendiente de revisión del profesor.**
 Archivos: `dibujo.js` (escena y gráficas), `sim.js` (Explorar niveles 1–3 y Construir), `ejercicios.js` (generador de
-13 tipos de ejercicio, sin pantalla) y `practicar.js` (pantalla de Practicar). Hechas las herramientas «Pendiente» y «Área»;
-faltan del plan original: secante arrastrable, huellas cada 1 s y modo predicción.
+13 tipos de ejercicio, sin pantalla) y `practicar.js` (pantalla de Practicar). Herramientas de Explorar: «Pendiente»,
+«Área», «Vel. media» (secante arrastrable en la s–t), «Huellas» (cada 1 s) y «Predecir» (oculta las gráficas hasta «Revelar»).
+No queda nada pendiente del plan original.
 Antes de publicar cambios: `node pruebas/verificar-cinematica.js` y `node pruebas/verificar-ejercicios.js` (0 fallos).
 
 ## Fases (revisión del profesor entre cada una)

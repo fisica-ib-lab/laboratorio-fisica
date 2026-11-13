@@ -82,11 +82,15 @@
         <div class="grafica"><canvas id="gA" aria-label="Gráfica aceleración–tiempo"></canvas></div>
       </div>
       <div class="pie-graficas">
-        <p class="ayuda" id="ayudaGraficas">Haz clic o arrastra sobre una gráfica para ir a ese instante.</p>
-        <label class="casilla"><input type="checkbox" id="chkPendiente"> Pendiente</label>
-        <label class="casilla"><input type="checkbox" id="chkArea"> Área</label>
-        <label class="casilla solo-explorar"><input type="checkbox" id="chkAnterior" checked> Movimiento anterior (gris)</label>
-        <label class="casilla solo-explorar"><input type="checkbox" id="chkCompleta"> Gráficas completas</label>
+        <p class="ayuda" id="ayudaGraficas">Clic en una gráfica: ir a ese instante.</p>
+        <label class="casilla" title="Tangente: la pendiente de la s–t es v y la de la v–t es a"><input type="checkbox" id="chkPendiente"> Pendiente</label>
+        <label class="casilla" title="Área bajo la v–t (desplazamiento) y bajo la a–t (cambio de velocidad)"><input type="checkbox" id="chkArea"> Área</label>
+        <label class="casilla" title="Secante en la s–t: arrastra sus dos puntos"><input type="checkbox" id="chkSecante"> Vel. media</label>
+        <label class="casilla" title="Marca en la pista dónde está el carrito cada segundo"><input type="checkbox" id="chkHuellas"> Huellas</label>
+        <label class="casilla solo-explorar" title="Oculta las gráficas para que las predigas antes de verlas"><input type="checkbox" id="chkPrediccion"> Predecir</label>
+        <button type="button" class="boton primario" id="btnRevelar" hidden>Revelar</button>
+        <label class="casilla solo-explorar" title="Deja en gris el movimiento anterior para comparar"><input type="checkbox" id="chkAnterior" checked> Anterior (gris)</label>
+        <label class="casilla solo-explorar" title="Muestra las gráficas enteras desde el principio"><input type="checkbox" id="chkCompleta"> Completas</label>
       </div>
     </div>
 
