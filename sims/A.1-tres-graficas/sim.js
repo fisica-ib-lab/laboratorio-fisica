@@ -1,488 +1,198 @@
-/* Simulación A.1 · Un movimiento, tres gráficas — parte Explorar
-   Nivel 1: velocidad constante (un tramo con a = 0).
+/* Simulación A.1 · Un movimiento, tres gráficas — partes Explorar y Construir
+   Explorar: nivel 1 (velocidad constante), nivel 2 (con aceleración) y nivel 3 (por tramos).
+   Construir: hasta 6 tramos con tabla y puntos arrastrables en la gráfica v–t.
    La física sale de comun/cinematica.js (valores exactos, sin aproximaciones numéricas). */
 
 (function () {
   'use strict';
   const { Movimiento, numero } = window.Cinematica;
+  const D = window.A1Dibujo;
+  const { COL, fmt, LETRAS } = D;
+  const $ = (id) => document.getElementById(id);
 
-  // ---------- Configuración por nivel ----------
+  const PISTA = { min: -30, max: 30 };
+  const TMAX = 10;                 // s (eje de tiempo de las gráficas)
+  const V_CONSTRUIR = 6;           // m s⁻¹ (límite de la gráfica v–t al construir)
+  const MAX_TRAMOS = 6;
+  const V = '<span class="var">v</span>', U = '<span class="var">u</span>', A = '<span class="var">a</span>', S = '<span class="var">s</span>', T = '<span class="var">t</span>';
+
+  // ---------- Configuración de los niveles de Explorar ----------
   const NIVELES = {
     1: {
-      duracion: 10,                                   // s
-      pista: { min: -30, max: 30 },                   // m
-      ejes: {
-        s: { min: -30, max: 30, mayor: 10, menor: 5 },
-        v: { min: -2.5, max: 2.5, mayor: 1, menor: 0.5 },
-        a: { min: -1, max: 1, mayor: 0.5, menor: 0.25 }
-      },
-      movimiento: (s0, v) => new Movimiento(s0, v, [{ duracion: 10, a: 0 }])
+      rotV: 'Velocidad ' + V, des: { s0: [-10, 10, 1], v: [-2, 2, 0.1] }, usaA: false,
+      ini: { s0: -10, v: 1.5, a: 0 },
+      casos: [
+        { html: 'En reposo', p: { s0: 0, v: 0, a: 0 } },
+        { html: 'Derecha<br>(' + V + ' &gt; 0)', p: { s0: -10, v: 2, a: 0 } },
+        { html: 'Izquierda<br>(' + V + ' &lt; 0)', p: { s0: 10, v: -2, a: 0 } }
+      ],
+      observar: [
+        `Aumenta y disminuye ${V}. ¿Qué le pasa a la inclinación de la gráfica ${S}–${T}? ¿Y a la gráfica ${V}–${T}?`,
+        'Pon una velocidad negativa. ¿Hacia dónde se mueve el carrito? ¿Cómo cambia cada gráfica?',
+        `Cambia solo ${S}₀. ¿Qué gráficas cambian y cuáles no? ¿Por qué?`,
+        `Activa «Área» y pausa en un instante. Compara el área bajo la ${V}–${T} con el desplazamiento.`,
+        '¿Cuándo coinciden el desplazamiento y la distancia recorrida? ¿Cuándo no?'
+      ]
+    },
+    2: {
+      rotV: 'Velocidad inicial ' + U, des: { s0: [-10, 10, 1], v: [-4, 4, 0.5], a: [-1, 1, 0.1] }, usaA: true,
+      ini: { s0: -10, v: 0, a: 0.5 },
+      casos: [
+        { html: 'Acelera', p: { s0: -10, v: 0, a: 0.5 } },
+        { html: 'Frena', p: { s0: -10, v: 4, a: -0.4 } },
+        { html: 'Va y vuelve', p: { s0: -10, v: 4, a: -0.8 } },
+        { html: 'Acelera ←', p: { s0: 10, v: 0, a: -0.5 } }
+      ],
+      observar: [
+        `Con ${U} = 0, aumenta ${A}. ¿Cómo cambia la forma de cada una de las tres gráficas?`,
+        `Elige «Frena». ¿Qué signos tienen ${V} y ${A}? ¿Y si el carrito frena mientras va hacia la izquierda?`,
+        `En «Va y vuelve», ¿cuánto vale ${V} en el punto más alejado? ¿Y ${A} en ese mismo instante?`,
+        `Activa «Pendiente». ¿Qué magnitud da la pendiente de la ${S}–${T}? ¿Y la de la ${V}–${T}?`,
+        `Activa «Área». ¿Con qué coincide el área bajo la ${V}–${T}? ¿Qué pasa con el área cuando ${V} es negativa?`,
+        `¿En qué casos la rapidez aumenta aunque ${A} sea negativa?`
+      ]
+    },
+    3: {
+      casos: [
+        { html: 'Arranca y frena', def: { s0: -12, u: 0, tramos: [{ duracion: 4, a: 1 }, { duracion: 2, a: 0 }, { duracion: 4, a: -1 }] } },
+        { html: 'Va, espera y vuelve', def: { s0: -5, u: 2, tramos: [{ duracion: 3, a: 0 }, { duracion: 1, a: -2 }, { duracion: 2, a: 0 }, { duracion: 1, a: -2 }, { duracion: 3, a: 0 }] } },
+        { html: 'Frena y regresa', def: { s0: -5, u: 4, tramos: [{ duracion: 6, a: -1 }, { duracion: 4, a: 0 }] } },
+        { html: 'Dos aceleraciones', def: { s0: -20, u: 0, tramos: [{ duracion: 4, a: 0.5 }, { duracion: 4, a: 1 }, { duracion: 2, a: 0 }] } }
+      ],
+      observar: [
+        `Antes de reproducir, predice la forma de la ${S}–${T} en cada tramo: ¿recta o curva?, ¿sube o baja?`,
+        `¿Cómo se ve un tramo en reposo en la ${V}–${T}? ¿Y en la ${S}–${T}?`,
+        'En «Va, espera y vuelve», compara el desplazamiento total con la distancia recorrida.',
+        `¿En qué instantes cambia ${A}? ¿Cambia ${V} de golpe en esos instantes?`,
+        'Con «Área», halla el desplazamiento de cada tramo y compáralo con lo que ves en la pista.'
+      ]
     }
   };
-  const nivel = NIVELES[1];
-  const DUR = nivel.duracion;
-
-  // ---------- Colores y letra (Normas de diseño) ----------
-  const COL = {
-    tinta: '#1F2A36', suave: '#5A6B7D', azul: '#2E74B5', azulOsc: '#1F4D78', azulFondo: '#EEF3F9',
-    rejMayor: '#C9D3DF', rejMenor: '#E6EBF1', gris: '#8A97A6',
-    pos: '#2E74B5', des: '#C25E0C', vel: '#1E7B4F', velFondo: '#E6F3EC', ace: '#C00000', aceFondo: '#FBEDED'
-  };
-  const LETRA = 'Calibri, Carlito, "Segoe UI", Arial, sans-serif';
-  const MENOS = '−';
+  const RETOS = [
+    'Haz que el carrito termine exactamente donde empezó.',
+    'Consigue un desplazamiento de 0 m con una distancia recorrida de 16 m.',
+    `Construye un movimiento en el que ${A} sea negativa pero la rapidez aumente.`,
+    'Haz que el carrito pase 2 s en reposo en mitad del recorrido.',
+    `Consigue que la ${S}–${T} tenga forma de «montaña» (sube y baja) con un solo tramo.`
+  ];
+  const PLAN_INICIAL = { s0: -15, u: 0, tramos: [{ duracion: 3, a: 1 }, { duracion: 4, a: 0 }, { duracion: 3, a: -1 }] };
 
   // ---------- Estado ----------
-  const $ = (id) => document.getElementById(id);
   const estado = {
-    s0: Number($('desS0').value),
-    v: Number($('desV').value),
-    mov: null,
-    anterior: null,
-    t: 0,
-    jugando: false,
-    rapidez: 1,
-    verAnterior: $('chkAnterior').checked,
-    completa: $('chkCompleta').checked
+    modo: 'explorar', nivel: 1,
+    par: { 1: Object.assign({}, NIVELES[1].ini), 2: Object.assign({}, NIVELES[2].ini) },
+    caso3: 0,
+    plan: JSON.parse(JSON.stringify(PLAN_INICIAL)),
+    mov: null, anterior: null, pts: null, ptsAnt: null, ejes: null,
+    t: 0, jugando: false, rapidez: 1,
+    ver: { anterior: true, completa: false, pendiente: false, area: false }
   };
-  estado.mov = nivel.movimiento(estado.s0, estado.v);
+  const escena = D.crearEscena($('escena'));
+  const GRAFICAS = [{ id: 'gS', mag: 's' }, { id: 'gV', mag: 'v' }, { id: 'gA', mag: 'a' }];
 
-  // ---------- Utilidades de dibujo ----------
-  function prepararLienzo(cv) {
-    const r = cv.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
-    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
-      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    }
-    const ctx = cv.getContext('2d');
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, w, h);
-    return { ctx, w, h };
+  // ---------- Movimiento actual ----------
+  function movimientoDe(modo, nivel) {
+    if (modo === 'construir') return new Movimiento(estado.plan.s0, estado.plan.u, estado.plan.tramos);
+    if (nivel === 3) { const d = NIVELES[3].casos[estado.caso3].def; return new Movimiento(d.s0, d.u, d.tramos); }
+    const p = estado.par[nivel];
+    let m = new Movimiento(p.s0, p.v, [{ duracion: TMAX, a: nivel === 2 ? p.a : 0 }]);
+    const tc = m.primerCruce(PISTA.min, PISTA.max);        // si llega al final de la pista, el movimiento termina ahí
+    if (tc !== null && tc < TMAX) m = m.recortar(tc);
+    return m;
   }
+  function puntosDe(m) { return { s: D.muestrear(m, 's'), v: D.muestrear(m, 'v'), a: D.muestrear(m, 'a') }; }
 
-  // Texto con partes en cursiva: partes = [[texto, cursiva?], ...]
-  function medirRico(ctx, partes, tam, negrita) {
-    let ancho = 0;
-    for (const [txt, it] of partes) {
-      ctx.font = `${it ? 'italic ' : ''}${negrita ? '700 ' : ''}${tam}px ${LETRA}`;
-      ancho += ctx.measureText(txt).width;
-    }
-    return ancho;
+  function recalcular(guardarAnterior) {
+    const nuevo = movimientoDe(estado.modo, estado.nivel);
+    if (guardarAnterior && estado.mov) { estado.anterior = estado.mov; estado.ptsAnt = estado.pts; }
+    estado.mov = nuevo; estado.pts = puntosDe(nuevo);
+    estado.t = Math.min(estado.t, nuevo.duracion);
+    calcularEjes();
+    $('barraTiempo').max = nuevo.duracion;
+    pintarTablaTramos();
   }
-  function textoRico(ctx, partes, x, y, tam, color, alinear, negrita) {
-    const ancho = medirRico(ctx, partes, tam, negrita);
-    let cx = alinear === 'center' ? x - ancho / 2 : alinear === 'right' ? x - ancho : x;
-    ctx.fillStyle = color;
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-    for (const [txt, it] of partes) {
-      ctx.font = `${it ? 'italic ' : ''}${negrita ? '700 ' : ''}${tam}px ${LETRA}`;
-      ctx.fillText(txt, cx, y);
-      cx += ctx.measureText(txt).width;
-    }
-    return ancho;
-  }
-  function rectRedondo(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
-  }
-  // Píldora centrada en (x, y); se mantiene dentro de [xmin, xmax]
-  function pildora(ctx, partes, x, y, tam, borde, fondo, texto, xmin, xmax) {
-    const ancho = medirRico(ctx, partes, tam, true) + 18, alto = tam + 9;
-    let x0 = x - ancho / 2;
-    if (xmin !== undefined) x0 = Math.max(xmin, Math.min(x0, xmax - ancho));
-    rectRedondo(ctx, x0, y - alto / 2, ancho, alto, alto / 2);
-    ctx.fillStyle = fondo; ctx.fill();
-    ctx.lineWidth = 1.5; ctx.strokeStyle = borde; ctx.stroke();
-    textoRico(ctx, partes, x0 + 9, y + 0.5, tam, texto, 'left', true);
-  }
-  // Flecha con punta triangular sólida
-  function flecha(ctx, x1, y1, x2, y2, color, grosor, punta) {
-    const L = Math.hypot(x2 - x1, y2 - y1);
-    if (L < 1) return;
-    const ux = (x2 - x1) / L, uy = (y2 - y1) / L;
-    const p = Math.min(punta, L);
-    ctx.strokeStyle = color; ctx.lineWidth = grosor; ctx.lineCap = 'butt';
-    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - ux * p * 0.9, y2 - uy * p * 0.9); ctx.stroke();
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(x2, y2);
-    ctx.lineTo(x2 - ux * p - uy * p * 0.55, y2 - uy * p + ux * p * 0.55);
-    ctx.lineTo(x2 - ux * p + uy * p * 0.55, y2 - uy * p - ux * p * 0.55);
-    ctx.closePath(); ctx.fill();
-  }
-  function num(x, d) { return numero(x, d); }
-  // Número para ejes: sin decimales sobrantes (0,5 · 1 · −2)
-  function numEje(x) {
-    const r = Math.round(x * 1000) / 1000;
-    return numero(r, Number.isInteger(r) ? 0 : (Number.isInteger(r * 10) ? 1 : 2));
-  }
-
-  // ---------- Escena: mesa de laboratorio, pista, sensor de movimiento y carrito ----------
-  // El banderín es solo decorativo: cuelga en reposo y ondea hacia atrás cuando el carrito se mueve.
-  const bandera = { phi: 0, om: 0, ultimo: null };
-  let escenaPendiente = false;
-  const QUIETO = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const MET = { claro: '#E4E9EF', brillo: '#F6F8FA', medio: '#8A97A6', oscuro: '#5A6B7D', pizarra: '#2F3E4E' };
-
-  function dibujarEscena() {
-    const cv = $('escena');
-    const lienzo = prepararLienzo(cv);
-    const ctx = lienzo.ctx;
-    // En pantallas altas, todo el dibujo se amplía (hasta 1,5 veces) para que se vea bien al proyectar
-    const k = Math.max(1, Math.min(1.5, lienzo.h / 190));
-    ctx.scale(k, k);
-    const w = lienzo.w / k, h = lienzo.h / k;
-    const { min, max } = nivel.pista;
-    const ancha = w >= 640;
-    const mIzq = ancha ? 112 : 70, mDer = 56;
-    const X = (s) => mIzq + (s - min) / (max - min) * (w - mIzq - mDer);
-    const pxm = (w - mIzq - mDer) / (max - min);
-    const yP = h - 62;                    // superficie de la pista (donde ruedan las ruedas)
-    const ahora = performance.now();
-    const linea = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
-    ctx.lineJoin = 'round';
-
-    const s = estado.mov.s(estado.t);
-    const v = estado.mov.v(estado.t);
-    const a = estado.mov.a(estado.t);
-    const s0 = estado.mov.s0;
-    const xc = X(s);
-
-    // Indicador de sentido positivo
-    pildora(ctx, [['derecha +', false]], 52, 15, 13, COL.azul, COL.azulFondo, COL.azulOsc);
-    flecha(ctx, 100, 15, 140, 15, COL.azul, 2.5, 10);
-
-    // Mesa de laboratorio
-    ctx.fillStyle = '#EFE8DC'; ctx.fillRect(0, yP + 17, w, 3);
-    ctx.fillStyle = '#D3AC84'; ctx.fillRect(0, yP + 20, w, 5);
-
-    // Pista de aluminio con su escala
-    const rx0 = mIzq - 58, rx1 = w - 8;
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2;
-    for (const xp of (ancha ? [rx0 + 16, (rx0 + rx1) / 2, rx1 - 16] : [rx0 + 14, rx1 - 14])) {   // patas niveladoras
-      ctx.beginPath(); ctx.moveTo(xp - 6, yP + 11); ctx.lineTo(xp + 6, yP + 11); ctx.lineTo(xp + 9, yP + 17); ctx.lineTo(xp - 9, yP + 17); ctx.closePath();
-      ctx.fillStyle = MET.oscuro; ctx.fill(); ctx.stroke();
-    }
-    ctx.fillStyle = MET.claro; ctx.fillRect(rx0, yP, rx1 - rx0, 11);
-    ctx.fillStyle = MET.brillo; ctx.fillRect(rx0, yP, rx1 - rx0, 3);
-    ctx.strokeRect(rx0, yP, rx1 - rx0, 11);
-    for (let m = min; m <= max; m++) {
-      if (pxm < 6 && m % 5 !== 0) continue;
-      const largo = m === 0 ? 10 : m % 5 === 0 ? 6 : 3;
-      ctx.strokeStyle = m === 0 ? COL.azulOsc : MET.oscuro; ctx.lineWidth = m === 0 ? 2 : 1;
-      linea(X(m), yP + 10.5, X(m), yP + 10.5 - largo);
-    }
-    // Tope del extremo derecho
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2;
-    ctx.fillStyle = MET.medio; ctx.fillRect(rx1 - 7, yP - 14, 6, 14); ctx.strokeRect(rx1 - 7, yP - 14, 6, 14);
-    ctx.fillStyle = COL.tinta; ctx.fillRect(rx1 - 10, yP - 11, 3, 7);
-
-    // Números de la escala (bajo la mesa)
-    const pasoEtiqueta = pxm >= 13 ? 5 : 10;
-    for (let m = min; m <= max; m += pasoEtiqueta) {
-      const cero = m === 0;
-      ctx.font = `${cero ? '700 ' : ''}13px ${LETRA}`;
-      ctx.fillStyle = cero ? COL.azulOsc : COL.suave;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText(m < 0 ? MENOS + Math.abs(m) : String(m), X(m), yP + 28);
-    }
-    textoRico(ctx, [['s', true], [' / m', false]], w - 6, yP + 35, 13, COL.suave, 'right');
-
-    // Interfaz y cable del sensor
-    const sx = rx0 + 4;                     // borde izquierdo del sensor
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(sx + 1, yP - 15);
-    if (ancha) ctx.bezierCurveTo(sx - 16, yP - 17, sx - 4, yP + 17, 40, yP + 9);
-    else ctx.bezierCurveTo(sx - 9, yP - 16, sx - 2, yP + 15, 0, yP + 13);
-    ctx.stroke(); ctx.lineCap = 'butt';
-    if (ancha) {
-      ctx.lineWidth = 1.2;
-      rectRedondo(ctx, 10, yP - 6, 31, 23, 3); ctx.fillStyle = MET.pizarra; ctx.fill(); ctx.stroke();
-      ctx.fillStyle = '#E8F1F8'; ctx.fillRect(14, yP - 2, 23, 11);
-      ctx.strokeStyle = COL.pos; ctx.lineWidth = 1.3;              // mini gráfica en la pantalla
-      ctx.beginPath(); ctx.moveTo(16, yP + 6); ctx.lineTo(23, yP + 4); ctx.lineTo(28, yP + 1); ctx.lineTo(35, yP); ctx.stroke();
-      ctx.fillStyle = MET.medio;
-      for (const bx of [18, 25.5, 33]) { ctx.beginPath(); ctx.arc(bx, yP + 13, 1.4, 0, 2 * Math.PI); ctx.fill(); }
-    }
-
-    // Sensor de movimiento (ultrasonidos) sujeto al extremo de la pista
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2;
-    ctx.fillStyle = MET.oscuro; ctx.fillRect(sx + 4, yP - 5, 10, 5); ctx.strokeRect(sx + 4, yP - 5, 10, 5);
-    rectRedondo(ctx, sx, yP - 27, 18, 22, 4); ctx.fillStyle = MET.pizarra; ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(sx + 18, yP - 16, 2.6, 7, 0, 0, 2 * Math.PI);
-    ctx.fillStyle = '#E2B045'; ctx.fill(); ctx.lineWidth = 1; ctx.stroke();
-    const parpadeo = estado.jugando && (QUIETO || Math.floor(ahora / 350) % 2 === 0);
-    ctx.beginPath(); ctx.arc(sx + 6, yP - 22, 1.8, 0, 2 * Math.PI);
-    ctx.fillStyle = parpadeo ? '#4FD08A' : MET.medio; ctx.fill();
-    // Pulsos de ultrasonidos mientras se mide
-    if (estado.jugando && !QUIETO) {
-      ctx.lineWidth = 1.3; ctx.strokeStyle = MET.oscuro;
-      for (let k = 0; k < 3; k++) {
-        const fase = (ahora / 900 + k / 3) % 1;
-        ctx.globalAlpha = 0.75 * (1 - fase);
-        ctx.beginPath(); ctx.arc(sx + 14, yP - 16, 9 + fase * 30, -0.55, 0.55); ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
-    }
-    // Rótulo del sensor (se atenúa si el carrito está encima)
-    ctx.font = `12px ${LETRA}`;
-    const medio = Math.max(ctx.measureText('movimiento').width, ctx.measureText('sensor de').width) / 2;
-    const xr = Math.max(4 + medio, sx + 9);
-    const visible = Math.max(0, Math.min(1, (xc - 34 - (xr + medio)) / 24));
-    if (visible > 0) {
-      ctx.globalAlpha = visible;
-      ctx.fillStyle = COL.suave; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText('sensor de', xr, yP - 56); ctx.fillText('movimiento', xr, yP - 44);
-      ctx.strokeStyle = COL.suave; ctx.lineWidth = 1; linea(sx + 9, yP - 36, sx + 9, yP - 29);
-      ctx.globalAlpha = 1;
-    }
-
-    // Posición inicial (marca discontinua)
-    ctx.save();
-    ctx.setLineDash([4, 3]); ctx.strokeStyle = COL.pos; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(X(s0), yP - 36); ctx.lineTo(X(s0), yP);
-    ctx.moveTo(X(s0), yP + 43); ctx.lineTo(X(s0), yP + 58); ctx.stroke();
-    ctx.restore();
-    // el rótulo s₀ va abajo, en el lado contrario al desplazamiento
-    if (xc >= X(s0)) textoRico(ctx, [['s', true], ['₀', false]], X(s0) - 5, yP + 51, 13, COL.pos, 'right', true);
-    else textoRico(ctx, [['s', true], ['₀', false]], X(s0) + 5, yP + 51, 13, COL.pos, 'left', true);
-
-    // Desplazamiento (naranja), desde s0 hasta s
-    const yDes = yP + 51;
-    if (Math.abs(xc - X(s0)) > 3) {
-      flecha(ctx, X(s0), yDes, xc, yDes, COL.des, 3, Math.min(11, Math.abs(xc - X(s0))));
-      ctx.font = `700 12px ${LETRA}`;
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      const xm = (X(s0) + xc) / 2, etiqueta = 'desplazamiento';
-      const ancho = ctx.measureText(etiqueta).width;
-      if (Math.abs(xc - X(s0)) > ancho + 16) {
-        ctx.fillStyle = '#FFF'; ctx.fillRect(xm - ancho / 2 - 3, yDes - 7, ancho + 6, 14);
-        ctx.fillStyle = COL.des; ctx.fillText(etiqueta, xm, yDes);
-      }
-    }
-
-    // ----- Carrito de laboratorio (su posición es la de su centro) -----
-    const yT = yP - 28, yB = yP - 8, rR = 6.5;
-    // Ruedas: giran sin deslizar (ángulo = recorrido / radio)
-    const giro = (s * pxm) / rR;
-    for (const dx of [-18, 18]) {
-      const cx = xc + dx, cy = yP - rR;
-      ctx.beginPath(); ctx.arc(cx, cy, rR, 0, 2 * Math.PI); ctx.fillStyle = COL.tinta; ctx.fill();
-      ctx.beginPath(); ctx.arc(cx, cy, 3.4, 0, 2 * Math.PI); ctx.fillStyle = '#C9D3DF'; ctx.fill();
-      ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.1;
-      for (let k = 0; k < 3; k++) {
-        const ang = giro + k * 2 * Math.PI / 3;
-        linea(cx, cy, cx + 3.4 * Math.cos(ang), cy + 3.4 * Math.sin(ang));
-      }
-    }
-    // Topes de los extremos y cuerpo
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2; ctx.fillStyle = MET.medio;
-    for (const lado of [-1, 1]) {
-      const x0 = lado < 0 ? xc - 33 : xc + 29;
-      ctx.fillRect(x0, yT + 7, 4, 6); ctx.strokeRect(x0, yT + 7, 4, 6);
-    }
-    rectRedondo(ctx, xc - 29, yT, 58, yB - yT, 4);
-    ctx.fillStyle = '#B5CFEC'; ctx.fill();
-    ctx.save(); ctx.clip(); ctx.fillStyle = COL.azul; ctx.fillRect(xc - 29, yT, 58, 5); ctx.restore();
-    ctx.lineWidth = 1.5; ctx.strokeStyle = COL.tinta; ctx.stroke();
-    // Marca del centro y su índice sobre la escala
-    ctx.strokeStyle = COL.azulOsc; ctx.lineWidth = 1.5; linea(xc, yT + 8, xc, yB - 2);
-    ctx.fillStyle = COL.azulOsc;
-    ctx.beginPath(); ctx.moveTo(xc, yP + 1); ctx.lineTo(xc - 4.5, yP + 9); ctx.lineTo(xc + 4.5, yP + 9); ctx.closePath(); ctx.fill();
-
-    // Banderín: resorte amortiguado hacia su ángulo de equilibrio (decorativo)
-    const objetivo = estado.jugando ? -Math.sign(v) * 1.43 * (1 - Math.exp(-Math.abs(v) / 0.5)) : 0.3;
-    const dt = bandera.ultimo === null ? 0 : Math.min(0.05, (ahora - bandera.ultimo) / 1000);
-    bandera.ultimo = ahora;
-    if (QUIETO) { bandera.phi = objetivo; bandera.om = 0; }
-    else {
-      for (let i = 0; i < 4; i++) {
-        const acc = 100 * (objetivo - bandera.phi) - 6 * bandera.om;
-        bandera.om += acc * dt / 4; bandera.phi += bandera.om * dt / 4;
-      }
-    }
-    const phi = bandera.phi;
-    ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5; linea(xc, yT, xc, yT - 21);
-    ctx.beginPath(); ctx.arc(xc, yT - 21, 1.6, 0, 2 * Math.PI); ctx.fillStyle = COL.tinta; ctx.fill();
-    // phi = 0: cuelga; phi < 0: ondea hacia la izquierda (el carrito va a la derecha)
-    const dir = [Math.sin(phi), Math.cos(phi)], nor = [Math.cos(phi), -Math.sin(phi)];
-    const onda = (estado.jugando && !QUIETO) ? 2.2 * Math.min(1, Math.abs(v)) : 0;
-    const arriba = [], abajo = [];
-    for (let i = 0; i <= 5; i++) {
-      const f = i / 5, d = 17 * f, medioAncho = 3.6 * (1 - f);
-      const riz = onda * f * Math.sin(ahora / 70 - i * 1.3);
-      const px = xc + dir[0] * d + nor[0] * riz, py = (yT - 17) + dir[1] * d + nor[1] * riz;
-      arriba.push([px + nor[0] * medioAncho, py + nor[1] * medioAncho]);
-      abajo.push([px - nor[0] * medioAncho, py - nor[1] * medioAncho]);
-    }
-    ctx.beginPath(); ctx.moveTo(arriba[0][0], arriba[0][1]);
-    for (let i = 1; i <= 5; i++) ctx.lineTo(arriba[i][0], arriba[i][1]);
-    for (let i = 4; i >= 0; i--) ctx.lineTo(abajo[i][0], abajo[i][1]);
-    ctx.closePath(); ctx.fillStyle = '#F2B84B'; ctx.fill(); ctx.lineWidth = 1.1; ctx.stroke();
-
-    // Flecha de velocidad (verde) a escala: 30 px por cada m s⁻¹
-    const yV = yT - 30;
-    const kV = 30;
-    if (Math.abs(v) > 1e-9) flecha(ctx, xc, yV, xc + v * kV, yV, COL.vel, 4, 12);
-    const textoV = [['v', true], [' = ' + num(v, 1) + ' m s⁻¹', false]];
-    const yPV = yV - 20;
-    pildora(ctx, textoV, xc, yPV, 13, COL.vel, COL.velFondo, COL.vel, 4, w - 4);
-    // Aceleración (roja): en este nivel es cero, sin flecha
-    if (Math.abs(a) > 1e-9) flecha(ctx, xc, yV - 40, xc + a * 60, yV - 40, COL.ace, 4, 12);
-    const textoA = [['a', true], [' = ' + num(a, a === 0 ? 0 : 1) + (a === 0 ? '' : ' m s⁻²'), false]];
-    const anchoPV = medirRico(ctx, textoV, 13, true) + 18;
-    let xA = xc + anchoPV / 2 + 8;
-    const anchoA = medirRico(ctx, textoA, 13, true) + 18;
-    if (xA + anchoA > w - 4) xA = xc - anchoPV / 2 - 8 - anchoA;
-    pildora(ctx, textoA, xA + anchoA / 2, yPV, 13, COL.ace, COL.aceFondo, COL.ace, 4, w - 4);
-
-    // Mientras el banderín no esté quieto, seguir dibujando aunque la simulación esté en pausa
-    const inquieto = Math.abs(objetivo - bandera.phi) > 0.004 || Math.abs(bandera.om) > 0.004;
-    if (!estado.jugando && inquieto && !escenaPendiente && w > 10) {
-      escenaPendiente = true;
-      requestAnimationFrame(() => { escenaPendiente = false; dibujarEscena(); });
-    }
-  }
-
-  // ---------- Gráficas ----------
-  const GRAFICAS = [
-    { id: 'gS', mag: 's', color: COL.pos, unidad: 'm', f: (m, t) => m.s(t) },
-    { id: 'gV', mag: 'v', color: COL.vel, unidad: 'm s⁻¹', f: (m, t) => m.v(t) },
-    { id: 'gA', mag: 'a', color: COL.ace, unidad: 'm s⁻²', f: (m, t) => m.a(t) }
-  ];
-  const MARGEN = { izq: 54, der: 36, arr: 22, aba: 26 };
-
-  function geometria(w, h, eje) {
-    const x0 = MARGEN.izq, x1 = w - MARGEN.der, y0 = MARGEN.arr, y1 = h - MARGEN.aba;
-    return {
-      x0, x1, y0, y1,
-      X: (t) => x0 + (t / DUR) * (x1 - x0),
-      Y: (val) => y1 - (val - eje.min) / (eje.max - eje.min) * (y1 - y0),
-      T: (x) => Math.min(DUR, Math.max(0, (x - x0) / (x1 - x0) * DUR))
+  function calcularEjes() {
+    const conAnt = estado.modo === 'explorar' && estado.ver.anterior && estado.ptsAnt;
+    const mx = (mag) => Math.max(D.maxAbsPuntos(estado.pts[mag]), conAnt ? D.maxAbsPuntos(estado.ptsAnt[mag]) : 0);
+    estado.ejes = {
+      s: { min: PISTA.min, max: PISTA.max, mayor: 10, menor: 5 },
+      v: estado.modo === 'construir' ? D.ejeAuto('v', V_CONSTRUIR) : D.ejeAuto('v', mx('v')),
+      a: D.ejeAuto('a', mx('a'))
     };
   }
 
-  // Trazo exacto de una magnitud entre 0 y tFin
-  function trazar(ctx, g, m, G, tFin) {
-    ctx.beginPath();
-    if (g.mag === 'a') {
-      let primero = true;
-      for (const tr of m.tramos) {
-        if (tr.t0 > tFin) break;
-        const fin = Math.min(tr.t1, tFin);
-        if (primero) { ctx.moveTo(G.X(tr.t0), G.Y(tr.a)); primero = false; }
-        else ctx.lineTo(G.X(tr.t0), G.Y(tr.a)); // salto vertical entre tramos
-        ctx.lineTo(G.X(fin), G.Y(tr.a));
-      }
-    } else {
-      let primero = true;
-      for (const tr of m.tramos) {
-        if (tr.t0 > tFin) break;
-        const fin = Math.min(tr.t1, tFin);
-        const n = (g.mag === 's' && tr.a !== 0) ? 80 : 1;
-        for (let i = 0; i <= n; i++) {
-          const t = tr.t0 + (fin - tr.t0) * i / n;
-          const y = G.Y(g.f(m, t));
-          if (primero) { ctx.moveTo(G.X(t), y); primero = false; } else ctx.lineTo(G.X(t), y);
-        }
-      }
+  // ---------- Dibujo ----------
+  function velocidadesNodo(m) { const r = m.tramos.map(tr => tr.v0); r.push(m.v(m.duracion)); return r; }
+
+  function opcionesGrafica(mag) {
+    const m = estado.mov, t = estado.t, construir = estado.modo === 'construir';
+    const valor = mag === 's' ? m.s(t) : mag === 'v' ? m.v(t) : m.a(t);
+    const curvas = [];
+    if (!construir && estado.ver.anterior && estado.ptsAnt) curvas.push({ puntos: estado.ptsAnt[mag], color: COL.gris, ancho: 2, raya: [6, 4] });
+    if (construir || estado.ver.completa) curvas.push({ puntos: estado.pts[mag], alfa: 0.3 });
+    curvas.push({ puntos: estado.pts[mag], hasta: t });
+    const o = { mag, eje: estado.ejes[mag], tMax: TMAX, curvas, cursor: { t, y: valor }, tramos: m.tramos.length > 1 ? m.tramos : null, extraArr: extraArr() };
+    if (estado.ver.pendiente && mag === 's') {
+      o.tangente = { t, y: valor, m: m.v(t), color: COL.vel, texto: [['pendiente = ', false], ['v', true], [' = ' + numero(m.v(t), 2) + ' m s⁻¹', false]] };
     }
-    ctx.stroke();
+    if (estado.ver.pendiente && mag === 'v') {
+      o.tangente = { t, y: valor, m: m.a(t), color: COL.ace, texto: [['pendiente = ', false], ['a', true], [' = ' + numero(m.a(t), 2) + ' m s⁻²', false]] };
+    }
+    if (estado.ver.area && mag === 'v') {
+      o.area = { puntos: estado.pts.v, hasta: t, colorPos: 'rgba(194,94,12,0.22)', colorNeg: 'rgba(91,75,138,0.26)', colorTexto: COL.des,
+        texto: [['área = Δ', false], ['s', true], [' = ' + numero(m.desplazamiento(t), 2) + ' m', false]] };
+    }
+    if (estado.ver.area && mag === 'a') {
+      o.area = { puntos: estado.pts.a, hasta: t, colorPos: 'rgba(192,0,0,0.16)', colorNeg: 'rgba(91,75,138,0.26)', colorTexto: COL.ace,
+        texto: [['área = Δ', false], ['v', true], [' = ' + numero(m.v(t) - m.v(0), 2) + ' m s⁻¹', false]] };
+    }
+    if (construir && mag === 'v') {
+      const vs = velocidadesNodo(m);
+      o.nodos = vs.map((y, i) => ({ t: i < m.tramos.length ? m.tramos[i].t0 : m.duracion, y }));
+    }
+    return o;
   }
 
-  function dibujarGrafica(g) {
-    const cv = $(g.id);
-    const { ctx, w, h } = prepararLienzo(cv);
-    const eje = nivel.ejes[g.mag];
-    const G = geometria(w, h, eje);
+  // con «Pendiente» y «Área» a la vez, la v–t lleva dos rótulos: las tres gráficas dejan una línea más arriba
+  function extraArr() { return estado.ver.pendiente && estado.ver.area ? 17 : 0; }
 
-    // Cuadrícula
-    const lineaV = (t, c, a) => { ctx.strokeStyle = c; ctx.lineWidth = a; ctx.beginPath(); ctx.moveTo(G.X(t), G.y0); ctx.lineTo(G.X(t), G.y1); ctx.stroke(); };
-    const lineaH = (y, c, a) => { ctx.strokeStyle = c; ctx.lineWidth = a; ctx.beginPath(); ctx.moveTo(G.x0, G.Y(y)); ctx.lineTo(G.x1, G.Y(y)); ctx.stroke(); };
-    for (let t = 0; t <= DUR + 1e-9; t += 0.5) if (Math.abs(t - Math.round(t)) > 1e-6) lineaV(t, COL.rejMenor, 1);
-    const pasos = (paso) => { const r = []; for (let k = Math.ceil(eje.min / paso - 1e-9); k * paso <= eje.max + 1e-9; k++) r.push(k * paso); return r; };
-    pasos(eje.menor).forEach(y => lineaH(y, COL.rejMenor, 1));
-    for (let t = 0; t <= DUR + 1e-9; t += 1) lineaV(t, COL.rejMayor, 1);
-    pasos(eje.mayor).forEach(y => lineaH(y, COL.rejMayor, 1));
-
-    // Números del eje vertical
-    ctx.font = `13px ${LETRA}`; ctx.fillStyle = COL.suave; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-    pasos(eje.mayor).forEach(y => ctx.fillText(numEje(y), G.x0 - 7, G.Y(y)));
-    // Números del tiempo (bajo la gráfica)
-    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-    const pasoT = (G.x1 - G.x0) / DUR < 26 ? 2 : 1;
-    for (let t = 0; t <= DUR + 1e-9; t += pasoT) ctx.fillText(String(t), G.X(t), G.y1 + 6);
-
-    // Ejes: vertical en t = 0 y eje de tiempo en el cero
-    flecha(ctx, G.x0, G.y1 + 2, G.x0, G.y0 - 12, COL.tinta, 1.5, 8);
-    flecha(ctx, G.x0 - 2, G.Y(0), G.x1 + 16, G.Y(0), COL.tinta, 1.5, 8);
-    textoRico(ctx, [[g.mag, true], [' / ' + g.unidad, false]], G.x0 + 8, G.y0 - 9, 14, g.color, 'left', true);
-    textoRico(ctx, [['t', true], [' / s', false]], w - 4, G.Y(0) - 12, 14, COL.tinta, 'right', true);
-
-    ctx.save();
-    ctx.beginPath(); ctx.rect(G.x0 - 2, G.y0 - 4, G.x1 - G.x0 + 4, G.y1 - G.y0 + 8); ctx.clip();
-    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-
-    // Movimiento anterior (gris discontinuo)
-    if (estado.verAnterior && estado.anterior) {
-      ctx.setLineDash([6, 4]); ctx.strokeStyle = COL.gris; ctx.lineWidth = 2;
-      trazar(ctx, g, estado.anterior, G, DUR);
-      ctx.setLineDash([]);
-    }
-    // Gráfica completa (tenue) si se pide
-    if (estado.completa) {
-      ctx.globalAlpha = 0.3; ctx.strokeStyle = g.color; ctx.lineWidth = 3;
-      trazar(ctx, g, estado.mov, G, DUR);
-      ctx.globalAlpha = 1;
-    }
-    // Trazo hasta el instante actual
-    ctx.strokeStyle = g.color; ctx.lineWidth = 3;
-    trazar(ctx, g, estado.mov, G, estado.t);
-    ctx.restore();
-
-    // Cursor del instante
-    const xt = G.X(estado.t);
-    ctx.save();
-    ctx.setLineDash([4, 3]); ctx.strokeStyle = COL.azulOsc; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(xt, G.y0 - 2); ctx.lineTo(xt, G.y1); ctx.stroke();
-    ctx.restore();
-    const valor = g.f(estado.mov, estado.t);
-    ctx.fillStyle = g.color; ctx.strokeStyle = '#FFF'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(xt, G.Y(valor), 5.5, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+  function textoRapidez(v, a) {
+    if (Math.abs(v) < 1e-9) return a === 0 ? 'en reposo' : 'cero en este instante';
+    if (a === 0) return 'constante';
+    return v * a > 0 ? 'aumenta' : 'disminuye';
   }
 
-  // ---------- Valores y controles ----------
+  let filaActual = -1;
   function actualizarTextos() {
-    const m = estado.mov, t = estado.t;
-    $('valT').textContent = num(t, 2);
-    $('valS').textContent = num(m.s(t), 2);
-    $('valV').textContent = num(m.v(t), 2);
-    $('valA').textContent = num(m.a(t), 2);
-    $('valDes').textContent = num(m.desplazamiento(t), 2);
-    $('valDist').textContent = num(m.distancia(t), 2);
-    $('outS0').textContent = num(estado.s0, 0) + ' m';
-    $('outV').textContent = num(estado.v, 1) + ' m s⁻¹';
+    const m = estado.mov, t = estado.t, fin = t >= m.duracion - 1e-9;
+    $('valT').textContent = numero(t, 2);
+    $('valS').textContent = numero(m.s(t), 2);
+    $('valV').textContent = numero(m.v(t), 2);
+    $('valA').textContent = numero(m.a(t), 2);
+    $('valDes').textContent = numero(m.desplazamiento(t), 2);
+    $('valDist').textContent = numero(m.distancia(t), 2);
+    $('valRap').textContent = textoRapidez(m.v(t), m.a(t));
     $('barraTiempo').value = t;
     $('btnPlay').setAttribute('aria-label', estado.jugando ? 'Pausar' : 'Reproducir');
-    $('txtPlay').textContent = estado.jugando ? 'Pausar' : (t >= DUR - 1e-9 ? 'Repetir' : 'Reproducir');
+    $('txtPlay').textContent = estado.jugando ? 'Pausar' : (fin ? 'Repetir' : 'Reproducir');
     $('icoPlay').hidden = estado.jugando;
     $('icoPausa').hidden = !estado.jugando;
-    document.querySelectorAll('.caso').forEach(b => {
-      b.classList.toggle('activo', Number(b.dataset.s0) === estado.s0 && Number(b.dataset.v) === estado.v);
-    });
+    const i = m.tramos.length > 1 ? m.indice(t) : -1;
+    if (i !== filaActual) {
+      filaActual = i;
+      ['tablaTramos', 'edTabla'].forEach(id => Array.from($(id).tBodies[0].rows).forEach((tr, k) => tr.classList.toggle('actual', k === i)));
+    }
   }
 
   function dibujarTodo() {
-    dibujarEscena();
-    GRAFICAS.forEach(dibujarGrafica);
+    if ($('panel-visor').hidden) return;
+    const m = estado.mov;
+    escena.dibujar({
+      mov: m, t: estado.t, jugando: estado.jugando, pista: PISTA,
+      vMax: estado.ejes.v.max, aMax: estado.ejes.a.max,
+      aviso: m.recortado && estado.t >= m.duracion - 1e-9 ? 'Fin de la pista' : null
+    });
+    GRAFICAS.forEach(g => D.dibujarGrafica($(g.id), opcionesGrafica(g.mag)));
     actualizarTextos();
   }
 
@@ -490,21 +200,22 @@
   let ultimo = null;
   function cuadro(ahora) {
     if (!estado.jugando) { ultimo = null; return; }
+    const fin = estado.mov.duracion;
     if (ultimo !== null) {
-      estado.t = Math.min(DUR, estado.t + (ahora - ultimo) / 1000 * estado.rapidez);
-      if (estado.t >= DUR) estado.jugando = false;
+      estado.t = Math.min(fin, estado.t + (ahora - ultimo) / 1000 * estado.rapidez);
+      if (estado.t >= fin) estado.jugando = false;
     }
     ultimo = ahora;
     dibujarTodo();
     if (estado.jugando) requestAnimationFrame(cuadro); else ultimo = null;
   }
   function reproducir() {
-    if (estado.t >= DUR - 1e-9) estado.t = 0;
+    if (estado.t >= estado.mov.duracion - 1e-9) estado.t = 0;
     if (!estado.jugando) { estado.jugando = true; ultimo = null; requestAnimationFrame(cuadro); }
     actualizarTextos();
   }
   function pausar() { estado.jugando = false; actualizarTextos(); }
-  function irA(t) { estado.t = Math.min(DUR, Math.max(0, Math.round(t * 1000) / 1000)); dibujarTodo(); }
+  function irA(t) { estado.t = Math.min(estado.mov.duracion, Math.max(0, Math.round(t * 1000) / 1000)); dibujarTodo(); }
 
   $('btnPlay').addEventListener('click', () => (estado.jugando ? pausar() : reproducir()));
   $('btnReiniciar').addEventListener('click', () => { pausar(); irA(0); });
@@ -513,53 +224,202 @@
   $('barraTiempo').addEventListener('input', (e) => { pausar(); irA(Number(e.target.value)); });
   $('rapidez').addEventListener('change', (e) => { estado.rapidez = Number(e.target.value); });
 
-  // ---------- Cambiar el movimiento ----------
-  function nuevoMovimiento(s0, v, guardarAnterior) {
-    if (guardarAnterior && (s0 !== estado.s0 || v !== estado.v)) estado.anterior = estado.mov;
-    estado.s0 = s0; estado.v = v;
-    estado.mov = nivel.movimiento(s0, v);
-    estado.t = 0;
+  // ---------- Explorar: niveles, casos y deslizadores ----------
+  function pintarControles() {
+    const n = estado.nivel, cfg = NIVELES[n];
+    document.querySelectorAll('.nivel').forEach(b => {
+      const activo = Number(b.dataset.nivel) === n;
+      b.classList.toggle('activo', activo); b.setAttribute('aria-pressed', String(activo));
+    });
+    // casos
+    const cont = $('casos');
+    cont.innerHTML = '';
+    cont.style.gridTemplateColumns = `repeat(${n === 1 ? 3 : n === 2 ? 4 : 2}, 1fr)`;
+    cfg.casos.forEach((c, i) => {
+      const b = document.createElement('button');
+      b.className = 'boton caso'; b.innerHTML = c.html; b.dataset.i = i;
+      cont.appendChild(b);
+    });
+    // deslizadores
+    const hayDes = n !== 3;
+    $('grupoS0').hidden = !hayDes; $('grupoV').hidden = !hayDes; $('grupoA').hidden = !cfg.usaA;
+    $('tablaTramos').hidden = n !== 3;
+    if (hayDes) {
+      $('rotV').innerHTML = cfg.rotV;
+      const pon = (id, r, val) => { const el = $(id); el.min = r[0]; el.max = r[1]; el.step = r[2]; el.value = val; };
+      pon('desS0', cfg.des.s0, estado.par[n].s0);
+      pon('desV', cfg.des.v, estado.par[n].v);
+      if (cfg.usaA) pon('desA', cfg.des.a, estado.par[n].a);
+    }
+    marcarCaso();
+    pintarObservar();
   }
+  function marcarCaso() {
+    const n = estado.nivel, p = estado.par[n];
+    document.querySelectorAll('#casos .caso').forEach((b, i) => {
+      const c = NIVELES[n].casos[i];
+      const activo = n === 3 ? i === estado.caso3 : (c.p.s0 === p.s0 && c.p.v === p.v && c.p.a === p.a);
+      b.classList.toggle('activo', activo);
+    });
+    if (n !== 3) {
+      $('outS0').textContent = numero(p.s0, 0) + ' m';
+      $('outV').textContent = numero(p.v, 1) + ' m s⁻¹';
+      $('outA').textContent = numero(p.a, 1) + ' m s⁻²';
+    }
+  }
+  function pintarObservar() {
+    const construir = estado.modo === 'construir';
+    $('rotObservar').textContent = construir ? 'Retos' : 'Para observar';
+    $('listaObservar').innerHTML = (construir ? RETOS : NIVELES[estado.nivel].observar).map(x => `<li>${x}</li>`).join('');
+  }
+  function pintarTablaTramos() {
+    const cuerpo = $('tablaTramos').tBodies[0];
+    cuerpo.innerHTML = estado.mov.tramos.map((tr, i) =>
+      `<tr><td>${LETRAS[i]}</td><td>${fmt(tr.t0)} – ${fmt(tr.t1)}</td><td>${fmt(tr.a)}</td></tr>`).join('');
+    filaActual = -1;
+  }
+
+  function ponerNivel(n) {
+    pausar();
+    estado.nivel = n; estado.anterior = null; estado.ptsAnt = null; estado.t = 0;
+    pintarControles(); recalcular(false); dibujarTodo();
+  }
+  document.querySelectorAll('.nivel').forEach(b => b.addEventListener('click', () => ponerNivel(Number(b.dataset.nivel))));
+
+  $('casos').addEventListener('click', (e) => {
+    const b = e.target.closest('.caso'); if (!b) return;
+    const n = estado.nivel, c = NIVELES[n].casos[Number(b.dataset.i)];
+    pausar();
+    if (n === 3) estado.caso3 = Number(b.dataset.i);
+    else {
+      Object.assign(estado.par[n], c.p);
+      $('desS0').value = c.p.s0; $('desV').value = c.p.v; $('desA').value = c.p.a;
+    }
+    estado.t = 0; recalcular(true); marcarCaso(); dibujarTodo(); reproducir();
+  });
 
   let arrastrando = false;
   function alMoverDeslizador() {
-    const s0 = Number($('desS0').value), v = Math.round(Number($('desV').value) * 10) / 10;
-    // el movimiento anterior se guarda una sola vez al empezar a arrastrar
-    const guardar = !arrastrando;
+    const n = estado.nivel, p = estado.par[n];
+    const r1 = (x) => Math.round(x * 10) / 10;
+    const nuevo = { s0: Number($('desS0').value), v: r1(Number($('desV').value)), a: NIVELES[n].usaA ? r1(Number($('desA').value)) : 0 };
+    if (nuevo.s0 === p.s0 && nuevo.v === p.v && nuevo.a === p.a) return;
+    const guardar = !arrastrando;                 // el movimiento anterior se guarda una sola vez al empezar a arrastrar
     arrastrando = true;
     pausar();
-    nuevoMovimiento(s0, v, guardar);
-    dibujarTodo();
+    Object.assign(p, nuevo);
+    estado.t = 0; recalcular(guardar); marcarCaso(); dibujarTodo();
   }
-  function alSoltarDeslizador() { arrastrando = false; reproducir(); }
-  ['desS0', 'desV'].forEach(id => {
+  ['desS0', 'desV', 'desA'].forEach(id => {
     $(id).addEventListener('input', alMoverDeslizador);
-    $(id).addEventListener('change', alSoltarDeslizador);
+    $(id).addEventListener('change', () => { arrastrando = false; reproducir(); });
   });
 
-  document.querySelectorAll('.caso').forEach(b => b.addEventListener('click', () => {
-    const s0 = Number(b.dataset.s0), v = Number(b.dataset.v);
-    $('desS0').value = s0; $('desV').value = v;
-    pausar();
-    nuevoMovimiento(s0, v, true);
-    dibujarTodo();
-    reproducir();
-  }));
+  [['chkAnterior', 'anterior'], ['chkCompleta', 'completa'], ['chkPendiente', 'pendiente'], ['chkArea', 'area']].forEach(([id, k]) => {
+    estado.ver[k] = $(id).checked;
+    $(id).addEventListener('change', (e) => { estado.ver[k] = e.target.checked; calcularEjes(); dibujarTodo(); });
+  });
 
-  $('chkAnterior').addEventListener('change', (e) => { estado.verAnterior = e.target.checked; dibujarTodo(); });
-  $('chkCompleta').addEventListener('change', (e) => { estado.completa = e.target.checked; dibujarTodo(); });
+  // ---------- Construir: tabla de tramos ----------
+  function paso(campo, i, valor, unidad) {
+    return `<span class="paso"><button type="button" data-campo="${campo}" data-i="${i}" data-d="-1" aria-label="Disminuir">−</button>` +
+      `<output>${valor}${unidad ? ' ' + unidad : ''}</output>` +
+      `<button type="button" data-campo="${campo}" data-i="${i}" data-d="1" aria-label="Aumentar">+</button></span>`;
+  }
+  function pintarEditor() {
+    const p = estado.plan;
+    $('edIniciales').innerHTML =
+      `<label>${S}₀ / m ${paso('s0', 0, numero(p.s0, 0))}</label><label>${U} / m s⁻¹ ${paso('u', 0, fmt(p.u))}</label>`;
+    $('edCuerpo').innerHTML = p.tramos.map((tr, i) =>
+      `<tr><td>${LETRAS[i]}</td><td>${paso('dur', i, fmt(tr.duracion))}</td><td>${paso('a', i, fmt(tr.a))}</td></tr>`).join('');
+    $('edMas').disabled = p.tramos.length >= MAX_TRAMOS;
+    $('edMenos').disabled = p.tramos.length <= 1;
+    filaActual = -1;
+  }
+  function validarPlan(p) {
+    const total = p.tramos.reduce((x, tr) => x + tr.duracion, 0);
+    if (total > TMAX + 1e-9) return 'El movimiento no puede durar más de 10 s.';
+    if (p.tramos.some(tr => tr.duracion < 0.5 - 1e-9)) return 'Cada tramo dura al menos 0,5 s.';
+    const m = new Movimiento(p.s0, p.u, p.tramos);
+    if (velocidadesNodo(m).some(v => Math.abs(v) > V_CONSTRUIR + 1e-9)) return 'La velocidad no puede pasar de 6 m s⁻¹ en esta gráfica.';
+    const [mn, mx] = m.rangoS();
+    if (mn < PISTA.min - 1e-9 || mx > PISTA.max + 1e-9) return 'Con ese cambio el carrito se saldría de la pista.';
+    return null;
+  }
+  let relojAviso = null;
+  function aviso(texto) {
+    $('edAviso').textContent = texto || '';
+    clearTimeout(relojAviso);
+    if (texto) relojAviso = setTimeout(() => { $('edAviso').textContent = ''; }, 3500);
+  }
+  function intentarPlan(nuevo) {
+    const error = validarPlan(nuevo);
+    if (error) { aviso(error); return false; }
+    aviso('');
+    estado.plan = nuevo;
+    pausar(); recalcular(false); pintarEditor(); dibujarTodo();
+    return true;
+  }
+  const copiaPlan = () => JSON.parse(JSON.stringify(estado.plan));
+  const medio = (x) => Math.round(x * 2) / 2;
+
+  $('editor').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    const p = copiaPlan();
+    if (b.id === 'edMas') {
+      p.tramos.push({ duracion: 1, a: 0 });
+      if (validarPlan(p)) { p.tramos[p.tramos.length - 1].duracion = 0.5; }
+      intentarPlan(p); return;
+    }
+    if (b.id === 'edMenos') { p.tramos.pop(); intentarPlan(p); return; }
+    if (b.id === 'edReiniciar') { estado.t = 0; intentarPlan(JSON.parse(JSON.stringify(PLAN_INICIAL))); return; }
+    const campo = b.dataset.campo, i = Number(b.dataset.i), d = Number(b.dataset.d);
+    if (!campo) return;
+    if (campo === 's0') p.s0 = Math.max(-25, Math.min(25, p.s0 + d));
+    else if (campo === 'u') p.u = medio(p.u + 0.5 * d);
+    else if (campo === 'dur') p.tramos[i].duracion = Math.max(0.5, medio(p.tramos[i].duracion + 0.5 * d));
+    else if (campo === 'a') {
+      // al siguiente múltiplo de 0,5 en el sentido pedido (a puede no ser «redonda» después de arrastrar un punto)
+      const a = p.tramos[i].a;
+      p.tramos[i].a = Math.max(-6, Math.min(6, d > 0 ? Math.floor(a * 2 + 1e-9) / 2 + 0.5 : Math.ceil(a * 2 - 1e-9) / 2 - 0.5));
+    }
+    intentarPlan(p);
+  });
+
+  // Arrastrar un punto de la v–t: cambia la velocidad en ese instante y, con ella, la aceleración de los tramos vecinos
+  function moverNodo(i, y) {
+    const p = copiaPlan(), vs = velocidadesNodo(estado.mov), n = p.tramos.length;
+    y = Math.max(-V_CONSTRUIR, Math.min(V_CONSTRUIR, medio(y)));
+    if (vs[i] === y) return;
+    if (i === 0) p.u = y; else p.tramos[i - 1].a = (y - vs[i - 1]) / p.tramos[i - 1].duracion;
+    if (i < n) p.tramos[i].a = (vs[i + 1] - y) / p.tramos[i].duracion;
+    intentarPlan(p);
+  }
 
   // ---------- Clic y arrastre sobre las gráficas ----------
   GRAFICAS.forEach(g => {
     const cv = $(g.id);
-    let abajo = false;
-    const tDesde = (e) => {
-      const r = cv.getBoundingClientRect();
-      return geometria(r.width, r.height, nivel.ejes[g.mag]).T(e.clientX - r.left);
-    };
-    cv.addEventListener('pointerdown', (e) => { abajo = true; cv.setPointerCapture(e.pointerId); pausar(); irA(tDesde(e)); });
-    cv.addEventListener('pointermove', (e) => { if (abajo) irA(tDesde(e)); });
-    const soltar = () => { abajo = false; };
+    let abajo = false, nodo = -1;
+    const geo = () => { const r = cv.getBoundingClientRect(); return { r, G: D.geometria(r.width, r.height, estado.ejes[g.mag], TMAX, false, extraArr()) }; };
+    cv.addEventListener('pointerdown', (e) => {
+      const { r, G } = geo(), x = e.clientX - r.left, y = e.clientY - r.top;
+      abajo = true; nodo = -1; cv.setPointerCapture(e.pointerId); pausar();
+      if (estado.modo === 'construir' && g.mag === 'v') {
+        const m = estado.mov, vs = velocidadesNodo(m);
+        let mejor = 18;
+        vs.forEach((v, i) => {
+          const d = Math.hypot(G.X(i < m.tramos.length ? m.tramos[i].t0 : m.duracion) - x, G.Y(v) - y);
+          if (d < mejor) { mejor = d; nodo = i; }
+        });
+      }
+      if (nodo < 0) irA(G.T(x));
+    });
+    cv.addEventListener('pointermove', (e) => {
+      if (!abajo) return;
+      const { r, G } = geo();
+      if (nodo >= 0) moverNodo(nodo, G.V(e.clientY - r.top)); else irA(G.T(e.clientX - r.left));
+    });
+    const soltar = () => { abajo = false; nodo = -1; };
     cv.addEventListener('pointerup', soltar);
     cv.addEventListener('pointercancel', soltar);
   });
@@ -567,26 +427,46 @@
   // ---------- Teclado ----------
   document.addEventListener('keydown', (e) => {
     const tag = (e.target.tagName || '').toLowerCase();
-    if (tag === 'input' || tag === 'select' || tag === 'button') return;
-    if ($('panel-explorar').hidden) return;
+    if (tag === 'input' || tag === 'select' || tag === 'button' || tag === 'summary') return;
+    if ($('panel-visor').hidden) return;
     if (e.code === 'Space') { e.preventDefault(); estado.jugando ? pausar() : reproducir(); }
     else if (e.key === 'ArrowRight') { pausar(); irA(estado.t + 0.1); }
     else if (e.key === 'ArrowLeft') { pausar(); irA(estado.t - 0.1); }
   });
 
   // ---------- Pestañas ----------
+  function ponerModo(modo) {
+    pausar();
+    estado.modo = modo; estado.anterior = null; estado.ptsAnt = null; estado.t = 0;
+    document.querySelectorAll('.solo-explorar').forEach(el => { el.hidden = modo !== 'explorar'; });
+    document.querySelectorAll('.solo-construir').forEach(el => { el.hidden = modo !== 'construir'; });
+    $('ayudaGraficas').textContent = modo === 'construir'
+      ? 'Arrastra los puntos de la gráfica v–t o cambia la tabla. Clic en una gráfica: ir a ese instante.'
+      : 'Haz clic o arrastra sobre una gráfica para ir a ese instante.';
+    if (modo === 'construir') pintarEditor(); else pintarControles();
+    pintarObservar();
+    recalcular(false);
+    dibujarTodo();
+  }
   document.querySelectorAll('.pestanas [role="tab"]').forEach(tab => tab.addEventListener('click', () => {
-    document.querySelectorAll('.pestanas [role="tab"]').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
-    document.querySelectorAll('.panel').forEach(p => { p.hidden = p.id !== 'panel-' + tab.dataset.panel; });
-    if (tab.dataset.panel !== 'explorar') pausar(); else dibujarTodo();
+    const parte = tab.dataset.panel;
+    document.querySelectorAll('.pestanas [role="tab"]').forEach(x => x.setAttribute('aria-selected', String(x === tab)));
+    $('panel-visor').hidden = parte === 'practicar';
+    $('panel-practicar').hidden = parte !== 'practicar';
+    $('panel-visor').setAttribute('aria-labelledby', tab.id);
+    document.querySelectorAll('.observar[open]').forEach(d => { d.open = false; });
+    if (parte === 'practicar') { pausar(); window.dispatchEvent(new CustomEvent('a1-practicar', { detail: true })); }
+    else { window.dispatchEvent(new CustomEvent('a1-practicar', { detail: false })); ponerModo(parte); }
   }));
 
   // ---------- Inicio ----------
+  pintarControles();
+  recalcular(false);
   new ResizeObserver(() => dibujarTodo()).observe(document.querySelector('.explorar'));
   window.addEventListener('resize', dibujarTodo);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(dibujarTodo);
   dibujarTodo();
 
   // Para las pruebas automáticas
-  window.__simA1 = { estado, irA, nuevoMovimiento, dibujarTodo, nivel };
+  window.__simA1 = { estado, irA, dibujarTodo, ponerNivel, ponerModo, intentarPlan, moverNodo, recalcular, reproducir, pausar, NIVELES };
 })();

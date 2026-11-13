@@ -44,7 +44,7 @@ window.CATALOGO = {
     {
       subtema: "A.1",
       titulo: "Un movimiento, tres gráficas",
-      descripcion: "Mueve un carrito y mira cómo se dibujan a la vez sus gráficas posición–tiempo, velocidad–tiempo y aceleración–tiempo.",
+      descripcion: "Explora el movimiento de un carrito y sus gráficas posición–tiempo, velocidad–tiempo y aceleración–tiempo; construye tu propio movimiento y practica con ejercicios que se corrigen al momento.",
       ficha: "A.1 · Ficha 1.3.4–1.3.6",
       ruta: "sims/A.1-tres-graficas/",
       miniatura: "sims/A.1-tres-graficas/miniatura.svg",

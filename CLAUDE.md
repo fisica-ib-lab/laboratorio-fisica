@@ -26,7 +26,7 @@ El sitio acompaña las fichas del proyecto «Material de trabajo 2027» (carpeta
 
 ## Estilo de las animaciones (obligatorio en todas las simulaciones y miniaturas)
 
-Referencia viva: la escena de `sims/A.1-tres-graficas/sim.js` (`dibujarEscena`) y su `miniatura.svg`.
+Referencia viva: la escena de `sims/A.1-tres-graficas/dibujo.js` (`crearEscena`) y su `miniatura.svg`.
 Ilustración plana de montaje de laboratorio, con «un poquito» de detalle y sin recargar.
 
 - **Trazo y relleno:** objetos con contorno oscuro `#1F2A36` de 1,2–1,5 px y rellenos planos, sin degradados ni sombras.
@@ -64,6 +64,12 @@ controles: reproducir/pausar, ±0,1 s, velocidad ×0,25–×2, barra de tiempo, 
 **Rigor:** cinemática exacta por tramos (aceleración uniforme), s y v continuas. Antes de publicar, verificar con código
 en todas las situaciones y en 1000 ejercicios aleatorios: pendiente s–t = v, pendiente v–t = a, área v–t = Δs,
 área a–t = Δv, distancia = suma de recorridos, respuesta correcta = cálculo.
+
+**Estado (13 nov 2026): simulación completa, pendiente de revisión del profesor.**
+Archivos: `dibujo.js` (escena y gráficas), `sim.js` (Explorar niveles 1–3 y Construir), `ejercicios.js` (generador de
+13 tipos de ejercicio, sin pantalla) y `practicar.js` (pantalla de Practicar). Hechas las herramientas «Pendiente» y «Área»;
+faltan del plan original: secante arrastrable, huellas cada 1 s y modo predicción.
+Antes de publicar cambios: `node pruebas/verificar-cinematica.js` y `node pruebas/verificar-ejercicios.js` (0 fallos).
 
 ## Fases (revisión del profesor entre cada una)
 

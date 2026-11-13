@@ -24,35 +24,28 @@
 </header>
 
 <nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
-  <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-explorar" data-panel="explorar">Explorar</button>
-  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Construir <span class="proximamente">próximamente</span></button>
-  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar <span class="proximamente">próximamente</span></button>
+  <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
+  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-visor" data-panel="construir">Construir</button>
+  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar</button>
 </nav>
 
-<!-- ============ EXPLORAR ============ -->
-<section class="panel" id="panel-explorar" role="tabpanel" aria-labelledby="tab-explorar">
-  <div class="niveles" role="group" aria-label="Niveles">
-    <button class="nivel activo" data-nivel="1" aria-pressed="true"><b>Nivel 1</b> Velocidad constante</button>
-    <button class="nivel" data-nivel="2" disabled aria-disabled="true"><b>Nivel 2</b> Con aceleración <span class="proximamente">próximamente</span></button>
-    <button class="nivel" data-nivel="3" disabled aria-disabled="true"><b>Nivel 3</b> Por tramos <span class="proximamente">próximamente</span></button>
+<!-- ============ EXPLORAR y CONSTRUIR (comparten escena, controles y gráficas) ============ -->
+<section class="panel" id="panel-visor" role="tabpanel" aria-labelledby="tab-explorar">
+  <div class="niveles">
+    <button class="nivel activo solo-explorar" data-nivel="1" aria-pressed="true"><b>Nivel 1</b> Velocidad constante</button>
+    <button class="nivel solo-explorar" data-nivel="2" aria-pressed="false"><b>Nivel 2</b> Con aceleración</button>
+    <button class="nivel solo-explorar" data-nivel="3" aria-pressed="false"><b>Nivel 3</b> Por tramos</button>
+    <p class="guia solo-construir" hidden>Arma tu propio movimiento, tramo a tramo, y mira qué gráficas produce.</p>
     <details class="observar">
-      <summary class="boton">Para observar</summary>
-      <div class="observar-texto">
-        <ol>
-          <li>Aumenta y disminuye <span class="var">v</span>. ¿Qué le pasa a la inclinación de la gráfica <span class="var">s</span>–<span class="var">t</span>? ¿Y a la gráfica <span class="var">v</span>–<span class="var">t</span>?</li>
-          <li>Pon una velocidad negativa. ¿Hacia dónde se mueve el carrito? ¿Cómo cambia cada gráfica?</li>
-          <li>Cambia solo <span class="var">s</span>₀. ¿Qué gráficas cambian y cuáles no? ¿Por qué?</li>
-          <li>Pausa en un instante. Compara el desplazamiento con el producto <span class="var">v</span> × <span class="var">t</span>. ¿Qué figura de la gráfica <span class="var">v</span>–<span class="var">t</span> tiene esa misma área?</li>
-          <li>¿Cuándo coinciden el desplazamiento y la distancia recorrida? ¿Cuándo no?</li>
-        </ol>
-      </div>
+      <summary class="boton"><span id="rotObservar">Para observar</span></summary>
+      <div class="observar-texto"><ol id="listaObservar"></ol></div>
     </details>
   </div>
 
   <div class="explorar">
     <!-- Escena -->
     <div class="caja escena-caja">
-      <canvas id="escena" aria-label="Pista con el carrito"></canvas>
+      <canvas id="escena" aria-label="Pista de laboratorio con el carrito"></canvas>
     </div>
 
     <!-- Reproducción -->
@@ -89,9 +82,11 @@
         <div class="grafica"><canvas id="gA" aria-label="Gráfica aceleración–tiempo"></canvas></div>
       </div>
       <div class="pie-graficas">
-        <p class="ayuda">Haz clic o arrastra sobre una gráfica para ir a ese instante.</p>
-        <label class="casilla"><input type="checkbox" id="chkAnterior" checked> Ver el movimiento anterior (gris)</label>
-        <label class="casilla"><input type="checkbox" id="chkCompleta"> Ver las gráficas completas</label>
+        <p class="ayuda" id="ayudaGraficas">Haz clic o arrastra sobre una gráfica para ir a ese instante.</p>
+        <label class="casilla"><input type="checkbox" id="chkPendiente"> Pendiente</label>
+        <label class="casilla"><input type="checkbox" id="chkArea"> Área</label>
+        <label class="casilla solo-explorar"><input type="checkbox" id="chkAnterior" checked> Movimiento anterior (gris)</label>
+        <label class="casilla solo-explorar"><input type="checkbox" id="chkCompleta"> Gráficas completas</label>
       </div>
     </div>
 
@@ -106,53 +101,93 @@
           <tr class="c-ace"><th><span class="var">a</span> <small>aceleración</small></th><td id="valA"></td><td class="u">m s⁻²</td></tr>
           <tr class="c-des"><th>Desplazamiento</th><td id="valDes"></td><td class="u">m</td></tr>
           <tr><th>Distancia recorrida</th><td id="valDist"></td><td class="u">m</td></tr>
+          <tr><th>Rapidez</th><td id="valRap" colspan="2" class="texto"></td></tr>
         </table>
-        <p class="nota">Desplazamiento y distancia: desde <span class="var">t</span> = 0.</p>
       </div>
 
-      <div class="caja ajustes">
+      <div class="caja ajustes solo-explorar" id="cajaAjustes">
         <h2>Elige un movimiento</h2>
-        <div class="casos" id="casos">
-          <button class="boton caso" data-s0="0" data-v="0">En reposo</button>
-          <button class="boton caso" data-s0="-10" data-v="2">Derecha<br>(<span class="var">v</span> &gt; 0)</button>
-          <button class="boton caso" data-s0="10" data-v="-2">Izquierda<br>(<span class="var">v</span> &lt; 0)</button>
-        </div>
+        <div class="casos" id="casos"></div>
 
-        <div class="deslizador c-pos">
+        <div class="deslizador c-pos" id="grupoS0">
           <div class="fila"><label for="desS0">Posición inicial <span class="var">s</span>₀</label><output id="outS0"></output></div>
-          <input type="range" id="desS0" min="-10" max="10" step="1" value="-10" aria-describedby="rangoS0">
-          <span class="sr" id="rangoS0">de −10 m a 10 m</span>
+          <input type="range" id="desS0" min="-10" max="10" step="1" value="-10">
         </div>
-        <div class="deslizador c-vel">
-          <div class="fila"><label for="desV">Velocidad <span class="var">v</span></label><output id="outV"></output></div>
-          <input type="range" id="desV" min="-2" max="2" step="0.1" value="1.5" aria-describedby="rangoV">
-          <span class="sr" id="rangoV">de −2 m s⁻¹ a 2 m s⁻¹</span>
+        <div class="deslizador c-vel" id="grupoV">
+          <div class="fila"><label for="desV" id="rotV">Velocidad <span class="var">v</span></label><output id="outV"></output></div>
+          <input type="range" id="desV" min="-2" max="2" step="0.1" value="1.5">
         </div>
+        <div class="deslizador c-ace" id="grupoA" hidden>
+          <div class="fila"><label for="desA">Aceleración <span class="var">a</span></label><output id="outA"></output></div>
+          <input type="range" id="desA" min="-1" max="1" step="0.1" value="0.5">
+        </div>
+        <table class="tabla-tramos" id="tablaTramos" hidden>
+          <thead><tr><th>Tramo</th><th><span class="var">t</span> / s</th><th><span class="var">a</span> / m s⁻²</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
+      <div class="caja editor solo-construir" id="editor" hidden>
+        <h2>Construye el movimiento</h2>
+        <div class="ed-iniciales" id="edIniciales"></div>
+        <table class="tabla-tramos" id="edTabla">
+          <thead><tr><th>Tramo</th><th>Duración / s</th><th><span class="var">a</span> / m s⁻²</th></tr></thead>
+          <tbody id="edCuerpo"></tbody>
+        </table>
+        <div class="ed-botones">
+          <button type="button" class="boton" id="edMas">+ Tramo</button>
+          <button type="button" class="boton" id="edMenos">− Tramo</button>
+          <button type="button" class="boton" id="edReiniciar">Reiniciar</button>
+        </div>
+        <p class="ed-aviso" id="edAviso" role="status"></p>
       </div>
     </aside>
   </div>
 </section>
 
-<!-- ============ CONSTRUIR (próximamente) ============ -->
-<section class="panel" id="panel-construir" role="tabpanel" aria-labelledby="tab-construir" hidden>
-  <div class="caja pronto">
-    <h2>Construir · próximamente</h2>
-    <p>Aquí podrás armar tu propio movimiento por tramos (con su duración y su aceleración o velocidad) y dibujar la gráfica <span class="var">v</span>–<span class="var">t</span> arrastrando puntos, para ver el movimiento que produce.</p>
-  </div>
-</section>
-
-<!-- ============ PRACTICAR (próximamente) ============ -->
+<!-- ============ PRACTICAR ============ -->
 <section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
-  <div class="caja pronto">
-    <h2>Practicar · próximamente</h2>
-    <p>Aquí habrá ejercicios que se corrigen uno a uno, sin puntaje: dibujar la gráfica que corresponde a un movimiento, pasar de una gráfica a otra, calcular pendientes y áreas, y decidir si el carrito acelera o frena.</p>
+  <div class="p-barra">
+    <label class="p-tipo">Tipo de ejercicio
+      <select id="pTipo">
+        <option value="todos">Todos</option>
+        <option value="graficas">De una gráfica a otra</option>
+        <option value="calcular">Calcular con la gráfica</option>
+        <option value="interpretar">Interpretar</option>
+        <option value="dibujar">Dibujar</option>
+      </select>
+    </label>
+    <button type="button" class="boton" id="pNuevo">Otro ejercicio</button>
+    <span class="p-nota">Se corrige cada ejercicio; no hay puntaje.</span>
+    <button type="button" class="boton" id="pVer" disabled>
+      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><polygon points="3,2 14,8 3,14" fill="currentColor"/></svg>
+      <span id="pVerTxt">Ver el movimiento</span>
+    </button>
+  </div>
+  <div class="caja escena-caja p-escena"><canvas id="pEscena" aria-label="Pista de laboratorio con el carrito"></canvas></div>
+  <div class="p-cuerpo">
+    <div class="caja p-izq">
+      <div class="p-enunciado" id="pEnunciado"></div>
+      <div class="grafica p-graf"><canvas id="pGraf"></canvas></div>
+    </div>
+    <div class="caja p-der">
+      <div id="pRespuesta"></div>
+      <div class="p-botones">
+        <button type="button" class="boton primario" id="pComprobar">Comprobar</button>
+        <button type="button" class="boton" id="pSolucion" hidden>Ver la solución</button>
+        <button type="button" class="boton primario" id="pSiguiente" hidden>Siguiente ejercicio</button>
+      </div>
+      <div class="p-correccion" id="pCorreccion" role="status" aria-live="polite"></div>
+    </div>
   </div>
 </section>
 
 <footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
 
 <script src="../../comun/cinematica.js"></script>
+<script src="dibujo.js"></script>
 <script src="sim.js"></script>
+<script src="ejercicios.js"></script>
+<script src="practicar.js"></script>
 </body>
 </html>
