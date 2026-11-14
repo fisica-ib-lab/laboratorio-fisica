@@ -58,6 +58,15 @@ window.CATALOGO = {
       ruta: "sims/A.1-proyectiles/",
       miniatura: "sims/A.1-proyectiles/miniatura.svg",
       palabras: "proyectil proyectiles lanzamiento horizontal oblicuo parabólico tiro componentes alcance altura máxima tiempo de vuelo resistencia del aire cinemática"
+    },
+    {
+      subtema: "A.1",
+      titulo: "Ecuaciones del movimiento y caída libre",
+      descripcion: "Suelta una bola o lánzala hacia arriba y mira cómo se cumplen las ecuaciones con aceleración uniforme en cada instante. Con puerta fotoeléctrica y huellas cada décima de segundo.",
+      ficha: "A.1 · Aceleración uniforme",
+      ruta: "sims/A.1-caida-libre/",
+      miniatura: "sims/A.1-caida-libre/miniatura.svg",
+      palabras: "caída libre lanzamiento vertical ecuaciones movimiento aceleración uniforme gravedad g suvat puerta fotoeléctrica cinemática"
     }
   ],
 

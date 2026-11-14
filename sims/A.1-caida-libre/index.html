@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ecuaciones del movimiento y caída libre · A.1</title>
+<meta name="description" content="Simulación de caída libre y lanzamiento vertical: las ecuaciones del movimiento con aceleración uniforme.">
+<link rel="stylesheet" href="../../comun/estilo.css">
+<script src="../../comun/docentes.js"></script>
+<link rel="stylesheet" href="sim.css">
+</head>
+<body>
+<header class="barra">
+  <a class="boton volver" href="../../">← Laboratorio</a>
+  <span class="marca">A.1</span>
+  <div>
+    <h1>Ecuaciones del movimiento y caída libre</h1>
+    <div class="sub">Cinemática · Aceleración uniforme · sin resistencia del aire</div>
+  </div>
+  <nav class="accesos" aria-label="Accesos">
+    <a class="acceso acceso-materiales solo-docentes" href="../../materiales/"><span class="largo">Materiales para docentes</span><span class="corto">Docentes</span></a>
+    <a class="acceso acceso-pp" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec" target="_blank" rel="noopener"><span class="largo">Past papers</span><span class="corto">Past papers</span></a>
+  </nav>
+</header>
+
+<nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
+  <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
+  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Plantear problemas <span class="proximamente">próximamente</span></button>
+  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar <span class="proximamente">próximamente</span></button>
+</nav>
+
+<!-- ============ EXPLORAR ============ -->
+<section class="panel" id="panel-visor" role="tabpanel" aria-labelledby="tab-explorar">
+  <div class="niveles">
+    <button class="nivel activo" data-nivel="1" aria-pressed="true"><b>Nivel 1</b> Caída desde el reposo</button>
+    <button class="nivel" data-nivel="2" aria-pressed="false"><b>Nivel 2</b> Lanzamiento hacia arriba</button>
+    <button class="nivel" data-nivel="3" aria-pressed="false"><b>Nivel 3</b> Las ecuaciones</button>
+    <details class="observar">
+      <summary class="boton"><span id="rotObservar">Para observar</span></summary>
+      <div class="observar-texto"><ol id="listaObservar"></ol></div>
+    </details>
+  </div>
+
+  <div class="taller caida">
+    <div class="col-escena">
+      <div class="caja escena-caja"><canvas id="escena" aria-label="Soporte de laboratorio con la bola y la puerta fotoeléctrica"></canvas></div>
+    </div>
+
+    <div class="col-centro">
+      <div class="reproduccion">
+        <button class="boton" id="btnReiniciar" title="Volver a t = 0" aria-label="Volver al inicio">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="2.5" height="12" fill="currentColor"/><polygon points="14,2 14,14 5.5,8" fill="currentColor"/></svg>
+        </button>
+        <button class="boton" id="btnAtras" title="Retroceder 0,02 s">−0,02 s</button>
+        <button class="boton primario" id="btnPlay" aria-label="Soltar">
+          <svg id="icoPlay" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><polygon points="3,2 14,8 3,14" fill="currentColor"/></svg>
+          <svg id="icoPausa" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" hidden><rect x="3" y="2" width="3.5" height="12" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"/></svg>
+          <span id="txtPlay">Soltar</span>
+        </button>
+        <button class="boton" id="btnAdelante" title="Avanzar 0,02 s">+0,02 s</button>
+        <label class="barra-tiempo"><span class="sr">Instante</span>
+          <input type="range" id="barraTiempo" min="0" max="1" step="0.001" value="0" aria-label="Instante t en segundos"></label>
+        <label class="rapidez">Cámara lenta
+          <select id="rapidez" aria-label="Rapidez de reproducción">
+            <option value="0.1">×0,1</option>
+            <option value="0.25" selected>×0,25</option>
+            <option value="0.5">×0,5</option>
+            <option value="1">×1</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="caja ecuaciones" id="cajaEcuaciones" hidden>
+        <h2>Las ecuaciones con aceleración uniforme, con los valores de este instante</h2>
+        <table class="tabla-ecuaciones">
+          <thead><tr><th>Ecuación</th><th><span class="var">s</span></th><th><span class="var">u</span></th><th><span class="var">v</span></th><th><span class="var">a</span></th><th><span class="var">t</span></th><th class="izq">Sustitución</th><th>Resultado</th></tr></thead>
+          <tbody id="cuerpoEcuaciones"></tbody>
+        </table>
+        <p class="nota-ecuaciones">✓ la ecuación contiene esa magnitud · ✗ no la contiene. Para resolver un problema, usa la ecuación que no contiene la magnitud que ni conoces ni te piden. Los valores se muestran redondeados.</p>
+      </div>
+
+      <div class="caja graficas col-graf">
+        <div class="apiladas" id="apiladas">
+          <div class="grafica"><canvas id="gS" aria-label="Gráfica s–t"></canvas></div>
+          <div class="grafica"><canvas id="gV" aria-label="Gráfica v–t"></canvas></div>
+          <div class="grafica"><canvas id="gA" aria-label="Gráfica a–t"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="lateral">
+      <div class="caja valores">
+        <h2>Valores en este instante</h2>
+        <table>
+          <tr><th><span class="var">t</span></th><td id="valT"></td><td class="u">s</td></tr>
+          <tr class="c-des" title="Se mide desde el punto de salida; arriba es positivo"><th><span class="var">s</span> <small>desde la salida</small></th><td id="valS"></td><td class="u">m</td></tr>
+          <tr class="c-vel"><th><span class="var">v</span> <small>velocidad</small></th><td id="valV"></td><td class="u">m s⁻¹</td></tr>
+          <tr class="c-ace"><th><span class="var">a</span> <small>aceleración</small></th><td id="valA"></td><td class="u">m s⁻²</td></tr>
+          <tr><th><span class="var">y</span> <small>altura sobre la mesa</small></th><td id="valY"></td><td class="u">m</td></tr>
+        </table>
+        <table class="resultados">
+          <tr id="filaSubida"><th>Tiempo de subida</th><td id="resTs"></td><td class="u">s</td></tr>
+          <tr id="filaAltura"><th>Altura máxima</th><td id="resH"></td><td class="u">m</td></tr>
+          <tr><th>Tiempo hasta la mesa</th><td id="resT"></td><td class="u">s</td></tr>
+          <tr class="c-vel"><th>Rapidez al llegar</th><td id="resV"></td><td class="u">m s⁻¹</td></tr>
+        </table>
+      </div>
+
+      <div class="caja ajustes">
+        <h2>Prepara el experimento</h2>
+        <div class="deslizador c-vel" id="grupoU">
+          <div class="fila"><label for="desU">Velocidad inicial <span class="var">u</span></label><output id="outU"></output></div>
+          <input type="range" id="desU" min="1" max="5" step="0.5" value="4">
+        </div>
+        <div class="deslizador c-pos" id="grupoH">
+          <div class="fila"><label for="desH" id="rotH">Altura de salida</label><output id="outH"></output></div>
+          <input type="range" id="desH" min="0.4" max="2" step="0.1" value="1.5">
+        </div>
+        <div class="deslizador c-pos" id="grupoP">
+          <div class="fila"><label for="desP">Altura de la puerta fotoeléctrica</label><output id="outP"></output></div>
+          <input type="range" id="desP" min="0.1" max="2" step="0.05" value="0.6">
+        </div>
+        <div class="casillas-2">
+          <label class="casilla"><input type="checkbox" id="chkPuerta" checked> Puerta</label>
+          <label class="casilla"><input type="checkbox" id="chkHuellas" checked> Huellas (0,1 s)</label>
+          <label class="casilla"><input type="checkbox" id="chkVelocidad" checked> Velocidad</label>
+          <label class="casilla"><input type="checkbox" id="chkAceleracion"> Aceleración</label>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="panel" id="panel-construir" role="tabpanel" aria-labelledby="tab-construir" hidden>
+  <div class="caja pronto">
+    <h2>Plantear problemas · próximamente</h2>
+    <p>Aquí podrás marcar qué magnitudes conoces y cuál te piden, y la simulación resaltará la ecuación que conviene usar. Después introducirás los valores y verás el resultado y el movimiento que le corresponde.</p>
+  </div>
+</section>
+<section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
+  <div class="caja pronto">
+    <h2>Practicar · próximamente</h2>
+    <p>Aquí habrá ejercicios que se corrigen uno a uno, sin puntaje: elegir la ecuación, calcular alturas, tiempos y rapideces, y problemas con dos soluciones.</p>
+  </div>
+</section>
+
+<footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
+
+<script src="../../comun/cinematica.js"></script>
+<script src="../../comun/proyectil.js"></script>
+<script src="../../comun/graficas.js"></script>
+<script src="escena.js"></script>
+<script src="sim.js"></script>
+</body>
+</html>

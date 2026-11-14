@@ -90,7 +90,19 @@ Archivos: `comun/proyectil.js` (física exacta; con aire, Runge–Kutta 4 con k 
 para simulaciones nuevas), `escena.js`, `sim.js`, `ejercicios.js`, `practicar.js`.
 Antes de publicar cambios: `node pruebas/verificar-proyectiles.js` y `node pruebas/verificar-ejercicios-proyectiles.js` (0 fallos).
 **Estado (13 nov 2026): completa, pendiente de revisión del profesor.** Falta saber a qué apartados de la ficha A.1 corresponde
-(la tarjeta dice «A.1 · Proyectiles»). Pendiente aparte: simulación de ecuaciones del movimiento y caída libre.
+(la tarjeta dice «A.1 · Proyectiles»).
+
+## Tercera simulación: «Ecuaciones del movimiento y caída libre» (A.1) — `sims/A.1-caida-libre/`
+
+Montaje vertical: varilla con escala, electroimán que suelta la bola o lanzador vertical, puerta fotoeléctrica móvil con
+cable e interfaz que muestra los tiempos de paso. Arriba +; s se mide desde el punto de salida (naranja).
+
+**Hecho (13 nov 2026): solo Explorar**, pendiente de revisión del profesor. Nivel 1 caída desde el reposo (huellas cada 0,1 s
+con las distancias 1 : 3 : 5), nivel 2 lanzamiento hacia arriba, nivel 3 tabla de las cuatro ecuaciones del Cuadernillo
+(✓/✗ de s, u, v, a, t) con los valores de cada instante sustituidos.
+**Falta:** pestaña «Plantear problemas» (marcar datos e incógnita → ecuación que conviene) y «Practicar»; ahora dicen «próximamente».
+Usa `comun/proyectil.js` (θ = 90° o u = 0). Verificación: `node pruebas/verificar-caida-libre.js`.
+La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de la ficha).
 
 ## Fases (revisión del profesor entre cada una)
 

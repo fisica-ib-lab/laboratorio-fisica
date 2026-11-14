@@ -99,6 +99,14 @@
   // ángulo de la velocidad con la horizontal, en grados (negativo si baja)
   Proyectil.prototype.anguloV = function (t) { return Math.atan2(this.vy(t), this.vx(t)) / RAD; };
 
+  // Instantes (0 < t ≤ duración) en que el proyectil pasa por la altura yp. Solo sin aire (solución exacta).
+  Proyectil.prototype.crucesAltura = function (yp) {
+    const g = this.g, disc = this.uy * this.uy + 2 * g * (this.h - yp);
+    if (disc < 0) return [];
+    const r = Math.sqrt(disc), ts = disc === 0 ? [this.uy / g] : [(this.uy - r) / g, (this.uy + r) / g];
+    return ts.filter(t => t > 1e-9 && t <= this.duracion + 1e-9);
+  };
+
   Proyectil.prototype.alcance = function () { return this.x(this.duracion); };
   Proyectil.prototype.alturaMax = function () { return this.y(this.tCumbre); };
 
