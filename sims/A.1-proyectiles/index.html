@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movimiento de proyectiles · A.1</title>
+<meta name="description" content="Simulación de movimiento de proyectiles: lanzador de laboratorio, componentes de la velocidad, alcance y altura máxima.">
+<link rel="stylesheet" href="../../comun/estilo.css">
+<script src="../../comun/docentes.js"></script>
+<link rel="stylesheet" href="sim.css">
+</head>
+<body>
+<header class="barra">
+  <a class="boton volver" href="../../">← Laboratorio</a>
+  <span class="marca">A.1</span>
+  <div>
+    <h1>Movimiento de proyectiles</h1>
+    <div class="sub">Cinemática · Proyectiles</div>
+  </div>
+  <nav class="accesos" aria-label="Accesos">
+    <a class="acceso acceso-materiales solo-docentes" href="../../materiales/"><span class="largo">Materiales para docentes</span><span class="corto">Docentes</span></a>
+    <a class="acceso acceso-pp" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec" target="_blank" rel="noopener"><span class="largo">Past papers</span><span class="corto">Past papers</span></a>
+  </nav>
+</header>
+
+<nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
+  <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
+  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-visor" data-panel="construir">Acierta al blanco</button>
+  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar</button>
+</nav>
+
+<!-- ============ EXPLORAR y ACIERTA AL BLANCO ============ -->
+<section class="panel" id="panel-visor" role="tabpanel" aria-labelledby="tab-explorar">
+  <div class="niveles">
+    <button class="nivel activo solo-explorar" data-nivel="1" aria-pressed="true"><b>Nivel 1</b> Lanzamiento horizontal</button>
+    <button class="nivel solo-explorar" data-nivel="2" aria-pressed="false"><b>Nivel 2</b> Lanzamiento oblicuo</button>
+    <button class="nivel solo-explorar" data-nivel="3" aria-pressed="false"><b>Nivel 3</b> Desde una altura y con aire</button>
+    <p class="guia solo-construir" hidden>Ajusta el ángulo y la rapidez para que la bola caiga en la bandeja de arena.</p>
+    <details class="observar">
+      <summary class="boton"><span id="rotObservar">Para observar</span></summary>
+      <div class="observar-texto"><ol id="listaObservar"></ol></div>
+    </details>
+  </div>
+
+  <div class="taller">
+    <div class="col-escena">
+      <div class="caja escena-caja"><canvas id="escena" aria-label="Mesa de laboratorio con el lanzador y la bola"></canvas></div>
+      <div class="reproduccion">
+        <button class="boton" id="btnReiniciar" title="Volver a t = 0" aria-label="Volver al inicio">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="2.5" height="12" fill="currentColor"/><polygon points="14,2 14,14 5.5,8" fill="currentColor"/></svg>
+        </button>
+        <button class="boton" id="btnAtras" title="Retroceder 0,02 s">−0,02 s</button>
+        <button class="boton primario" id="btnPlay" aria-label="Lanzar">
+          <svg id="icoPlay" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><polygon points="3,2 14,8 3,14" fill="currentColor"/></svg>
+          <svg id="icoPausa" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" hidden><rect x="3" y="2" width="3.5" height="12" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"/></svg>
+          <span id="txtPlay">Lanzar</span>
+        </button>
+        <button class="boton" id="btnAdelante" title="Avanzar 0,02 s">+0,02 s</button>
+        <label class="barra-tiempo"><span class="sr">Instante</span>
+          <input type="range" id="barraTiempo" min="0" max="1" step="0.001" value="0" aria-label="Instante t en segundos"></label>
+        <label class="rapidez">
+          <select id="rapidez" aria-label="Rapidez de reproducción" title="Cámara lenta">
+            <option value="0.1">Lenta ×0,1</option>
+            <option value="0.25" selected>Lenta ×0,25</option>
+            <option value="0.5">Lenta ×0,5</option>
+            <option value="1">Real ×1</option>
+          </select>
+        </label>
+      </div>
+      <div class="pie-graficas">
+        <label class="casilla" title="Componentes horizontal y vertical de la velocidad"><input type="checkbox" id="chkComponentes" checked> Componentes</label>
+        <label class="casilla" title="Vector velocidad"><input type="checkbox" id="chkVelocidad"> Velocidad</label>
+        <label class="casilla" title="Aceleración de caída libre"><input type="checkbox" id="chkAceleracion"> Aceleración</label>
+        <label class="casilla" title="Posición de la bola cada 0,1 s"><input type="checkbox" id="chkHuellas" checked> Huellas</label>
+        <label class="casilla solo-explorar" title="Deja en gris los lanzamientos anteriores para comparar"><input type="checkbox" id="chkAnteriores" checked> Anteriores</label>
+        <button type="button" class="boton mini solo-explorar" id="btnBorrar" title="Borra los lanzamientos anteriores">Borrar</button>
+      </div>
+    </div>
+
+    <div class="caja graficas col-graf">
+      <div class="cuatro">
+        <div class="grafica"><canvas id="gX" aria-label="Gráfica x–t"></canvas></div>
+        <div class="grafica"><canvas id="gY" aria-label="Gráfica y–t"></canvas></div>
+        <div class="grafica"><canvas id="gVx" aria-label="Gráfica vx–t"></canvas></div>
+        <div class="grafica"><canvas id="gVy" aria-label="Gráfica vy–t"></canvas></div>
+      </div>
+    </div>
+
+    <aside class="lateral">
+      <div class="caja valores">
+        <h2>Valores en este instante</h2>
+        <table>
+          <tr><th><span class="var">t</span></th><td id="valT"></td><td class="u">s</td></tr>
+          <tr class="c-hor"><th><span class="var">x</span> <small>horizontal</small></th><td id="valX"></td><td class="u">m</td></tr>
+          <tr class="c-ver"><th><span class="var">y</span> <small>altura</small></th><td id="valY"></td><td class="u">m</td></tr>
+          <tr class="c-hor"><th><span class="var">v</span><sub>x</sub></th><td id="valVx"></td><td class="u">m s⁻¹</td></tr>
+          <tr class="c-ver"><th><span class="var">v</span><sub>y</sub></th><td id="valVy"></td><td class="u">m s⁻¹</td></tr>
+          <tr class="c-vel"><th><span class="var">v</span> <small>rapidez</small></th><td id="valV"></td><td class="u">m s⁻¹</td></tr>
+        </table>
+        <table class="resultados solo-explorar">
+          <tr><th>Tiempo de vuelo</th><td id="resT"></td><td class="u">s</td></tr>
+          <tr class="c-hor"><th>Alcance</th><td id="resR"></td><td class="u">m</td></tr>
+          <tr class="c-ver"><th>Altura máxima</th><td id="resH"></td><td class="u">m</td></tr>
+        </table>
+      </div>
+
+      <div class="caja ajustes">
+        <h2 id="tituloAjustes">Prepara el lanzamiento</h2>
+        <p class="blanco-info solo-construir" id="blancoInfo" hidden></p>
+        <div class="casos solo-explorar" id="casos"></div>
+        <div class="deslizador c-pos" id="grupoH">
+          <div class="fila"><label for="desH">Altura del lanzador <span class="var">h</span></label><output id="outH"></output></div>
+          <input type="range" id="desH" min="0" max="1" step="0.1" value="0.8">
+        </div>
+        <div class="deslizador c-pos" id="grupoAng">
+          <div class="fila"><label for="desAng">Ángulo <span class="var">θ</span></label><output id="outAng"></output></div>
+          <input type="range" id="desAng" min="0" max="80" step="5" value="40">
+        </div>
+        <div class="deslizador c-vel" id="grupoV">
+          <div class="fila"><label for="desV">Rapidez inicial <span class="var">u</span></label><output id="outV"></output></div>
+          <input type="range" id="desV" min="1" max="5" step="0.5" value="3">
+        </div>
+        <label class="casilla solo-explorar" id="rotAire" hidden><input type="checkbox" id="chkAire"> Comparar con resistencia del aire</label>
+        <p class="nota-aire solo-explorar" id="notaAire" hidden>Con aire: comparación cualitativa, sin valores.</p>
+        <div class="solo-construir" id="cajaBlanco" hidden>
+          <label class="casilla" title="La rapidez queda fija: hay que calcular el ángulo"><input type="checkbox" id="chkCalcula"> Calcula primero (rapidez fija)</label>
+          <div class="ed-botones">
+            <button type="button" class="boton primario" id="btnLanzar">Lanzar</button>
+            <button type="button" class="boton" id="btnNuevoBlanco">Nuevo blanco</button>
+          </div>
+          <p class="resultado-blanco" id="resBlanco" role="status" aria-live="polite"></p>
+          <ol class="intentos" id="listaIntentos"></ol>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ PRACTICAR ============ -->
+<section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
+  <div class="p-barra">
+    <label class="p-tipo">Tipo de ejercicio
+      <select id="pTipo">
+        <option value="todos">Todos</option>
+        <option value="calcular">Calcular</option>
+        <option value="interpretar">Interpretar</option>
+        <option value="graficas">Gráficas y trayectorias</option>
+        <option value="bandeja">Coloca la bandeja</option>
+      </select>
+    </label>
+    <button type="button" class="boton" id="pNuevo">Otro ejercicio</button>
+    <span class="p-nota">Se corrige cada ejercicio; no hay puntaje. Usa <span class="var">g</span> = 9,81 m s⁻².</span>
+    <button type="button" class="boton" id="pVer" disabled>
+      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><polygon points="3,2 14,8 3,14" fill="currentColor"/></svg>
+      <span id="pVerTxt">Ver el lanzamiento</span>
+    </button>
+  </div>
+  <div class="p-cuerpo">
+    <div class="caja escena-caja p-izq"><canvas id="pEscena" aria-label="Mesa de laboratorio con el lanzador"></canvas></div>
+    <div class="caja p-der">
+      <div class="p-enunciado" id="pEnunciado"></div>
+      <div id="pRespuesta"></div>
+      <div class="p-botones">
+        <button type="button" class="boton primario" id="pComprobar">Comprobar</button>
+        <button type="button" class="boton" id="pSolucion" hidden>Ver la solución</button>
+        <button type="button" class="boton primario" id="pSiguiente" hidden>Siguiente ejercicio</button>
+      </div>
+      <div class="p-correccion" id="pCorreccion" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
+
+<script src="../../comun/cinematica.js"></script>
+<script src="../../comun/proyectil.js"></script>
+<script src="../../comun/graficas.js"></script>
+<script src="escena.js"></script>
+<script src="sim.js"></script>
+<script src="ejercicios.js"></script>
+<script src="practicar.js"></script>
+</body>
+</html>

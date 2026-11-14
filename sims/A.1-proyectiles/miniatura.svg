@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" font-family="Calibri, Carlito, Arial, sans-serif">
+  <rect width="320" height="200" fill="#FFFFFF"/>
+  <!-- varilla con escala -->
+  <rect x="22" y="58" width="7" height="142" fill="#E4E9EF" stroke="#1F2A36" stroke-width="1.2"/>
+  <g stroke="#5A6B7D" stroke-width="1"><line x1="22" y1="150" x2="26" y2="150"/><line x1="22" y1="130" x2="29" y2="130"/><line x1="22" y1="110" x2="26" y2="110"/><line x1="22" y1="90" x2="29" y2="90"/><line x1="22" y1="70" x2="26" y2="70"/></g>
+  <!-- mesa (empieza bajo la boca del lanzador) y regla -->
+  <rect x="62" y="170" width="258" height="3" fill="#EFE8DC"/>
+  <rect x="62" y="173" width="258" height="5" fill="#D3AC84"/>
+  <line x1="62" y1="170" x2="62" y2="178" stroke="#A8845F" stroke-width="1.5"/>
+  <rect x="66" y="181" width="246" height="9" fill="#E4E9EF" stroke="#1F2A36" stroke-width="1.1"/>
+  <g stroke="#5A6B7D" stroke-width="1">
+    <line x1="97" y1="181" x2="97" y2="184"/><line x1="128" y1="181" x2="128" y2="187"/><line x1="159" y1="181" x2="159" y2="184"/><line x1="190" y1="181" x2="190" y2="190"/>
+    <line x1="221" y1="181" x2="221" y2="184"/><line x1="252" y1="181" x2="252" y2="187"/><line x1="283" y1="181" x2="283" y2="184"/>
+  </g>
+  <line x1="66" y1="181" x2="66" y2="190" stroke="#1F4D78" stroke-width="2"/>
+  <!-- abrazadera y lanzador a 40° -->
+  <line x1="26" y1="120" x2="46" y2="120" stroke="#1F2A36" stroke-width="5" stroke-linecap="round"/>
+  <line x1="26" y1="120" x2="46" y2="120" stroke="#8A97A6" stroke-width="3" stroke-linecap="round"/>
+  <rect x="19" y="113" width="14" height="14" rx="3" fill="#2F3E4E" stroke="#1F2A36" stroke-width="1.2"/>
+  <g transform="translate(66,104) rotate(-40)">
+    <rect x="-52" y="-8.5" width="46" height="17" rx="4" fill="#B5CFEC"/>
+    <path d="M-52,-4.5 a4,4 0 0 1 4,-4 h3 v17 h-3 a4,4 0 0 1 -4,-4 Z" fill="#2E74B5"/>
+    <rect x="-52" y="-8.5" width="46" height="17" rx="4" fill="none" stroke="#1F2A36" stroke-width="1.5"/>
+    <rect x="-10" y="-10" width="4" height="20" fill="#2F3E4E" stroke="#1F2A36" stroke-width="1.2"/>
+  </g>
+  <circle cx="46" cy="120" r="3.2" fill="#E2B045" stroke="#1F2A36" stroke-width="1"/>
+  <!-- transportador -->
+  <line x1="66" y1="104" x2="112" y2="104" stroke="#5A6B7D" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <path d="M96,104 A30,30 0 0 0 89,84.7" fill="none" stroke="#2E74B5" stroke-width="1.6"/>
+  <text x="102" y="92" font-size="13" font-style="italic" font-weight="700" fill="#1F4D78">θ</text>
+  <!-- trayectoria y huellas -->
+  <path d="M66,104 Q150,-30 262,163.5" fill="none" stroke="#2E74B5" stroke-width="2.5" stroke-linecap="round"/>
+  <g fill="#EEF1F5" stroke="#1F2A36" stroke-width="1.2" opacity="0.7">
+    <circle cx="103" cy="62" r="6.5"/><circle cx="212" cy="88" r="6.5"/><circle cx="240" cy="128" r="6.5"/>
+  </g>
+  <!-- bola con componentes -->
+  <line x1="160" y1="42" x2="204" y2="42" stroke="#C25E0C" stroke-width="3.5"/><polygon points="214,42 203,36 203,48" fill="#C25E0C"/>
+  <line x1="160" y1="42" x2="160" y2="66" stroke="#5B4B8A" stroke-width="3.5"/><polygon points="160,76 154,65 166,65" fill="#5B4B8A"/>
+  <line x1="160" y1="42" x2="204" y2="68" stroke="#1E7B4F" stroke-width="3.5"/><polygon points="214,74 201.5,73.5 207.5,63" fill="#1E7B4F"/>
+  <circle cx="160" cy="42" r="6.5" fill="#C9D3DF" stroke="#1F2A36" stroke-width="1.4"/>
+  <text x="218" y="40" font-size="13" font-style="italic" font-weight="700" fill="#C25E0C">v<tspan font-size="9" dy="3">x</tspan></text>
+  <text x="143" y="74" font-size="13" font-style="italic" font-weight="700" fill="#5B4B8A">v<tspan font-size="9" dy="3">y</tspan></text>
+  <text x="218" y="82" font-size="13" font-style="italic" font-weight="700" fill="#1E7B4F">v</text>
+  <!-- bandeja de arena -->
+  <rect x="249" y="165" width="26" height="5" fill="#EAD9B0"/>
+  <path d="M247,161 V170 H277 V161" fill="none" stroke="#1F2A36" stroke-width="1.5"/>
+</svg>

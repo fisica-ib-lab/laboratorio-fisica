@@ -49,6 +49,15 @@ window.CATALOGO = {
       ruta: "sims/A.1-tres-graficas/",
       miniatura: "sims/A.1-tres-graficas/miniatura.svg",
       palabras: "gráficas posición desplazamiento velocidad aceleración pendiente área carrito cinemática"
+    },
+    {
+      subtema: "A.1",
+      titulo: "Movimiento de proyectiles",
+      descripcion: "Lanza una bola con un lanzador de laboratorio: componentes de la velocidad, tiempo de vuelo, alcance y altura máxima. Acierta al blanco y practica con ejercicios que se corrigen al momento.",
+      ficha: "A.1 · Proyectiles",
+      ruta: "sims/A.1-proyectiles/",
+      miniatura: "sims/A.1-proyectiles/miniatura.svg",
+      palabras: "proyectil proyectiles lanzamiento horizontal oblicuo parabólico tiro componentes alcance altura máxima tiempo de vuelo resistencia del aire cinemática"
     }
   ],
 

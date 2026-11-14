@@ -72,6 +72,26 @@ Archivos: `dibujo.js` (escena y gráficas), `sim.js` (Explorar niveles 1–3 y C
 No queda nada pendiente del plan original.
 Antes de publicar cambios: `node pruebas/verificar-cinematica.js` y `node pruebas/verificar-ejercicios.js` (0 fallos).
 
+## Segunda simulación: «Movimiento de proyectiles» (A.1) — `sims/A.1-proyectiles/`
+
+Montaje: lanzador sujeto al borde de la mesa (ángulo θ, rapidez u, altura h en una varilla con escala), regla sobre la mesa,
+bola de acero y bandeja de arena. La escala es la misma en x y en y; la vista se acerca a cada lanzamiento.
+Colores: componente horizontal naranja, vertical violeta, velocidad verde, g roja. Cámara lenta por defecto (×0,25).
+
+1. **Explorar**: nivel 1 (lanzamiento horizontal junto a una bola soltada a la vez), nivel 2 (oblicuo desde la mesa, con
+   lanzamientos anteriores en gris) y nivel 3 (desde una altura, con comparación **cualitativa** con resistencia del aire:
+   la bola «con aire» nunca muestra valores). Cuatro gráficas: x–t, y–t, vx–t, vy–t. Casillas: componentes, velocidad,
+   aceleración, huellas cada 0,1 s.
+2. **Acierta al blanco** (pestaña Construir): bandeja en una posición al azar que siempre tiene solución en la cuadrícula
+   de los deslizadores; intentos marcados; modo «Calcula primero» (rapidez fija).
+3. **Practicar**: 12 tipos (calcular, interpretar, gráficas y trayectorias, «coloca la bandeja»), con pista según el error.
+
+Archivos: `comun/proyectil.js` (física exacta; con aire, Runge–Kutta 4 con k = 0,30 m⁻¹), `comun/graficas.js` (dibujo común
+para simulaciones nuevas), `escena.js`, `sim.js`, `ejercicios.js`, `practicar.js`.
+Antes de publicar cambios: `node pruebas/verificar-proyectiles.js` y `node pruebas/verificar-ejercicios-proyectiles.js` (0 fallos).
+**Estado (13 nov 2026): completa, pendiente de revisión del profesor.** Falta saber a qué apartados de la ficha A.1 corresponde
+(la tarjeta dice «A.1 · Proyectiles»). Pendiente aparte: simulación de ecuaciones del movimiento y caída libre.
+
 ## Fases (revisión del profesor entre cada una)
 
 1. Portal + Explorar (3–4 situaciones). 2. Herramientas de gráficas. 3. Construir. 4. Practicar + desafío.
