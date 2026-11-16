@@ -7,6 +7,7 @@
 <meta name="description" content="Ficha del alumno, versión docente y presentación de Física IB completas, para hojear antes de pedirlas.">
 <link rel="stylesheet" href="../../comun/estilo.css">
 <script src="../../comun/docentes.js"></script>
+<script>if (/[?&]incrustado(=|&|$)/.test(location.search)) document.documentElement.classList.add('incrustado');</script>
 <style>
   html, body { height: 100%; }
   body { display: flex; flex-direction: column; overflow: hidden; background: #E9EDF2; }
@@ -98,6 +99,18 @@
 
   .cargando { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--tinta-suave); }
 
+  /* Incrustado en la página de materiales */
+  .incrustado .barra { display: none; }
+  .incrustado body { background: #EEF1F5; }
+  .incrustado .herramientas { padding: 6px 10px; gap: 6px; }
+  .incrustado .ir, .incrustado .nota, .incrustado #btnPantalla { display: none; }
+  .solo-incrustado { display: none; }
+  .incrustado .solo-incrustado { display: inline-flex; }
+  .incrustado .herramientas select { max-width: 240px; }
+  .incrustado .tira { padding: 6px 10px 8px; }
+  .incrustado .tira img { width: 104px; height: 58px; }
+  @media (max-width: 520px) { .incrustado #secciones { display: none; } }
+
   @media (max-width: 900px) {
     .barra .sub, .txt-volver { display: none; }
     .barra h1 { font-size: 17px; }
@@ -137,6 +150,7 @@
   <button class="boton empuje-alt" id="btnTodas">Ver todas</button>
   <button class="boton solo-ancho" id="btnLupa">Ampliar</button>
   <button class="boton" id="btnPantalla" aria-label="Pantalla completa">⛶<span class="solo-ancho"> Pantalla completa</span></button>
+  <a class="boton solo-incrustado" id="btnGrande" target="_top" href="#" aria-label="Abrir en pantalla grande">⛶<span class="solo-ancho"> Abrir en grande</span></a>
 </div>
 
 <main class="escenario" id="escenario">
@@ -393,7 +407,9 @@
     $('secciones').value = sec.pagina;
     // precarga de lo que viene
     for (let k = -2; k <= 4; k++) precargar(v[0] + k);
-    history.replaceState(null, '', `?sub=${encodeURIComponent(SUB)}&doc=${clave}&p=${v[0]}`);
+    const incr = document.documentElement.classList.contains('incrustado');
+    history.replaceState(null, '', `?sub=${encodeURIComponent(SUB)}&doc=${clave}&p=${v[0]}` + (incr ? '&incrustado' : ''));
+    $('btnGrande').href = `?sub=${encodeURIComponent(SUB)}&doc=${clave}&p=${v[0]}`;
   }
 
   $('btnAnt').onclick = $('ladoAnt').onclick = () => paso(-1);

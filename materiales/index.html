@@ -42,23 +42,24 @@
   /* Muestra */
   .muestra { background: var(--gris-fila); border: 1px solid var(--gris-suave); border-radius: 14px; padding: 20px; }
   .muestra p { margin: 0 0 14px; color: var(--tinta-suave); }
-  .documentos { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
-  .documento {
-    display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 12px;
-    border: 1.5px solid var(--gris-borde); background: #FFF; color: inherit; text-decoration: none;
-    transition: border-color .15s, box-shadow .15s, transform .15s;
-  }
-  .documento:hover { border-color: var(--azul); box-shadow: 0 8px 22px rgba(31,77,120,.16); transform: translateY(-2px); }
-  .documento .portadas { position: relative; height: 210px; }
-  .documento .portadas img { position: absolute; top: 0; height: 100%; border: 1px solid var(--gris-borde); border-radius: 3px; background: #FFF; box-shadow: 0 6px 14px rgba(31,77,120,.14); }
-  .documento .portadas img:nth-child(1) { left: 8%; z-index: 2; }
-  .documento .portadas img:nth-child(2) { left: 30%; transform: rotate(3deg); }
-  .documento.diapos .portadas img { height: auto; width: 82%; }
-  .documento.diapos .portadas img:nth-child(1) { left: 0; top: 0; }
-  .documento.diapos .portadas img:nth-child(2) { left: 18%; top: 34%; transform: none; }
-  .documento b { font-size: 19px; color: var(--azul-oscuro); }
-  .documento .cuantas { font-size: 15px; color: var(--tinta-suave); }
-  .documento .abrir { margin-top: auto; font-weight: 700; color: var(--azul); }
+  /* Las tres piezas, incrustadas y alternadas: descripción angosta y visor ancho */
+  .muestra { width: min(1320px, calc(100vw - 48px)); justify-self: start; margin-left: calc(50% - min(660px, 50vw - 24px)); }
+  .pieza-visor { display: grid; grid-template-columns: minmax(270px, 1fr) minmax(0, 2.3fr); gap: 22px; align-items: center; padding: 18px 0; }
+  .pieza-visor + .pieza-visor { border-top: 1px solid var(--gris-suave); }
+  .pieza-visor.invertida { grid-template-columns: minmax(0, 2.3fr) minmax(270px, 1fr); }
+  .pieza-visor.invertida .texto { order: 2; }
+  .pieza-visor .marco { border-radius: 12px; overflow: hidden; border: 1.5px solid var(--gris-borde); box-shadow: 0 14px 34px rgba(31,77,120,.18); background: #EEF1F5; }
+  .pieza-visor iframe { display: block; width: 100%; height: 660px; border: 0; }
+  .pieza-visor.diapos iframe { height: 640px; }
+  .pieza-visor .texto h4 { margin: 4px 0 6px; font-size: 26px; color: var(--azul-oscuro); line-height: 1.1; }
+  .pieza-visor .texto .datos { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; padding: 0; list-style: none; }
+  .pieza-visor .texto .datos li { padding: 2px 10px; border-radius: 999px; background: var(--azul-fondo); border: 1.5px solid var(--azul); color: var(--azul-oscuro); font-weight: 700; font-size: 14px; }
+  .pieza-visor .texto p { margin: 0 0 10px; }
+  .pieza-visor .texto ul.lista { margin: 0 0 12px; padding-left: 20px; }
+  .pieza-visor .texto ul.lista li { margin: 3px 0; }
+  .pieza-visor .texto ul.lista li::marker { color: var(--azul); }
+  .pieza-visor .texto .acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pieza-visor .texto .pista { font-size: 14px; color: var(--tinta-suave); margin-top: 10px; }
 
   /* Catálogo */
   .temas { display: grid; gap: 14px; }
@@ -113,7 +114,10 @@
     .pila { display: none; }
     .incluye, .canales { grid-template-columns: 1fr; }
     .rasgos { grid-template-columns: 1fr; }
-    .documentos { grid-template-columns: 1fr; }
+    .pieza-visor, .pieza-visor.invertida { grid-template-columns: 1fr; }
+    .pieza-visor.invertida .texto { order: 0; }
+    .pieza-visor iframe, .pieza-visor.diapos iframe { height: 560px; }
+    .pieza-visor .texto h4 { font-size: 22px; }
     .plataforma, .gratis { grid-template-columns: 1fr; }
     .autor { grid-template-columns: 72px 1fr; }
     .autor .foto { width: 72px; height: 72px; font-size: 24px; }
@@ -147,7 +151,7 @@
       <p>Cada subtema viene con la ficha del alumno, el solucionario y la presentación de clase, alineados con la Guía de Física y el Cuadernillo de datos (primera evaluación 2025).</p>
       <p>Todo está pensado para que el alumno practique un concepto a la vez, con preguntas de nivel creciente hasta llegar al nivel de examen.</p>
       <div class="llamadas">
-        <a class="boton principal" href="#gratis">Recibe gratis un apartado completo</a>
+        <a class="boton primario" href="#gratis">Recibe gratis un apartado completo</a>
         <a class="boton" href="#muestra">Ver A.1 completo</a>
       </div>
       <p class="precio">Desde <b>S/ 89</b> por subtema · licencias para colegios</p>
@@ -178,8 +182,58 @@
 
   <section class="muestra" id="muestra" aria-labelledby="t-muestra">
     <h3 class="seccion" id="t-muestra">Hojea A.1 Cinemática completo</h3>
-    <p>Las tres piezas del subtema, enteras y en alta resolución. Pasa las páginas como en un cuaderno y las diapositivas como en clase.</p>
-    <div class="documentos" id="documentos"></div>
+    <p>Las tres piezas del subtema, enteras y en alta resolución. Pasa las páginas con las flechas o deslizando; toca una página para verla en grande.</p>
+
+    <article class="pieza-visor" aria-labelledby="t-alumno">
+      <div class="texto">
+        <span class="antetitulo">Para el alumno</span>
+        <h4 id="t-alumno">Ficha del alumno</h4>
+        <ul class="datos"><li>69 páginas</li><li>Word editable y PDF</li><li>NM y NS</li></ul>
+        <p>El cuaderno de trabajo del subtema: teoría breve y mucha práctica, con espacio para escribir en cada ejercicio.</p>
+        <ul class="lista">
+          <li><b>Marco teórico</b> en 10 apartados, de distancia y desplazamiento a resistencia de fluidos, un concepto a la vez.</li>
+          <li>En cada apartado: explicación con figura, <b>ejemplo y «Ahora tú»</b> en tres niveles, bloque <b>Practica</b> y comprobación rápida.</li>
+          <li>Vocabulario, <b>ecuaciones clave</b> con lo que trae el Cuadernillo de datos, y tabla de <b>errores frecuentes</b>.</li>
+          <li><b>Práctica</b> mixta graduada y <b>preguntas tipo examen</b> de Prueba 1A, 1B y 2, con puntaje.</li>
+          <li>Ideas para la <b>Evaluación Interna</b> y autoevaluación final.</li>
+        </ul>
+        <div class="acciones"><a class="boton primario" href="#contacto">La quiero</a><a class="boton" href="ver/?sub=A.1&amp;doc=alumno">Abrir en grande</a></div>
+      </div>
+      <div class="marco"><iframe loading="lazy" title="Ficha del alumno de A.1, para hojear" src="ver/?sub=A.1&amp;doc=alumno&amp;incrustado" allowfullscreen></iframe></div>
+    </article>
+
+    <article class="pieza-visor invertida" aria-labelledby="t-docente">
+      <div class="texto">
+        <span class="antetitulo">Para ti</span>
+        <h4 id="t-docente">Versión docente</h4>
+        <ul class="datos"><li>80 páginas</li><li>Word editable y PDF</li><li>Con soluciones</li></ul>
+        <p>La misma ficha, página por página, con todo resuelto: lista para corregir o proyectar sin preparar nada.</p>
+        <ul class="lista">
+          <li><b>Resoluciones paso a paso</b> en los mismos recuadros de cada ejemplo, «Ahora tú» y ejercicio.</li>
+          <li><b>Esquemas de calificación</b> de las preguntas tipo examen.</li>
+          <li><b>Guía docente</b> al inicio: contenido con páginas, cómo usar la ficha, mapa del subtema (NM y NS) y dónde se practica cada término de instrucción.</li>
+        </ul>
+        <div class="acciones"><a class="boton primario" href="#contacto">La quiero</a><a class="boton" href="ver/?sub=A.1&amp;doc=docente">Abrir en grande</a></div>
+      </div>
+      <div class="marco"><iframe loading="lazy" title="Versión docente de A.1, para hojear" src="ver/?sub=A.1&amp;doc=docente&amp;incrustado" allowfullscreen></iframe></div>
+    </article>
+
+    <article class="pieza-visor diapos" aria-labelledby="t-diapos">
+      <div class="texto">
+        <span class="antetitulo">Para la clase</span>
+        <h4 id="t-diapos">Presentación</h4>
+        <ul class="datos"><li>186 diapositivas</li><li>PowerPoint 16:9 editable</li><li>Notas con tiempos</li></ul>
+        <p>Sigue la ficha apartado por apartado, para dar la clase con el mismo material que tienen tus alumnos.</p>
+        <ul class="lista">
+          <li><b>Pizarras</b> de cada ejemplo con cuadrícula para resolver en clase, y su <b>solución paso a paso</b> en una diapositiva oculta (aquí, marcadas «Solución»).</li>
+          <li>Conceptos con figura, ecuaciones con sello del Cuadernillo, comprobaciones rápidas y errores frecuentes.</li>
+          <li>Preguntas tipo examen, ideas de Evaluación Interna y cierre.</li>
+          <li><b>Animaciones</b> para revelar por pasos y <b>notas del orador</b> con el tiempo de cada diapositiva.</li>
+        </ul>
+        <div class="acciones"><a class="boton primario" href="#contacto">La quiero</a><a class="boton" href="ver/?sub=A.1&amp;doc=presentacion">Abrir en grande</a></div>
+      </div>
+      <div class="marco"><iframe loading="lazy" title="Presentación de A.1, para ver" src="ver/?sub=A.1&amp;doc=presentacion&amp;incrustado" allowfullscreen></iframe></div>
+    </article>
   </section>
 
   <section class="gratis" id="gratis" aria-labelledby="t-gratis">
@@ -189,7 +243,7 @@
       <p>Te envío el apartado <b>1.3.5 Gráfica velocidad–tiempo</b> de A.1 Cinemática: la parte de la ficha del alumno y sus diapositivas. El solucionario te lo envío cuando confirme que eres docente.</p>
     </div>
     <div class="llamadas">
-      <a class="boton principal" href="https://t.me/Ibsevenoficial" target="_blank" rel="noopener">Pedirla por Telegram</a>
+      <a class="boton primario" href="https://t.me/Ibsevenoficial" target="_blank" rel="noopener">Pedirla por Telegram</a>
       <a class="boton" href="mailto:ibseven.oficial@gmail.com?subject=Muestra%20gratis%20A.1&amp;body=Hola%2C%20soy%20profesor(a)%20de%20F%C3%ADsica%20IB%20en%20(colegio%20y%20pa%C3%ADs).%20Me%20gustar%C3%ADa%20recibir%20la%20muestra%20gratis%20de%20A.1.">Pedirla por correo</a>
     </div>
   </section>
@@ -213,7 +267,7 @@
       <p>Los alumnos practican por subtema y por prueba (1A, 1B y 2), con temporizador, nota estimada y estadísticas para el profesor. Pruébala sin cuenta con A.1 Cinemática y pide acceso para tus alumnos.</p>
     </div>
     <div class="llamadas">
-      <a class="boton principal" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec?invitado=1" target="_blank" rel="noopener">Probar como invitado (A.1)</a>
+      <a class="boton primario" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec?invitado=1" target="_blank" rel="noopener">Probar como invitado (A.1)</a>
       <a class="boton" href="#contacto">Pedir acceso</a>
     </div>
   </section>
@@ -252,24 +306,9 @@
 
 
 <script src="../catalogo.js"></script>
-<script src="A.1/datos.js"></script>
 <script>
   // Subtemas con materiales a la venta. Añadir uno = poner su código aquí y sus imágenes y datos.js en <código>/.
   var DISPONIBLES = { "A.1": true };
-  // Documentos completos de cada subtema disponible (imágenes y datos en A.1/, visor en ver/)
-  var docs = window.MATERIALES["A.1"].docs;
-  var muestras = { alumno: [1, 21], docente: [9, 4], presentacion: [1, 12] };
-  var cont = document.getElementById('documentos');
-  Object.keys(docs).forEach(function (k) {
-    var d = docs[k], a = document.createElement('a');
-    var n3 = function (p) { return ('00' + p).slice(-3); };
-    a.className = 'documento' + (d.tipo === 'diapositivas' ? ' diapos' : '');
-    a.href = 'ver/?sub=A.1&doc=' + k;
-    a.innerHTML = '<div class="portadas">' + muestras[k].map(function (p) { return '<img loading="lazy" alt="" src="A.1/' + k + '/mini/' + n3(p) + '.webp">'; }).join('') + '</div>' +
-      '<b>' + d.nombre + '</b><span class="cuantas">' + d.paginas + (d.tipo === 'diapositivas' ? ' diapositivas' : ' páginas') + (d.nota ? ' · ' + d.nota : '') + '</span>' +
-      '<span class="abrir">' + (d.tipo === 'diapositivas' ? 'Ver la presentación →' : 'Hojear completo →') + '</span>';
-    cont.appendChild(a);
-  });
   document.querySelectorAll('.pila img').forEach(function (im) {
     im.addEventListener('click', function () { location.href = 'ver/?sub=A.1&doc=' + im.dataset.doc + '&p=' + im.dataset.p; });
   });

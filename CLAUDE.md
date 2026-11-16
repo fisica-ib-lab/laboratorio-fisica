@@ -106,7 +106,7 @@ La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de l
 
 ## Materiales para docentes — `materiales/`
 
-`materiales/index.html` (página de venta) enlaza al visor `materiales/ver/?sub=A.1&doc=alumno|docente|presentacion&p=N`:
+`materiales/index.html` (página de venta) muestra las tres piezas incrustadas en filas alternadas (descripción angosta | visor ancho, `ver/?…&incrustado`) y enlaza al visor `materiales/ver/?sub=A.1&doc=alumno|docente|presentacion&p=N`:
 fichas como cuaderno (doble página con giro de hoja; una página en celular) y diapositivas como presentación (tira de miniaturas,
 las ocultas marcadas «Solución»). Ficha del alumno, versión docente y presentación **completas**, en imágenes WebP con marca de
 agua grabada («IB Seven · Física IB» en diagonal y línea de contacto); el profesor quiere que se vean enteras y en alta resolución.
