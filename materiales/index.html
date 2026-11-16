@@ -42,11 +42,23 @@
   /* Muestra */
   .muestra { background: var(--gris-fila); border: 1px solid var(--gris-suave); border-radius: 14px; padding: 20px; }
   .muestra p { margin: 0 0 14px; color: var(--tinta-suave); }
-  .galeria { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; }
-  .galeria figure { margin: 0; }
-  .galeria button { padding: 0; border: 1px solid var(--gris-borde); border-radius: 4px; background: #FFF; cursor: zoom-in; display: block; width: 100%; }
-  .galeria img { display: block; width: 100%; border-radius: 4px; }
-  .galeria figcaption { font-size: 14px; color: var(--tinta-suave); margin-top: 6px; }
+  .documentos { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .documento {
+    display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 12px;
+    border: 1.5px solid var(--gris-borde); background: #FFF; color: inherit; text-decoration: none;
+    transition: border-color .15s, box-shadow .15s, transform .15s;
+  }
+  .documento:hover { border-color: var(--azul); box-shadow: 0 8px 22px rgba(31,77,120,.16); transform: translateY(-2px); }
+  .documento .portadas { position: relative; height: 210px; }
+  .documento .portadas img { position: absolute; top: 0; height: 100%; border: 1px solid var(--gris-borde); border-radius: 3px; background: #FFF; box-shadow: 0 6px 14px rgba(31,77,120,.14); }
+  .documento .portadas img:nth-child(1) { left: 8%; z-index: 2; }
+  .documento .portadas img:nth-child(2) { left: 30%; transform: rotate(3deg); }
+  .documento.diapos .portadas img { height: auto; width: 82%; }
+  .documento.diapos .portadas img:nth-child(1) { left: 0; top: 0; }
+  .documento.diapos .portadas img:nth-child(2) { left: 18%; top: 34%; transform: none; }
+  .documento b { font-size: 19px; color: var(--azul-oscuro); }
+  .documento .cuantas { font-size: 15px; color: var(--tinta-suave); }
+  .documento .abrir { margin-top: auto; font-weight: 700; color: var(--azul); }
 
   /* Catálogo */
   .temas { display: grid; gap: 14px; }
@@ -94,13 +106,6 @@
   .mensaje b { display: block; margin-bottom: 4px; }
   .aviso { font-size: 13px; color: var(--tinta-suave); text-align: center; margin: 0; }
 
-  /* Visor de páginas */
-  .visor { position: fixed; inset: 0; background: rgba(15,25,38,.86); z-index: 50; display: grid; place-items: center; padding: 20px; }
-  .visor img { max-width: min(760px, 100%); max-height: calc(100vh - 110px); background: #FFF; border-radius: 4px; }
-  .visor .controles { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
-  .visor .controles .boton { min-width: 44px; }
-  .visor .marco { display: grid; justify-items: center; }
-  .visor .pie { color: #FFF; text-align: center; font-size: 15px; margin-top: 6px; }
 
   @media (max-width: 820px) {
     .portada { grid-template-columns: 1fr; }
@@ -108,7 +113,7 @@
     .pila { display: none; }
     .incluye, .canales { grid-template-columns: 1fr; }
     .rasgos { grid-template-columns: 1fr; }
-    .galeria { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .documentos { grid-template-columns: 1fr; }
     .plataforma, .gratis { grid-template-columns: 1fr; }
     .autor { grid-template-columns: 72px 1fr; }
     .autor .foto { width: 72px; height: 72px; font-size: 24px; }
@@ -143,21 +148,21 @@
       <p>Todo está pensado para que el alumno practique un concepto a la vez, con preguntas de nivel creciente hasta llegar al nivel de examen.</p>
       <div class="llamadas">
         <a class="boton principal" href="#gratis">Recibe gratis un apartado completo</a>
-        <a class="boton" href="#muestra">Ver muestra</a>
+        <a class="boton" href="#muestra">Ver A.1 completo</a>
       </div>
       <p class="precio">Desde <b>S/ 89</b> por subtema · licencias para colegios</p>
     </div>
     <div class="pila" aria-hidden="true">
-      <img src="muestras/A.1/pagina-1.jpg" alt="" data-i="0">
-      <img src="muestras/A.1/pagina-2.jpg" alt="" data-i="1">
-      <img src="muestras/A.1/pagina-3.jpg" alt="" data-i="2">
+      <img src="A.1/alumno/001.webp" alt="" data-doc="alumno" data-p="1">
+      <img src="A.1/docente/009.webp" alt="" data-doc="docente" data-p="9">
+      <img src="A.1/alumno/021.webp" alt="" data-doc="alumno" data-p="21">
     </div>
   </section>
 
   <section aria-labelledby="t-incluye">
     <h3 class="seccion" id="t-incluye">Qué incluye cada subtema</h3>
     <div class="incluye">
-      <div class="pieza"><b>Ficha del alumno</b><span class="tipo">Word editable y PDF · unas 70 páginas en A.1</span></div>
+      <div class="pieza"><b>Ficha del alumno</b><span class="tipo">Word editable y PDF · 69 páginas en A.1</span></div>
       <div class="pieza"><b>Solucionario</b><span class="tipo">Resoluciones paso a paso en los mismos recuadros</span></div>
       <div class="pieza"><b>Presentación</b><span class="tipo">PowerPoint con pizarras, soluciones ocultas y notas con tiempos</span></div>
     </div>
@@ -172,9 +177,9 @@
   </section>
 
   <section class="muestra" id="muestra" aria-labelledby="t-muestra">
-    <h3 class="seccion" id="t-muestra">Muestra: A.1 Cinemática</h3>
-    <p>Cuatro páginas de la ficha del alumno. Toca una página para verla en grande.</p>
-    <div class="galeria" id="galeria"></div>
+    <h3 class="seccion" id="t-muestra">Hojea A.1 Cinemática completo</h3>
+    <p>Las tres piezas del subtema, enteras y en alta resolución. Pasa las páginas como en un cuaderno y las diapositivas como en clase.</p>
+    <div class="documentos" id="documentos"></div>
   </section>
 
   <section class="gratis" id="gratis" aria-labelledby="t-gratis">
@@ -245,38 +250,28 @@
   <p class="aviso">IB Seven · Guillermo Escalante. Material independiente, sin afiliación con la Organización del Bachillerato Internacional.</p>
 </div>
 
-<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-label="Página de muestra">
-  <div class="marco">
-    <img id="visorImg" alt="">
-    <div class="pie" id="visorPie"></div>
-    <div class="controles">
-      <button class="boton" type="button" id="ant" aria-label="Página anterior">←</button>
-      <button class="boton" type="button" id="cerrar">Cerrar</button>
-      <button class="boton" type="button" id="sig" aria-label="Página siguiente">→</button>
-    </div>
-  </div>
-</div>
 
 <script src="../catalogo.js"></script>
+<script src="A.1/datos.js"></script>
 <script>
-  // Subtemas con materiales a la venta. Añadir uno = poner su código aquí y sus muestras en muestras/<código>/.
+  // Subtemas con materiales a la venta. Añadir uno = poner su código aquí y sus imágenes y datos.js en <código>/.
   var DISPONIBLES = { "A.1": true };
-  var PAGINAS = [
-    { src: "muestras/A.1/pagina-1.jpg", pie: "Portada" },
-    { src: "muestras/A.1/pagina-2.jpg", pie: "Ejemplo y «Ahora tú» de nivel 1" },
-    { src: "muestras/A.1/pagina-3.jpg", pie: "Gráfica velocidad–tiempo" },
-    { src: "muestras/A.1/pagina-4.jpg", pie: "Preguntas tipo examen · Prueba 1A" }
-  ];
-
-  var gal = document.getElementById('galeria');
-  PAGINAS.forEach(function (p, i) {
-    var f = document.createElement('figure');
-    f.innerHTML = '<button type="button" aria-label="Ver en grande: ' + p.pie + '"><img loading="lazy" src="' + p.src + '" alt="Página de muestra: ' + p.pie + '"></button><figcaption>' + p.pie + '</figcaption>';
-    f.querySelector('button').addEventListener('click', function () { abrir(i); });
-    gal.appendChild(f);
+  // Documentos completos de cada subtema disponible (imágenes y datos en A.1/, visor en ver/)
+  var docs = window.MATERIALES["A.1"].docs;
+  var muestras = { alumno: [1, 21], docente: [9, 4], presentacion: [1, 12] };
+  var cont = document.getElementById('documentos');
+  Object.keys(docs).forEach(function (k) {
+    var d = docs[k], a = document.createElement('a');
+    var n3 = function (p) { return ('00' + p).slice(-3); };
+    a.className = 'documento' + (d.tipo === 'diapositivas' ? ' diapos' : '');
+    a.href = 'ver/?sub=A.1&doc=' + k;
+    a.innerHTML = '<div class="portadas">' + muestras[k].map(function (p) { return '<img loading="lazy" alt="" src="A.1/' + k + '/mini/' + n3(p) + '.webp">'; }).join('') + '</div>' +
+      '<b>' + d.nombre + '</b><span class="cuantas">' + d.paginas + (d.tipo === 'diapositivas' ? ' diapositivas' : ' páginas') + (d.nota ? ' · ' + d.nota : '') + '</span>' +
+      '<span class="abrir">' + (d.tipo === 'diapositivas' ? 'Ver la presentación →' : 'Hojear completo →') + '</span>';
+    cont.appendChild(a);
   });
   document.querySelectorAll('.pila img').forEach(function (im) {
-    im.addEventListener('click', function () { abrir(+im.dataset.i); });
+    im.addEventListener('click', function () { location.href = 'ver/?sub=A.1&doc=' + im.dataset.doc + '&p=' + im.dataset.p; });
   });
 
   var temas = document.getElementById('temas');
@@ -287,27 +282,12 @@
       var ok = DISPONIBLES[s.codigo];
       h += '<li class="' + (ok ? '' : 'vacio') + '"><span class="cod">' + s.codigo + '</span><span class="nom">' + s.nombre +
         (s.ns ? ' <span class="etiqueta-ns">NS</span>' : '') + '</span><span class="estado">' +
-        (ok ? '<span class="disponible">Disponible</span><a class="enlace-chico" href="#muestra">Ver muestra</a><a class="enlace-chico" href="#contacto">Pedir información</a>'
+        (ok ? '<span class="disponible">Disponible</span><a class="enlace-chico" href="#muestra">Ver completo</a><a class="enlace-chico" href="#contacto">Pedir información</a>'
             : '<span class="proximamente">En preparación</span><a class="enlace-chico" href="#contacto">Avísame</a>') +
         '</span></li>';
     });
     d.innerHTML = h + '</ul>';
     temas.appendChild(d);
-  });
-
-  var visor = document.getElementById('visor'), vImg = document.getElementById('visorImg'), vPie = document.getElementById('visorPie'), actual = 0;
-  function mostrar() { vImg.src = PAGINAS[actual].src; vImg.alt = PAGINAS[actual].pie; vPie.textContent = (actual + 1) + ' / ' + PAGINAS.length + ' · ' + PAGINAS[actual].pie; }
-  function abrir(i) { actual = i; mostrar(); visor.hidden = false; document.getElementById('cerrar').focus(); }
-  function cerrar() { visor.hidden = true; }
-  document.getElementById('cerrar').onclick = cerrar;
-  document.getElementById('ant').onclick = function () { actual = (actual + PAGINAS.length - 1) % PAGINAS.length; mostrar(); };
-  document.getElementById('sig').onclick = function () { actual = (actual + 1) % PAGINAS.length; mostrar(); };
-  visor.addEventListener('click', function (e) { if (e.target === visor) cerrar(); });
-  document.addEventListener('keydown', function (e) {
-    if (visor.hidden) return;
-    if (e.key === 'Escape') cerrar();
-    if (e.key === 'ArrowRight') document.getElementById('sig').click();
-    if (e.key === 'ArrowLeft') document.getElementById('ant').click();
   });
 
   function copiar(texto, boton) {

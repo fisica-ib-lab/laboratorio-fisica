@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ver materiales · IB Seven</title>
+<meta name="description" content="Ficha del alumno, versión docente y presentación de Física IB completas, para hojear antes de pedirlas.">
+<link rel="stylesheet" href="../../comun/estilo.css">
+<script src="../../comun/docentes.js"></script>
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; overflow: hidden; background: #E9EDF2; }
+  .barra { flex-wrap: wrap; row-gap: 6px; }
+  .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
+  .barra .volver:hover { background: rgba(255,255,255,.12); }
+  .barra h1 { font-size: 20px; }
+  .docs { display: flex; gap: 4px; margin-left: auto; background: rgba(255,255,255,.12); padding: 3px; border-radius: 10px; }
+  .docs a {
+    padding: 6px 14px; border-radius: 8px; color: #FFF; text-decoration: none; font-weight: 700; white-space: nowrap;
+  }
+  .docs a:hover { background: rgba(255,255,255,.14); }
+  .docs a[aria-current="page"] { background: #FFF; color: var(--azul-oscuro); }
+  .docs .corto { display: none; }
+  .contactar { background: #F2B84B; border-color: #F2B84B; color: #1F2A36; }
+  .contactar:hover { background: #F6C96E; }
+
+  /* Barra de herramientas */
+  .herramientas {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 8px 16px; background: #FFF; border-bottom: 1px solid var(--gris-borde);
+  }
+  .herramientas .boton { min-height: 36px; padding: 4px 12px; }
+  .herramientas select { min-height: 36px; padding: 4px 8px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; max-width: 290px; }
+  .contador { font-weight: 700; color: var(--azul-oscuro); font-variant-numeric: tabular-nums; min-width: 150px; text-align: center; }
+  .ir { display: inline-flex; align-items: center; gap: 6px; color: var(--tinta-suave); font-size: 15px; }
+  .ir input { width: 64px; min-height: 36px; padding: 4px 8px; border: 1.5px solid var(--gris-borde); border-radius: 8px; font-variant-numeric: tabular-nums; }
+  .empuje { margin-left: auto; }
+  .etiqueta-solucion { display: inline-block; padding: 1px 10px; border-radius: 999px; background: #FBEDED; border: 1.5px solid #C00000; color: #C00000; font-weight: 700; font-size: 14px; }
+  .nota { font-size: 14px; color: var(--tinta-suave); }
+  @media (max-width: 1500px) { .nota { display: none; } .empuje-alt { margin-left: auto; } }
+
+  /* Escenario */
+  .escenario { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: pan-y; user-select: none; }
+  .flecha-lado {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+    width: 46px; height: 76px; border: 0; border-radius: 10px; cursor: pointer;
+    background: rgba(31,77,120,.78); color: #FFF; font-size: 26px; font-weight: 700;
+  }
+  .flecha-lado:hover { background: rgba(31,77,120,.95); }
+  .flecha-lado[disabled] { opacity: 0; pointer-events: none; }
+  .flecha-lado.ant { left: 10px; } .flecha-lado.sig { right: 10px; }
+
+  /* Cuaderno */
+  .libro { position: absolute; left: 50%; top: 50%; perspective: 2600px; transition: transform .45s ease; }
+  .hoja { position: absolute; top: 0; background: #FFF; overflow: hidden; cursor: zoom-in; }
+  .hoja img, .cara img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+  .hoja.izq { left: 0; box-shadow: -6px 8px 22px rgba(15,25,38,.22); }
+  .hoja.der { box-shadow: 6px 8px 22px rgba(15,25,38,.22); }
+  .hoja.vacia { visibility: hidden; }
+  /* sombra del lomo */
+  .hoja.izq::after, .hoja.der::after { content: ""; position: absolute; top: 0; bottom: 0; width: 34px; pointer-events: none; }
+  .hoja.izq::after { right: 0; background: linear-gradient(to left, rgba(0,0,0,.12), transparent); }
+  .hoja.der::after { left: 0; background: linear-gradient(to right, rgba(0,0,0,.12), transparent); }
+  .libro.una .hoja::after { display: none; }
+  .giro { position: absolute; top: 0; transform-style: preserve-3d; z-index: 4; }
+  .giro .cara { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: #FFF; overflow: hidden; }
+  .giro .cara.dorso { transform: rotateY(180deg); }
+  .giro .cara::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; }
+  .giro .cara.frente::after { background: linear-gradient(to left, rgba(0,0,0,.18), transparent 60%); }
+  .giro.adelante .cara.frente::after, .giro.atras .cara.frente::after { opacity: 1; }
+
+  /* Diapositivas */
+  .diapo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #FFF; box-shadow: 0 10px 30px rgba(15,25,38,.25); cursor: pointer; }
+  .diapo img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity .25s ease; pointer-events: none; }
+  .tira { display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px 10px; background: #FFF; border-top: 1px solid var(--gris-borde); scroll-behavior: smooth; }
+  .tira button { position: relative; flex: none; padding: 0; border: 2px solid transparent; border-radius: 6px; background: #FFF; cursor: pointer; }
+  .tira img { display: block; width: 128px; height: 72px; border-radius: 4px; background: var(--gris-fila); }
+  .tira button[aria-current="true"] { border-color: var(--azul); box-shadow: 0 0 0 2px var(--azul); }
+  .tira .num { position: absolute; left: 4px; bottom: 3px; font-size: 11px; font-weight: 700; color: #FFF; background: rgba(31,77,120,.85); padding: 0 5px; border-radius: 4px; }
+  .tira .sol { position: absolute; right: 4px; top: 3px; font-size: 10px; font-weight: 700; color: #FFF; background: #C00000; padding: 0 5px; border-radius: 4px; }
+
+  /* Lupa (página en grande) y vista de todas las páginas */
+  .capa { position: fixed; inset: 0; z-index: 50; background: rgba(15,25,38,.9); display: flex; flex-direction: column; }
+  .capa[hidden] { display: none; }
+  .capa .cabeza { display: flex; align-items: center; gap: 10px; padding: 10px 16px; color: #FFF; flex-wrap: wrap; }
+  .capa .cabeza b { font-size: 17px; }
+  .capa .cabeza .boton { min-height: 36px; padding: 4px 12px; }
+  .capa .cuerpo { flex: 1; overflow: auto; padding: 0 16px 24px; }
+  .lupa-img { display: block; margin: 0 auto; width: min(1100px, 100%); background: #FFF; border-radius: 3px; }
+  .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; max-width: 1300px; margin: 0 auto; }
+  .rejilla.anchas { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .rejilla h3 { grid-column: 1 / -1; margin: 10px 0 0; color: #FFF; font-size: 17px; border-bottom: 1px solid rgba(255,255,255,.3); padding-bottom: 4px; }
+  .rejilla button { position: relative; padding: 0; border: 2px solid transparent; border-radius: 4px; background: #FFF; cursor: pointer; display: block; }
+  .rejilla button:hover { border-color: #F2B84B; }
+  .rejilla img { display: block; width: 100%; height: auto; border-radius: 2px; }
+  .rejilla .num { position: absolute; left: 4px; bottom: 4px; font-size: 12px; font-weight: 700; color: #FFF; background: rgba(31,77,120,.88); padding: 0 6px; border-radius: 4px; }
+  .rejilla .sol { position: absolute; right: 4px; top: 4px; font-size: 11px; font-weight: 700; color: #FFF; background: #C00000; padding: 0 6px; border-radius: 4px; }
+
+  .cargando { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--tinta-suave); }
+
+  @media (max-width: 900px) {
+    .barra .sub, .txt-volver { display: none; }
+    .barra h1 { font-size: 17px; }
+    .docs { margin-left: 0; order: 5; width: 100%; justify-content: stretch; }
+    .docs a { flex: 1; text-align: center; padding: 5px 6px; }
+    .docs .largo { display: none; } .docs .corto { display: inline; }
+    .herramientas { padding: 6px 10px; gap: 6px; }
+    .ir, .nota, .solo-ancho { display: none; }
+    .contador { min-width: 0; }
+    .herramientas select { max-width: 150px; }
+    .flecha-lado { width: 38px; height: 60px; font-size: 22px; }
+    .tira img { width: 96px; height: 54px; }
+    .contactar .largo { display: none; }
+  }
+  @media (min-width: 901px) { .contactar .corto { display: none; } }
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="boton volver" href="../" aria-label="Volver a los materiales">←<span class="txt-volver"> Materiales</span></a>
+  <div>
+    <h1 id="titulo">A.1 Cinemática</h1>
+    <div class="sub" id="subtitulo"></div>
+  </div>
+  <nav class="docs" id="docs" aria-label="Documentos"></nav>
+  <a class="boton contactar" href="../#contacto"><span class="largo">Lo quiero · Escríbeme</span><span class="corto">Escríbeme</span></a>
+</header>
+
+<div class="herramientas">
+  <select id="secciones" aria-label="Ir a una sección"></select>
+  <button class="boton" id="btnAnt" aria-label="Anterior">←</button>
+  <span class="contador" id="contador" aria-live="polite"></span>
+  <button class="boton" id="btnSig" aria-label="Siguiente">→</button>
+  <label class="ir">Ir a <input id="irA" type="number" min="1" inputmode="numeric" aria-label="Número de página"></label>
+  <span id="marcaSolucion"></span>
+  <span class="nota empuje" id="nota"></span>
+  <button class="boton empuje-alt" id="btnTodas">Ver todas</button>
+  <button class="boton solo-ancho" id="btnLupa">Ampliar</button>
+  <button class="boton" id="btnPantalla" aria-label="Pantalla completa">⛶<span class="solo-ancho"> Pantalla completa</span></button>
+</div>
+
+<main class="escenario" id="escenario">
+  <span class="cargando" id="cargando">Cargando…</span>
+  <button class="flecha-lado ant" id="ladoAnt" aria-label="Anterior">‹</button>
+  <button class="flecha-lado sig" id="ladoSig" aria-label="Siguiente">›</button>
+</main>
+<div class="tira" id="tira" hidden></div>
+
+<!-- Página en grande -->
+<div class="capa" id="lupa" hidden role="dialog" aria-modal="true" aria-label="Página ampliada">
+  <div class="cabeza">
+    <button class="boton" id="lupaAnt" aria-label="Página anterior">←</button>
+    <b id="lupaTxt"></b>
+    <button class="boton" id="lupaSig" aria-label="Página siguiente">→</button>
+    <button class="boton empuje" id="lupaCerrar">Cerrar</button>
+  </div>
+  <div class="cuerpo" id="lupaCuerpo"><img class="lupa-img" id="lupaImg" alt=""></div>
+</div>
+
+<!-- Todas las páginas -->
+<div class="capa" id="todas" hidden role="dialog" aria-modal="true" aria-label="Todas las páginas">
+  <div class="cabeza">
+    <b id="todasTxt"></b>
+    <button class="boton empuje" id="todasCerrar">Cerrar</button>
+  </div>
+  <div class="cuerpo"><div class="rejilla" id="rejilla"></div></div>
+</div>
+
+<script src="../A.1/datos.js"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const SUB = params.get('sub') || 'A.1';
+  const MAT = (window.MATERIALES || {})[SUB];
+  const DOCS = MAT.docs;
+  const clave = DOCS[params.get('doc')] ? params.get('doc') : 'alumno';
+  const D = DOCS[clave];
+  const N = D.paginas;
+  const BASE = `../${SUB}/${clave}/`;
+  const QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ocultas = new Set(D.ocultas || []);
+  const src = (p) => BASE + String(p).padStart(3, '0') + '.webp';
+  const mini = (p) => BASE + 'mini/' + String(p).padStart(3, '0') + '.webp';
+  const esDiapo = D.tipo === 'diapositivas';
+  const unidad = esDiapo ? 'Diapositiva' : 'Página';
+
+  // ---------- Cabecera ----------
+  document.title = `${MAT.titulo} · ${D.nombre} · IB Seven`;
+  $('titulo').textContent = MAT.titulo;
+  $('subtitulo').textContent = `${D.nombre} · ${N} ${esDiapo ? 'diapositivas' : 'páginas'}`;
+  $('nota').textContent = D.nota || '';
+  Object.keys(DOCS).forEach(k => {
+    const a = document.createElement('a');
+    a.href = `?sub=${encodeURIComponent(SUB)}&doc=${k}`;
+    a.innerHTML = `<span class="largo">${DOCS[k].nombre}</span><span class="corto">${DOCS[k].corto}</span>`;
+    if (k === clave) a.setAttribute('aria-current', 'page');
+    $('docs').appendChild(a);
+  });
+  D.secciones.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.pagina;
+    o.textContent = (s.nivel ? ' ' : '') + s.titulo + ' · ' + s.pagina;
+    $('secciones').appendChild(o);
+  });
+  $('irA').max = N;
+
+  // ---------- Precarga ----------
+  const cache = new Map();
+  function precargar(p) {
+    if (p < 1 || p > N || cache.has(p)) return;
+    const im = new Image(); im.decoding = 'async'; im.src = src(p); cache.set(p, im);
+  }
+  function imagen(p) {
+    const im = document.createElement('img');
+    im.alt = `${unidad} ${p} de ${N}`; im.src = src(p); im.decoding = 'async';
+    return im;
+  }
+
+  const escenario = $('escenario');
+  let actual = Math.min(N, Math.max(1, parseInt(params.get('p'), 10) || 1));
+
+  // ================= Cuaderno =================
+  let libro = null, modoUna = false, girando = null, geo = null;
+
+  // Pliego (doble página): [izquierda, derecha]. La portada va sola a la derecha.
+  const pliego = (p) => { const k = Math.floor(p / 2); return [2 * k, 2 * k + 1]; };
+  const valida = (p) => p >= 1 && p <= N;
+
+  function medir() {
+    const w = escenario.clientWidth, h = escenario.clientHeight, r = D.proporcion;
+    modoUna = w < 760 || w / h < 1.05;
+    const margenX = modoUna ? 64 : 120, margenY = 24;
+    let ph = h - margenY, pw = ph * r;
+    const anchoMax = (w - margenX) / (modoUna ? 1 : 2);
+    if (pw > anchoMax) { pw = anchoMax; ph = pw / r; }
+    geo = { pw: Math.floor(pw), ph: Math.floor(ph) };
+  }
+
+  function construirLibro() {
+    if (libro) libro.remove();
+    libro = document.createElement('div');
+    libro.className = 'libro' + (modoUna ? ' una' : '');
+    libro.innerHTML = '<div class="hoja izq"></div><div class="hoja der"></div>';
+    escenario.appendChild(libro);
+    libro.querySelectorAll('.hoja').forEach(h => h.addEventListener('click', () => abrirLupa(Number(h.dataset.p))));
+  }
+
+  function colocarHoja(h, p) {
+    h.dataset.p = p;
+    h.classList.toggle('vacia', !valida(p));
+    h.innerHTML = '';
+    if (valida(p)) h.appendChild(imagen(p));
+  }
+
+  function pintarLibro(animarCentro) {
+    const { pw, ph } = geo;
+    const [izq, der] = modoUna ? [actual, null] : pliego(actual);
+    const hi = libro.querySelector('.izq'), hd = libro.querySelector('.der');
+    libro.style.width = (modoUna ? pw : 2 * pw) + 'px';
+    libro.style.height = ph + 'px';
+    [hi, hd].forEach(h => { h.style.width = pw + 'px'; h.style.height = ph + 'px'; });
+    hd.style.left = pw + 'px';
+    if (modoUna) { colocarHoja(hi, actual); hd.classList.add('vacia'); hd.innerHTML = ''; }
+    else { colocarHoja(hi, izq); colocarHoja(hd, der); }
+    // si solo hay una página en el pliego (portada o última), el libro se centra en ella
+    let dx = 0;
+    if (!modoUna) { if (!valida(izq)) dx = -pw / 2; else if (!valida(der)) dx = pw / 2; }
+    if (!animarCentro) libro.style.transition = 'none';
+    libro.style.transform = `translate(calc(-50% + ${dx}px), -50%)`;
+    if (!animarCentro) { libro.offsetHeight; libro.style.transition = ''; }
+  }
+
+  function terminarGiro() { if (girando) { const f = girando; girando = null; f(); } }
+
+  function irCuaderno(destino) {
+    destino = Math.min(N, Math.max(1, destino));
+    terminarGiro();
+    if (modoUna) {
+      if (destino === actual) return;
+      const hi = libro.querySelector('.izq');
+      actual = destino;
+      if (QUIETO) { pintarLibro(false); return actualizar(); }
+      hi.style.transition = 'opacity .16s'; hi.style.opacity = '0';
+      setTimeout(() => { pintarLibro(false); hi.style.opacity = '1'; }, 160);
+      return actualizar();
+    }
+    const [aI, aD] = pliego(actual), [nI, nD] = pliego(destino);
+    if (aI === nI) { actual = destino; return actualizar(); }
+    const adelante = nI > aI;
+    const vecino = Math.abs(nI - aI) === 2;
+    actual = destino;
+    actualizar();
+    if (QUIETO || !vecino) { pintarLibro(true); return; }
+    // hoja que gira: hacia delante, la derecha (dorso = nueva izquierda); hacia atrás, la izquierda (dorso = nueva derecha)
+    const { pw, ph } = geo;
+    const g = document.createElement('div');
+    g.className = 'giro';
+    g.style.width = pw + 'px'; g.style.height = ph + 'px';
+    g.style.left = (adelante ? pw : 0) + 'px';
+    g.style.transformOrigin = adelante ? 'left center' : 'right center';
+    const frente = document.createElement('div'); frente.className = 'cara frente';
+    const dorso = document.createElement('div'); dorso.className = 'cara dorso';
+    const pf = adelante ? aD : aI, pd = adelante ? nI : nD;
+    if (valida(pf)) frente.appendChild(imagen(pf));
+    if (valida(pd)) dorso.appendChild(imagen(pd));
+    g.append(frente, dorso);
+    const hi = libro.querySelector('.izq'), hd = libro.querySelector('.der');
+    // bajo la hoja que gira se ve ya la página nueva del mismo lado
+    if (adelante) colocarHoja(hd, nD); else colocarHoja(hi, nI);
+    libro.appendChild(g);
+    // el libro se recentra a la vez si la portada o la última página quedan solas
+    let dx = 0;
+    if (!valida(nI)) dx = -pw / 2; else if (!valida(nD)) dx = pw / 2;
+    libro.style.transform = `translate(calc(-50% + ${dx}px), -50%)`;
+    g.offsetHeight;
+    g.style.transition = 'transform .62s cubic-bezier(.45,.05,.3,1)';
+    g.classList.add(adelante ? 'adelante' : 'atras');
+    g.style.transform = `rotateY(${adelante ? -180 : 180}deg)`;
+    const fin = () => { g.remove(); colocarHoja(hi, nI); colocarHoja(hd, nD); };
+    girando = fin;
+    g.addEventListener('transitionend', () => { if (girando === fin) { girando = null; fin(); } }, { once: true });
+  }
+
+  // ================= Diapositivas =================
+  let diapo = null;
+  function construirDiapo() {
+    diapo = document.createElement('div');
+    diapo.className = 'diapo';
+    escenario.appendChild(diapo);
+    diapo.addEventListener('click', () => ir(actual + 1));
+    const tira = $('tira'); tira.hidden = false;
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver((ents) => ents.forEach(e => {
+      if (e.isIntersecting) { const im = e.target.querySelector('img'); if (!im.src) im.src = im.dataset.src; io.unobserve(e.target); }
+    }), { root: tira, rootMargin: '0px 400px' }) : null;
+    for (let p = 1; p <= N; p++) {
+      const b = document.createElement('button');
+      b.dataset.p = p; b.setAttribute('aria-label', `Diapositiva ${p}`);
+      b.innerHTML = `<img alt="" data-src="${mini(p)}"><span class="num">${p}</span>` + (ocultas.has(p) ? '<span class="sol">Solución</span>' : '');
+      b.addEventListener('click', () => ir(p));
+      tira.appendChild(b);
+      if (io) io.observe(b); else b.querySelector('img').src = mini(p);
+    }
+  }
+  function medirDiapo() {
+    const w = escenario.clientWidth - (w0() < 760 ? 70 : 130), h = escenario.clientHeight - 24, r = D.proporcion;
+    let dw = w, dh = w / r;
+    if (dh > h) { dh = h; dw = h * r; }
+    diapo.style.width = Math.floor(dw) + 'px'; diapo.style.height = Math.floor(dh) + 'px';
+  }
+  const w0 = () => escenario.clientWidth;
+  function pintarDiapo() {
+    const viejas = diapo.querySelectorAll('img');
+    const im = imagen(actual);
+    im.style.opacity = viejas.length && !QUIETO ? '0' : '1';
+    diapo.appendChild(im);
+    const mostrar = () => { im.style.opacity = '1'; setTimeout(() => viejas.forEach(v => v.remove()), 260); };
+    if (im.complete) requestAnimationFrame(mostrar); else im.onload = mostrar;
+    const tira = $('tira');
+    tira.querySelectorAll('button[aria-current]').forEach(b => b.removeAttribute('aria-current'));
+    const b = tira.children[actual - 1];
+    if (b) { b.setAttribute('aria-current', 'true'); tira.scrollLeft = b.offsetLeft - tira.clientWidth / 2 + b.clientWidth / 2; }
+  }
+
+  // ================= Común =================
+  function ir(p) {
+    p = Math.min(N, Math.max(1, p));
+    if (esDiapo) { if (p === actual) return; actual = p; pintarDiapo(); actualizar(); }
+    else irCuaderno(modoUna || p !== actual ? p : p);
+  }
+  function paso(signo) {
+    if (esDiapo || modoUna) return ir(actual + signo);
+    const [i, d] = pliego(actual);
+    ir(signo > 0 ? (valida(d + 1) ? d + 1 : d) : Math.max(1, i - 1));
+  }
+  function visibles() {
+    if (esDiapo || modoUna) return [actual];
+    return pliego(actual).filter(valida);
+  }
+  function actualizar() {
+    const v = visibles();
+    $('contador').textContent = v.length === 2 ? `Páginas ${v[0]}–${v[1]} de ${N}` : `${unidad} ${v[0]} de ${N}`;
+    const ultima = v[v.length - 1];
+    $('btnAnt').disabled = $('ladoAnt').disabled = v[0] <= 1;
+    $('btnSig').disabled = $('ladoSig').disabled = ultima >= N;
+    $('irA').value = '';
+    $('irA').placeholder = v[0];
+    $('marcaSolucion').innerHTML = esDiapo && ocultas.has(actual) ? '<span class="etiqueta-solucion">Solución · oculta en clase</span>' : '';
+    // sección actual
+    let sec = D.secciones[0];
+    for (const s of D.secciones) if (s.pagina <= v[v.length - 1]) sec = s;
+    $('secciones').value = sec.pagina;
+    // precarga de lo que viene
+    for (let k = -2; k <= 4; k++) precargar(v[0] + k);
+    history.replaceState(null, '', `?sub=${encodeURIComponent(SUB)}&doc=${clave}&p=${v[0]}`);
+  }
+
+  $('btnAnt').onclick = $('ladoAnt').onclick = () => paso(-1);
+  $('btnSig').onclick = $('ladoSig').onclick = () => paso(1);
+  $('secciones').onchange = (e) => ir(Number(e.target.value));
+  $('irA').addEventListener('change', (e) => { const p = parseInt(e.target.value, 10); if (p) ir(p); e.target.blur(); });
+
+  // ---------- Lupa ----------
+  let pLupa = 1;
+  function abrirLupa(p) {
+    if (!valida(p)) return;
+    pLupa = p; $('lupaImg').src = src(p); $('lupaImg').alt = `${unidad} ${p} de ${N}`;
+    $('lupaTxt').textContent = `${unidad} ${p} de ${N}`;
+    $('lupaAnt').disabled = p <= 1; $('lupaSig').disabled = p >= N;
+    $('lupa').hidden = false; $('lupaCuerpo').scrollTop = 0;
+    precargar(p + 1);
+  }
+  $('btnLupa').onclick = () => abrirLupa(visibles()[0]);
+  $('lupaCerrar').onclick = () => { $('lupa').hidden = true; if (!esDiapo) irCuaderno(pLupa); };
+  $('lupaAnt').onclick = () => abrirLupa(pLupa - 1);
+  $('lupaSig').onclick = () => abrirLupa(pLupa + 1);
+  $('lupa').addEventListener('click', (e) => { if (e.target.id === 'lupaCuerpo') $('lupaCerrar').click(); });
+
+  // ---------- Todas las páginas ----------
+  let rejillaLista = false;
+  function abrirTodas() {
+    if (!rejillaLista) {
+      const rej = $('rejilla');
+      if (esDiapo) rej.classList.add('anchas');
+      const inicios = new Map(D.secciones.filter(s => s.nivel === 0).map(s => [s.pagina, s.titulo]));
+      for (let p = 1; p <= N; p++) {
+        if (inicios.has(p)) { const h = document.createElement('h3'); h.textContent = inicios.get(p); rej.appendChild(h); }
+        const b = document.createElement('button');
+        b.setAttribute('aria-label', `${unidad} ${p}`);
+        b.innerHTML = `<img loading="lazy" alt="" src="${mini(p)}"><span class="num">${p}</span>` + (ocultas.has(p) ? '<span class="sol">Solución</span>' : '');
+        b.onclick = () => { $('todas').hidden = true; ir(p); };
+        rej.appendChild(b);
+      }
+      rejillaLista = true;
+    }
+    $('todasTxt').textContent = `${MAT.titulo} · ${D.nombre} · ${N} ${esDiapo ? 'diapositivas' : 'páginas'}`;
+    $('todas').hidden = false;
+  }
+  $('btnTodas').onclick = abrirTodas;
+  $('todasCerrar').onclick = () => { $('todas').hidden = true; };
+
+  // ---------- Pantalla completa ----------
+  $('btnPantalla').onclick = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+  };
+
+  // ---------- Teclado y gestos ----------
+  document.addEventListener('keydown', (e) => {
+    if ((e.target.tagName || '').toLowerCase() === 'input' || (e.target.tagName || '').toLowerCase() === 'select') return;
+    if (!$('lupa').hidden) {
+      if (e.key === 'Escape') $('lupaCerrar').click();
+      else if (e.key === 'ArrowRight') $('lupaSig').click();
+      else if (e.key === 'ArrowLeft') $('lupaAnt').click();
+      return;
+    }
+    if (!$('todas').hidden) { if (e.key === 'Escape') $('todasCerrar').click(); return; }
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); paso(1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); paso(-1); }
+    else if (e.key === 'Home') ir(1);
+    else if (e.key === 'End') ir(N);
+    else if (e.key === 'f' || e.key === 'F') $('btnPantalla').click();
+  });
+  let x0 = null, y0 = null;
+  escenario.addEventListener('pointerdown', (e) => { x0 = e.clientX; y0 = e.clientY; });
+  escenario.addEventListener('pointerup', (e) => {
+    if (x0 === null) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) { e.preventDefault(); paso(dx < 0 ? 1 : -1); bloquearClic(); }
+  });
+  // tras deslizar no debe abrirse la lupa ni avanzar por el clic
+  function bloquearClic() {
+    const f = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+    escenario.addEventListener('click', f, { capture: true, once: true });
+    setTimeout(() => escenario.removeEventListener('click', f, { capture: true }), 400);
+  }
+
+  // ---------- Inicio y cambio de tamaño ----------
+  function montar() {
+    $('cargando').remove();
+    if (esDiapo) { construirDiapo(); medirDiapo(); pintarDiapo(); }
+    else { medir(); construirLibro(); pintarLibro(false); }
+    actualizar();
+  }
+  let reloj = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(reloj);
+    reloj = setTimeout(() => {
+      if (esDiapo) return medirDiapo();
+      terminarGiro();
+      const antes = modoUna; medir();
+      if (antes !== modoUna) construirLibro();
+      pintarLibro(false); actualizar();
+    }, 120);
+  });
+  montar();
+
+  // Para las pruebas automáticas
+  window.__visor = { ir, paso, estado: () => ({ actual, modoUna, visibles: visibles(), girando: !!girando }) };
+})();
+</script>
+</body>
+</html>

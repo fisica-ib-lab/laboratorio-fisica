@@ -104,6 +104,15 @@ con las distancias 1 : 3 : 5), nivel 2 lanzamiento hacia arriba, nivel 3 tabla d
 Usa `comun/proyectil.js` (θ = 90° o u = 0). Verificación: `node pruebas/verificar-caida-libre.js`.
 La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de la ficha).
 
+## Materiales para docentes — `materiales/`
+
+`materiales/index.html` (página de venta) enlaza al visor `materiales/ver/?sub=A.1&doc=alumno|docente|presentacion&p=N`:
+fichas como cuaderno (doble página con giro de hoja; una página en celular) y diapositivas como presentación (tira de miniaturas,
+las ocultas marcadas «Solución»). Ficha del alumno, versión docente y presentación **completas**, en imágenes WebP con marca de
+agua grabada («IB Seven · Física IB» en diagonal y línea de contacto); el profesor quiere que se vean enteras y en alta resolución.
+Imágenes y datos en `materiales/<subtema>/` (`datos.js` con páginas, secciones y diapositivas ocultas). Se generan desde los
+archivos de «03 Materiales finales/Tema A» con LibreOffice (necesita `libreoffice-math` para las ecuaciones) → PDF → 170 ppp.
+
 ## Fases (revisión del profesor entre cada una)
 
 1. Portal + Explorar (3–4 situaciones). 2. Herramientas de gráficas. 3. Construir. 4. Practicar + desafío.
