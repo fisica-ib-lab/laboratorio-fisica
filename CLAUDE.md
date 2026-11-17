@@ -113,8 +113,10 @@ libre), máquina de Atwood con la polea colgada de un dinamómetro (marca 2F_T),
 dos cuerdas con un dinamómetro en cada una, y esfera de acero o vidrio en glicerina o aceite de ricino (Stokes, Re < 1).
 
 Convenciones: símbolos **F_g** (peso), F_N, F_f, F_T, F_H, F_b, F_d con subíndice recto; colores por fuerza en `escena.js`
-(`FZ`). En la escena, cada fuerza sale de su punto de aplicación; el panel «Diagrama de cuerpo libre» usa el modelo de
-partícula y la **fuerza neta va en un recuadro aparte, nunca dentro del diagrama**. Tabla «quién la ejerce → sobre quién».
+(`FZ`). **Todas las flechas salen del borde del cuerpo y están alineadas con su centro** (si se prolongan, pasan por el centro),
+como en las figuras del profesor; las componentes salen del mismo punto. Dos fuerzas con la misma dirección y sentido sobre
+el mismo cuerpo (empuje y arrastre) se separan 5 px para que no se pisen. Igual en el panel «Diagrama de cuerpo libre»
+(modelo de partícula). La **fuerza neta va en un recuadro aparte, nunca dentro del diagrama**. Tabla «quién la ejerce → sobre quién».
 Rigor: F_f estático = lo necesario para el reposo, ≤ μs F_N; al llegar a v = 0 el bloque se detiene y se vuelve a evaluar
 (no retrocede); μd ≤ μs forzado en los controles; F_H sen θ ≤ 0,95 mg (el bloque no se despega).
 

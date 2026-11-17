@@ -82,9 +82,37 @@
     return { fin: [x + Math.cos(ang) * (v1 + largoTubo + 11), y + Math.sin(ang) * (v1 + largoTubo + 11)], medio: [x + Math.cos(ang) * (v1 + largoTubo / 2), y + Math.sin(ang) * (v1 + largoTubo / 2)] };
   }
 
-  /* Flechas de fuerza en la escena.
-     lista: [{ f, x, y }] con el punto de aplicación en píxeles; pxN: píxeles por newton. */
+  /* Punto donde sale la flecha: la recta que pasa por el centro del cuerpo en la dirección de la fuerza corta su borde.
+     c = { cx, cy, w, h, ang } (rectángulo girado «ang» rad, antihorario) o { cx, cy, r } (círculo). (dx, dy) en pantalla. */
+  function salida(c, dx, dy) {
+    const L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, hueco = 2;
+    let t;
+    if (c.r !== undefined) t = c.r;
+    else {
+      const a = c.ang || 0, ca = Math.cos(a), sa = Math.sin(a);
+      const lx = ux * ca - uy * sa, ly = ux * sa + uy * ca;      // dirección en los ejes del cuerpo
+      t = Math.min(Math.abs(lx) > 1e-9 ? c.w / 2 / Math.abs(lx) : Infinity, Math.abs(ly) > 1e-9 ? c.h / 2 / Math.abs(ly) : Infinity);
+    }
+    return [c.cx + ux * (t + hueco), c.cy + uy * (t + hueco)];
+  }
+  /* Flechas de fuerza.
+     lista: [{ f, c }] con el cuerpo c (cada flecha sale de su borde, alineada con el centro) o [{ f, x, y }] con el origen.
+     Dos fuerzas sobre el mismo cuerpo con igual dirección y sentido (empuje y arrastre) se separan un poco para que no se pisen.
+     pxN: píxeles por newton. */
   function flechasFuerza(ctx, lista, pxN, ver, w, h) {
+    lista = lista.map(it => {
+      if (!it.c) return it;
+      const [x, y] = salida(it.c, it.f.x, -it.f.y);
+      return Object.assign({}, it, { x, y });
+    });
+    for (let a = 0; a < lista.length; a++) for (let b = a + 1; b < lista.length; b++) {
+      const A = lista[a], B = lista[b], fa = A.f, fb = B.f;
+      if (!A.c || A.c !== B.c || fa.mod < 1e-12 || fb.mod < 1e-12) continue;
+      if (Math.abs((fa.x * fb.x + fa.y * fb.y) / (fa.mod * fb.mod) - 1) < 1e-6) {
+        const px = -fa.y / fa.mod, py = -fa.x / fa.mod, d = 5;
+        A.x += px * d; A.y += py * d; B.x -= px * d; B.y -= py * d;
+      }
+    }
     const rotulos = [];
     for (const { f, x, y } of lista) {
       const dx = f.x * pxN, dy = -f.y * pxN, L = Math.hypot(dx, dy);
@@ -146,25 +174,22 @@
       bloque(ctx, cx, cy, w0, h0, 0, [['m', true], [' = ' + numero(par.m, 1) + ' kg', false]]);
       // gancho y dinamómetro (solo mientras tira)
       const bloqueF = est.cuerpos[0], FH = bloqueF.fuerzas.find(f => f.tipo === 'FH');
-      const gx = cx + w0 / 2, gy = cy - h0 * 0.12;
-      ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(gx + 3, gy, 3, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+      // el gancho está donde la recta de la fuerza (que pasa por el centro) corta la cara del bloque
+      const th = par.ang * RAD, [gx, gy] = salida({ cx, cy, w: w0, h: h0, ang: 0 }, Math.cos(th), -Math.sin(th));
+      ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(gx + 1, gy, 3, -Math.PI / 2, Math.PI / 2); ctx.stroke();
       if (FH) {
-        const th = par.ang * RAD, alarg = est.lecturas.alargamiento * 320 * k;
-        const d = dinamometro(ctx, gx + 6, gy, Math.cos(th), -Math.sin(th), alarg, 70 * k);
+        const alarg = est.lecturas.alargamiento * 320 * k;
+        const d = dinamometro(ctx, gx + 4 * Math.cos(th), gy - 4 * Math.sin(th), Math.cos(th), -Math.sin(th), alarg, 70 * k);
         // la mano tira de la anilla
         ctx.beginPath(); ctx.arc(d.fin[0] + 6 * Math.cos(th), d.fin[1] - 6 * Math.sin(th), 7 * k, 0, 2 * Math.PI);
         ctx.fillStyle = '#F1D6BE'; ctx.fill(); ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2; ctx.stroke();
-        if (w > 380) pildora(ctx, [['dinamómetro: ' + N1(est.lecturas.dinamometro) + ' N', false]], d.medio[0], d.medio[1] - 26 * k, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
+        if (w > 380) pildora(ctx, [['dinamómetro: ' + N1(est.lecturas.dinamometro) + ' N', false]], d.fin[0] + 10, d.fin[1] - 20 * k, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
       } else if (par.modo === 'soltar' && est.t >= window.Dinamica.SOLTAR) pildora(ctx, [['se soltó el dinamómetro', false]], Math.min(w - 90, cx + 110), cy - 20, 12, COL.ambar, COL.ambarFondo, COL.ambar, 4, w - 4);
       if (par.mus === 0 && par.mud === 0) pildora(ctx, [['sin rozamiento', false]], w - 70, 16, 12, COL.ambar, COL.ambarFondo, COL.ambar, 4, w - 4);
       pildora(ctx, [['derecha +', false]], 44, 16, 12, COL.azul, COL.azulFondo, COL.azulOsc);
       if (E.ver.fuerzas) {
-        const lista = bloqueF.fuerzas.map(f => {
-          if (f.tipo === 'Fg') return { f, x: cx, y: cy };
-          if (f.tipo === 'FN') return { f, x: cx - w0 * 0.28, y: yM };
-          if (f.tipo === 'Ff') return { f, x: cx, y: yM };
-          return { f: par.ang ? conComponentes(f, [[1, 0, [['F', true], ['H', false, true], [' cos θ', false]]], [0, 1, [['F', true], ['H', false, true], [' sen θ', false]]]]) : f, x: gx + 4, y: gy };
-        });
+        const cb = { cx, cy, w: w0, h: h0, ang: 0 };
+        const lista = bloqueF.fuerzas.map(f => ({ f: f.tipo === 'FH' && par.ang ? conComponentes(f, [[1, 0, [['F', true], ['H', false, true], [' cos θ', false]]], [0, 1, [['F', true], ['H', false, true], [' sen θ', false]]]]) : f, c: cb }));
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
     },
@@ -172,7 +197,7 @@
     plano(ctx, w, h, E, k) {
       const { est, mod } = E, par = mod.par, th = par.ang * RAD, c = Math.cos(th), s = Math.sin(th);
       const yb = h - 26, xb = 30;
-      const Lpx = Math.min((w - 70) / Math.max(c, 0.2), s > 0.01 ? (h - 74) / s : 1e9);
+      const Lpx = Math.min((w - 70) / Math.max(c, 0.2), s > 0.01 ? Math.max(h * 0.4, h - 60 - E.pxN * E.Fmax) / s : 1e9);
       const B = [xb, yb], C = [xb + Lpx * c, yb], T = [xb + Lpx * c, yb - Lpx * s];
       mesaLab(ctx, 0, w, yb);
       // rampa de aluminio con soporte
@@ -196,19 +221,20 @@
       pildora(ctx, [['hacia arriba del plano +', false]], 90, 16, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
       if (E.ver.fuerzas) {
         const cuerpo = est.cuerpos[0];
-        const lista = cuerpo.fuerzas.map(f => {
-          if (f.tipo === 'Fg') return { f: conComponentes(f, [[c, s, [['mg sen θ', false]]], [s, -c, [['mg cos θ', false]]]]), x: cx, y: cy };
-          if (f.tipo === 'FN') return { f, x: bx - ux * w0 * 0.28, y: by - uy * w0 * 0.28 };
-          return { f, x: bx + ux * w0 * 0.1, y: by + uy * w0 * 0.1 };
-        });
+        const cb = { cx, cy, w: w0, h: h0, ang: th };
+        const lista = cuerpo.fuerzas.map(f => ({ f: f.tipo === 'Fg' ? conComponentes(f, [[c, s, [['mg sen θ', false]]], [s, -c, [['mg cos θ', false]]]]) : f, c: cb }));
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
     },
 
     ascensor(ctx, w, h, E, k) {
       const { est, mod } = E, par = mod.par;
-      const cxp = Math.min(w * 0.42, w / 2), Hc = Math.min(h - 34, 230 * k), Wc = Math.min(Hc * 0.85, 170 * k);
-      const top = (h - Hc) / 2 + 6, bot = top + Hc;
+      // persona centrada en la altura, con sitio arriba y abajo para las flechas (salen de la cabeza y de los pies)
+      const alto = Math.min(h * 0.44, 150 * k), esc = alto / 150, hs = 9 * k;
+      const pie = h / 2 + 73 * esc;
+      const top = pie - 146 * esc - 20, bot = pie + hs + 8, Hc = bot - top;
+      const cxp = Math.min(w * 0.42, w / 2), Wc = Math.min(Hc * 0.9, 170 * k);
+      E.pxN = Math.min(E.pxN, (Math.min(pie - 146 * esc, h - pie) - 20) / E.Fmax);
       const pxm = 34;                       // píxeles por metro en el hueco del ascensor
       // hueco: paredes y pisos (un piso cada 3 m) que se desplazan al moverse la cabina
       const xw0 = cxp - Wc / 2 - 16, xw1 = cxp + Wc / 2 + 16;
@@ -229,10 +255,10 @@
       ctx.fillStyle = MET.claro; ctx.fillRect(cxp - Wc / 2, top, Wc, 8); ctx.fillRect(cxp - Wc / 2, bot - 8, Wc, 8);
       ctx.strokeRect(cxp - Wc / 2, top, Wc, 8); ctx.strokeRect(cxp - Wc / 2, bot - 8, Wc, 8);
       // balanza de baño
-      const yS = bot - 8, ws = Wc * 0.55, hs = 9 * k;
+      const yS = bot - 8, ws = Wc * 0.55;
       rectRedondo(ctx, cxp - ws / 2, yS - hs, ws, hs, 3); ctx.fillStyle = MET.pizarra; ctx.fill(); ctx.stroke();
       // persona (silueta plana)
-      const pie = yS - hs, alto = Math.min(Hc - 30, 150 * k), esc = alto / 150, pxp = cxp + 4 * esc;
+      const pxp = cxp + 4 * esc;
       ctx.lineWidth = 1.3; ctx.strokeStyle = COL.tinta;
       const parte = (x, y, ww, hh, r, col) => { rectRedondo(ctx, x, y, ww, hh, r); ctx.fillStyle = col; ctx.fill(); ctx.stroke(); };
       parte(pxp - 14 * esc, pie - 62 * esc, 11 * esc, 62 * esc, 4 * esc, '#5A6B7D');      // piernas
@@ -253,7 +279,8 @@
       if (Math.abs(par.a + 9.81) < 1e-9 && par.modo === 'constante') pildora(ctx, [['caída libre', false]], 40, 40, 12, COL.ambar, COL.ambarFondo, COL.ambar);
       if (E.ver.fuerzas) {
         const cuerpo = est.cuerpos[0];
-        const lista = cuerpo.fuerzas.map(f => f.tipo === 'Fg' ? { f, x: pxp, y: pie - 88 * esc } : { f, x: pxp - 40 * esc, y: pie });
+        const cb = { cx: pxp, cy: pie - 73 * esc, w: 58 * esc, h: 146 * esc, ang: 0 };
+        const lista = cuerpo.fuerzas.map(f => ({ f, c: cb }));
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
     },
@@ -264,18 +291,22 @@
       ctx.fillStyle = '#D3AC84'; ctx.fillRect(cxp - 90, yTecho - 10, 180, 10); ctx.fillStyle = '#EFE8DC'; ctx.fillRect(cxp - 90, yTecho - 2, 180, 2);
       // dinamómetro que sostiene la polea (vertical, alarga con 2F_T)
       const lectura = est.lecturas.polea, alarg = lectura / 200 * 320 * k;
-      const d = dinamometro(ctx, cxp, yTecho + 2, 0, 1, Math.min(alarg, 40), 36 * k);
-      const R = 30 * k, yP = d.fin[1] + R + 6;
+      const d = dinamometro(ctx, cxp, yTecho + 2, 0, 1, Math.min(alarg * 0.5, 14), 26 * k);
+      const R = 24 * k, yP = d.fin[1] + R + 4;
       ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5; linea(ctx, cxp, d.fin[1] - 4, cxp, yP);
       ctx.fillStyle = MET.pizarra; ctx.fillRect(cxp - 3, yP - R - 8, 6, R + 8);
       const yMesa = h - 20;
       mesaLab(ctx, 0, w, yMesa);
       // la masa que baja empieza arriba (junto a la polea) y la que sube, apoyada en la mesa
-      const rec = mod.recorrido, h1 = (26 + 20 * par.m1) * k, h2 = (26 + 20 * par.m2) * k, wb = 50 * k;
-      const arriba = yP + R + 12, baja2 = par.m2 >= par.m1;
-      const pxm = Math.max(10, (yMesa - 6 - arriba - Math.max(h1, h2)) / rec);
-      const y1 = baja2 ? yMesa - 6 - h1 - est.x * pxm : arriba - est.x * pxm;
-      const y2 = baja2 ? arriba + est.x * pxm : yMesa - 6 - h2 + est.x * pxm;
+      const rec = mod.recorrido, h1 = (20 + 14 * par.m1) * k, h2 = (20 + 14 * par.m2) * k, wb = 40 * k;
+      const arriba = yP + R + 8, baja2 = par.m2 >= par.m1, altoMax = Math.max(h1, h2);
+      // debajo de las masas queda sitio para la flecha del peso (sale de su base)
+      const pesoMax = Math.max(par.m1, par.m2) * window.Dinamica.G;
+      E.pxN = Math.min(E.pxN, 0.22 * h / pesoMax);
+      const abajo = h - 14 - E.pxN * pesoMax;          // donde queda la base de la masa más baja
+      const pxm = Math.max(10, (abajo - arriba - altoMax) / rec);
+      const y1 = baja2 ? abajo - h1 - est.x * pxm : arriba - est.x * pxm;
+      const y2 = baja2 ? arriba + est.x * pxm : abajo - h2 + est.x * pxm;
       ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5;
       linea(ctx, cxp - R, yP, cxp - R, y1); linea(ctx, cxp + R, yP, cxp + R, y2);
       ctx.beginPath(); ctx.arc(cxp, yP, R, Math.PI, 2 * Math.PI); ctx.stroke();
@@ -287,14 +318,17 @@
       if (E.ver.fuerzas) {
         const [c1, c2] = est.cuerpos, lista = [];
         for (const [cuerpo, x, y, hh] of [[c1, cxp - R, y1, h1], [c2, cxp + R, y2, h2]])
-          for (const f of cuerpo.fuerzas) lista.push(f.tipo === 'Fg' ? { f, x, y: y + hh / 2 } : { f, x, y });
+          { const cb = { cx: x, cy: y + hh / 2, w: wb, h: hh, ang: 0 }; for (const f of cuerpo.fuerzas) lista.push({ f, c: cb }); }
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
     },
 
     mesa(ctx, w, h, E, k) {
       const { est, mod } = E, par = mod.par;
-      const yT = Math.max(54, h * 0.36), xE = Math.min(w * 0.66, w - 110), R = 16 * k, w0 = 60 * k, h0 = 38 * k;
+      const R = 16 * k, w0 = 60 * k, h0 = 38 * k, xE = Math.min(w * 0.66, w - 110);
+      // sobre el bloque queda sitio para la normal (sale de su cara de arriba)
+      E.pxN = Math.min(E.pxN, (h * 0.42 - h0 - 22) / E.Fmax);
+      const yT = Math.max(54, h0 + E.pxN * E.est.cuerpos[0].fuerzas.find(f => f.tipo === 'FN').mod + 24);
       // mesa: tablero, canto y pata
       mesaLab(ctx, 0, xE, yT);
       ctx.fillStyle = '#C49A72'; ctx.fillRect(xE - 22, yT + 8, 14, h - yT - 8); ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2; ctx.strokeRect(xE - 22, yT + 8, 14, h - yT - 8);
@@ -320,13 +354,9 @@
       pildora(ctx, [['hacia la polea +', false]], 64, 16, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
       if (E.ver.fuerzas) {
         const [c1, c2] = est.cuerpos, lista = [];
-        for (const f of c1.fuerzas) {
-          if (f.tipo === 'Fg') lista.push({ f, x: cx, y: cy });
-          else if (f.tipo === 'FN') lista.push({ f, x: cx - w0 * 0.28, y: yT });
-          else if (f.tipo === 'Ff') lista.push({ f, x: cx, y: yT });
-          else lista.push({ f, x: x0 + w0, y: yh });
-        }
-        for (const f of c2.fuerzas) lista.push(f.tipo === 'Fg' ? { f, x: pxc + R, y: yM + hm / 2 } : { f, x: pxc + R, y: yM });
+        const b1 = { cx, cy, w: w0, h: h0, ang: 0 }, b2 = { cx: pxc + R, cy: yM + hm / 2, w: wm, h: hm, ang: 0 };
+        for (const f of c1.fuerzas) lista.push({ f, c: b1 });
+        for (const f of c2.fuerzas) lista.push({ f, c: b2 });
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
     },
@@ -371,13 +401,13 @@
       bloque(ctx, xN, yN + 10 + hb / 2, wb, hb, 0, [['m', true], [' = ' + numero(par.m, 1) + ' kg', false]]);
       pildora(ctx, [['en equilibrio', false]], w - 60, h - 16, 12, COL.vel, COL.velFondo, COL.vel, 4, w - 4);
       if (E.ver.fuerzas) {
-        const cuerpo = est.cuerpos[0];
+        const cuerpo = est.cuerpos[0], cb = { cx: xN, cy: yN + 10 + hb / 2, w: wb, h: hb, ang: 0 };
         let n = 0;
         const lista = cuerpo.fuerzas.map(f => {
-          if (f.tipo === 'Fg') return { f, x: xN, y: yN + 10 + hb / 2 };
+          if (f.tipo === 'Fg') return { f, c: cb };
           n++;
           const g = Object.assign({}, f, { extra: String(n) });
-          return { f: conComponentes(g, [[1, 0, null], [0, 1, null]]), x: xN, y: yN };
+          return { f: conComponentes(g, [[1, 0, null], [0, 1, null]]), c: cb };
         });
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
@@ -385,9 +415,11 @@
 
     esfera(ctx, w, h, E, k) {
       const { est, mod } = E;
-      const yTop = 36, yBot = h - 18, cxp = Math.min(w * 0.36, w / 2 - 20), wt = 58 * k;
+      // sobre la superficie queda sitio para las flechas hacia arriba (empuje y arrastre) cuando la esfera sale
+      const yTop = Math.max(36, h * 0.28), yBot = h - 18, cxp = Math.min(w * 0.36, w / 2 - 20), wt = 58 * k;
       const pxm = (yBot - yTop - 16) / (mod.tubo + 0.02);
       const ySup = yTop + 10;                               // superficie del líquido
+      E.pxN = Math.min(E.pxN, (ySup - 22 - (4 + mod.par.r * 2.2) * k) / Math.max(mod.Fb, mod.m * window.Dinamica.G - mod.Fb));
       mesaLab(ctx, 0, w, yBot);
       // probeta: líquido, escala en cm y marcas de cronometraje
       const col = mod.par.liquido === 'glicerina' ? '#F4ECCF' : '#F3DC9A';
@@ -417,7 +449,8 @@
       if (E.ver.fuerzas) {
         const cuerpo = est.cuerpos[0];
         // F_b y F_d actúan sobre la esfera: se separan un poco para que no se pisen (las dos son verticales hacia arriba)
-        const lista = cuerpo.fuerzas.map(f => ({ f, x: cxp + (f.tipo === 'Fb' ? -9 : f.tipo === 'Fd' ? 9 : 0), y: ys }));
+        const cb = { cx: cxp, cy: ys, r: rpx };
+        const lista = cuerpo.fuerzas.map(f => ({ f, c: cb }));
         flechasFuerza(ctx, lista, E.pxN, E.ver, w, h);
       }
     }
@@ -461,21 +494,14 @@
       ctx.restore();
       ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, 2 * Math.PI); ctx.fillStyle = COL.tinta; ctx.fill();
       let m = 0;
+      const caja = E.mod.escena === 'esfera' ? { cx, cy, r: 8 } : { cx, cy, w: 18, h: 18, ang: E.mod.escena === 'plano' ? E.mod.par.ang * RAD : 0 };
       const lista = c.fuerzas.map(f => {
         let g = f;
         if (E.mod.escena === 'cuerdas' && f.tipo === 'FT') { m++; g = Object.assign({}, f, { extra: String(m), comp: [[1, 0, null], [0, 1, null]] }); }
         if (E.mod.escena === 'plano' && f.tipo === 'Fg') { const th = E.mod.par.ang * RAD; g = Object.assign({}, f, { comp: [[Math.cos(th), Math.sin(th), null], [Math.sin(th), -Math.cos(th), null]] }); }
         if (E.mod.escena === 'horizontal' && f.tipo === 'FH' && E.mod.par.ang) g = Object.assign({}, f, { comp: [[1, 0, null], [0, 1, null]] });
-        return { f: g, x: cx, y: cy };
+        return { f: g, c: caja };
       });
-      // dos fuerzas con la misma dirección y sentido (empuje y arrastre) se separan un poco para que no se pisen
-      for (let a = 0; a < lista.length; a++) for (let b = a + 1; b < lista.length; b++) {
-        const fa = lista[a].f, fb = lista[b].f;
-        if (fa.mod > 1e-12 && fb.mod > 1e-12 && Math.abs((fa.x * fb.x + fa.y * fb.y) / (fa.mod * fb.mod) - 1) < 1e-6) {
-          const px = -fa.y / fa.mod, py = -fa.x / fa.mod;
-          lista[a].x += px * 6; lista[a].y += py * 6; lista[b].x -= px * 6; lista[b].y -= py * 6;
-        }
-      }
       flechasFuerza(ctx, lista, pxN, { componentes: E.ver.componentes, valores: E.ver.valores, mili: E.mod.escena === 'esfera' }, w, h);
       // fuerza neta y aceleración, aparte (no forman parte del diagrama)
       const Fx = c.m * c.a.x, Fy = c.m * c.a.y, Fn = Math.hypot(Fx, Fy), yp = h - altoPie / 2;
