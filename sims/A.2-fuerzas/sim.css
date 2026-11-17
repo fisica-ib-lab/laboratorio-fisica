@@ -410,3 +410,29 @@ input[type="range"] { accent-color: var(--azul); height: 24px; margin: 0; cursor
 .construir .guia-cab, .construir2 .guia-cab { flex-direction: column; align-items: flex-start; gap: 3px; }
 .c-botones .boton { min-height: 30px; padding: 2px 9px; font-size: 14px; }
 .construir .lateral, .construir .c-botones, .banco { user-select: none; -webkit-user-select: none; }
+
+/* ================= Practicar ================= */
+#pGrupos .nivel { font-size: 14px; padding: 3px 10px; }
+.practicar { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 14px; align-items: start; }
+.p-figura { position: relative; padding: 4px; }
+.p-figura canvas { display: block; width: 100%; height: 340px; }
+.sin-figura { margin: 0; padding: 30px 12px; text-align: center; color: var(--tinta-suave); }
+.p-tarjeta { border-color: var(--azul); }
+.p-cab { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.termino { display: inline-block; padding: 2px 12px; border-radius: 999px; background: var(--azul-oscuro); color: #FFF; font-weight: 700; font-size: 15px; letter-spacing: .02em; }
+.p-grupo { color: var(--tinta-suave); font-size: 13px; font-weight: 700; }
+.p-tarjeta .guia-texto { font-size: 17px; line-height: 1.35; }
+.p-tarjeta .opc { font-size: 15px; }
+.p-nota { font-size: 12px; color: var(--tinta-suave); align-self: center; max-width: 60%; }
+.pasos { margin: 4px 0 0; padding-left: 20px; }
+.pasos li + li { margin-top: 2px; }
+.p-tarjeta .correccion { font-size: 15px; }
+@media (min-width: 900px) and (min-height: 600px) {
+  #panel-practicar:not([hidden]) { overflow: auto; }
+  .p-figura canvas { height: min(420px, calc(100vh - 260px)); }
+}
+@media (max-width: 899px) {
+  .practicar { grid-template-columns: minmax(0, 1fr); }
+  .p-figura canvas { height: 240px; }
+  .p-tarjeta { order: -1; }
+}

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagramas de cuerpo libre y segunda ley · A.2</title>
 <meta name="description" content="Simulación de las leyes de Newton: diagramas de cuerpo libre, rozamiento estático y dinámico, plano inclinado, ascensor, máquina de Atwood, dos cuerdas y velocidad terminal.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611162334">
-<script src="../../comun/docentes.js?v=202611162334"></script>
-<link rel="stylesheet" href="sim.css?v=202611162334">
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611170633">
+<script src="../../comun/docentes.js?v=202611170633"></script>
+<link rel="stylesheet" href="sim.css?v=202611170633">
 </head>
 <body>
 <header class="barra">
@@ -26,7 +26,7 @@
 <nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
   <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
   <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Construir</button>
-  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar <span class="proximamente">próximamente</span></button>
+  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar</button>
 </nav>
 
 <!-- ============ EXPLORAR ============ -->
@@ -131,7 +131,7 @@
         <div class="guia-cab"><span class="guia-num" id="cNum"></span><span class="guia-puntos" id="cPuntos"></span></div>
         <div class="guia-sit"><span id="cNombre"></span></div>
         <div class="guia-texto" id="cTexto"></div>
-        <div class="banco-tit">Banco de fuerzas <small>(arrástralas hasta el cuerpo o tócalas)</small></div>
+        <div class="banco-tit">Banco de fuerzas <small>(arrástralas hasta el cuerpo o tócalas; la longitud de cada flecha también cuenta)</small></div>
         <div class="banco" id="banco"></div>
         <div class="c-botones">
           <button class="boton mini primario" id="cComprobar">Comprobar</button>
@@ -170,22 +170,34 @@
   </div>
 </section>
 <section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
-  <div class="caja pronto">
-    <h2>Practicar · próximamente</h2>
-    <p>Aquí habrá ejercicios que se corrigen uno a uno, sin puntaje: aceleración, tensión, coeficiente de rozamiento, lectura de la balanza, ángulo límite, velocidad terminal y «¿se mueve o no?».</p>
+  <div class="niveles" id="pGrupos" role="group" aria-label="Tipo de ejercicio"></div>
+  <div class="practicar">
+    <div class="caja p-figura">
+      <canvas id="pFig" aria-label="Figura del ejercicio"></canvas>
+      <p class="sin-figura" id="pSinFig" hidden>Este ejercicio no tiene figura.</p>
+    </div>
+    <div class="caja guia p-tarjeta" aria-live="polite">
+      <div class="p-cab"><span class="termino" id="eTermino"></span><span class="p-grupo" id="eGrupo"></span></div>
+      <div class="guia-texto" id="eTexto"></div>
+      <div class="guia-resp" id="eResp"></div>
+      <div class="correccion" id="eCorr" hidden></div>
+      <div class="guia-nav"><span class="p-nota">Sin puntaje: cada ejercicio se corrige al momento (se acepta ±2 %).</span><button class="boton primario" id="eNuevo">Nuevo ejercicio →</button></div>
+    </div>
   </div>
 </section>
 
 <footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
 
-<script src="../../comun/cinematica.js?v=202611162334"></script>
-<script src="../../comun/dinamica.js?v=202611162334"></script>
-<script src="../../comun/graficas.js?v=202611162334"></script>
-<script src="niveles.js?v=202611162334"></script>
-<script src="escena.js?v=202611162334"></script>
-<script src="construir-datos.js?v=202611162334"></script>
-<script src="construir-corrector.js?v=202611162334"></script>
-<script src="sim.js?v=202611162334"></script>
-<script src="construir.js?v=202611162334"></script>
+<script src="../../comun/cinematica.js?v=202611170633"></script>
+<script src="../../comun/dinamica.js?v=202611170633"></script>
+<script src="../../comun/graficas.js?v=202611170633"></script>
+<script src="niveles.js?v=202611170633"></script>
+<script src="escena.js?v=202611170633"></script>
+<script src="construir-datos.js?v=202611170633"></script>
+<script src="construir-corrector.js?v=202611170633"></script>
+<script src="sim.js?v=202611170633"></script>
+<script src="practicar-ejercicios.js?v=202611170633"></script>
+<script src="construir.js?v=202611170633"></script>
+<script src="practicar.js?v=202611170633"></script>
 </body>
 </html>

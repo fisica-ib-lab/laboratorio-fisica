@@ -126,7 +126,7 @@ Verificación: `node pruebas/verificar-dinamica.js` (≈2,4 millones de comproba
 `node pruebas/verificar-niveles-fuerzas.js` (cada situación hace lo que dicen las preguntas y cada respuesta numérica
 coincide con lo que mide la simulación). Las dos con 0 fallos antes de publicar.
 
-**Hecho (16 nov 2026): etapas 1, 2 y 3**, pendientes de revisión del profesor.
+**Hecho: etapas 1, 2, 3 (16 nov 2026) y 4 (17 nov 2026)**, pendientes de revisión del profesor.
 - Etapa 1: los siete montajes en «Laboratorio libre» (selector de montajes y todos los deslizadores).
 - Etapa 2: Explorar por niveles (34 preguntas): 1 Equilibrio y primera ley (riel sin rozamiento, velocidad constante con
   rozamiento, ascensor a velocidad constante, dos cuerdas, velocidad terminal); 2 Rozamiento (F_f estático = lo necesario,
@@ -148,7 +148,20 @@ coincide con lo que mide la simulación). Las dos con 0 fallos antes de publicar
   cuatro criterios marcados ✓/✗, y preguntas de opción (peso y normal, choque camión–auto, balanza del ascensor, Atwood).
   Archivos: `construir-datos.js`, `construir-corrector.js` (sin pantalla) y `construir.js`.
   Verificación: `node pruebas/verificar-construir-fuerzas.js` (0 fallos).
-**Falta:** etapa 4 Practicar (términos de instrucción del IB, ±2 %, resolución paso a paso).
+  Longitudes (17 nov 2026, pedido del profesor): además de cuáles y su dirección, se corrigen las longitudes, juzgadas a lo
+  largo de la dirección correcta: en equilibrio las flechas se compensan (|ΣL| ≤ 25 % de la más larga); si acelera, la suma
+  apunta hacia la aceleración (≥ 8 %) y en perpendicular se compensan (≤ 25 %). «Ver solución» dibuja longitudes proporcionales.
+- Etapa 4 (17 nov 2026): **Practicar**, pendiente de revisión del profesor. 19 tipos de ejercicio con datos al azar
+  (`practicar-ejercicios.js`, sin pantalla) y término de instrucción del IB (Calcula, Determina, Explica): aceleración en la
+  mesa, con fuerza oblicua y en el plano; ¿desliza o no? y valor del rozamiento; normal con fuerza oblicua; μd con velocidad
+  constante; ángulo límite y μs a partir del ángulo; lectura de la balanza (sube/baja, acelera/frena); Atwood (a, F_T,
+  dinamómetro de la polea); masa colgante (a, F_T); tensión en dos cuerdas; constante elástica (figura propia del resorte);
+  velocidad terminal y viscosidad; y «Explica» (8 preguntas de razonamiento con comentario por opción). Filtros por grupo.
+  Figura = montaje sin fuerzas ni lecturas (`sinLecturas`); al resolverlo se ven las fuerzas. ±2 %, pista (también para
+  signo y unidades sin convertir), «Ver resolución» paso a paso tras dos errores. Sin puntaje.
+  Verificación: `node pruebas/verificar-practicar-fuerzas.js` (1000 ejercicios por tipo: la respuesta coincide con lo que mide
+  el modelo con los mismos datos; 0 fallos).
+**Simulación A.2 completa (etapas 1–4)**, pendiente de revisión del profesor.
 
 ## Materiales para docentes — `materiales/`
 

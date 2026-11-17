@@ -166,9 +166,9 @@
     if (!fl.length) {
       ctx.font = `15px ${LETRA}`; ctx.fillStyle = COL.suave; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       const yT = Math.min(h - 18, g.cuerpo.cy + (g.cuerpo.r || g.cuerpo.h / 2) + 46);
-      const txt = 'Arrastra fuerzas del banco hasta aquí. Gira cada flecha arrastrando su punta.';
+      const txt = 'Arrastra fuerzas del banco hasta aquí. Gira y alarga cada flecha arrastrando su punta.';
       if (ctx.measureText(txt).width < w - 24) ctx.fillText(txt, w / 2, yT);
-      else { ctx.fillText('Arrastra o toca fuerzas del banco.', w / 2, yT - 10); ctx.fillText('Gira cada flecha arrastrando su punta.', w / 2, yT + 10); }
+      else { ctx.fillText('Arrastra o toca fuerzas del banco.', w / 2, yT - 10); ctx.fillText('Gira y alarga cada flecha arrastrando su punta.', w / 2, yT + 10); }
     }
   }
   function dibujarMini() {
@@ -224,7 +224,9 @@
   }
   function verSolucion() {
     const esp = K.esperadas(sit(), D), max = Math.max(...esp.map(f => f.mod));
-    r1.flechas[r1.i] = esp.map(f => ({ id: r1.sigId++, tipo: f.tipo, ang: f.ang, L: sit().modelo === false ? 70 : 30 + 70 * f.mod / max }));
+    // longitudes proporcionales a los módulos (el carrito no tiene modelo: F_N = F_g y el rozamiento más corto)
+    const Lsol = (f) => sit().modelo === false ? (f.tipo === 'Ff' ? 40 : 90) : Math.max(10, 120 * f.mod / max);
+    r1.flechas[r1.i] = esp.map(f => ({ id: r1.sigId++, tipo: f.tipo, ang: f.ang, L: Lsol(f) }));
     r1.estado[r1.i] = 'visto'; r1.marcadas = []; r1.sel = null;
     r1.mensaje[r1.i] = { clase: 'solucion', html: `<b>Solución.</b> ${sit().explica.replace(/F_([a-zA-Z]+)/g, (_, x) => F(x))}` };
     pintarR1();
@@ -257,7 +259,7 @@
       if (d < 6) return;
       arrastre.ang = ajustar(Math.atan2(-dy, dx) / RAD);
       const [x0, y0] = Es.salida(g.cuerpo, Math.cos(arrastre.ang * RAD), -Math.sin(arrastre.ang * RAD));
-      arrastre.L = Math.max(28, Math.min(150, (d - Math.hypot(x0 - g.cx, y0 - g.cy)) / g.k));
+      arrastre.L = Math.max(10, Math.min(150, (d - Math.hypot(x0 - g.cx, y0 - g.cy)) / g.k));
       arrastre.quitar = d < Math.hypot(x0 - g.cx, y0 - g.cy) * 0.7;
       r1.marcadas = []; r1.mensaje[r1.i] = null;
       pintarR1();

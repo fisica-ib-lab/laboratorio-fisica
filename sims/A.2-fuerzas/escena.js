@@ -183,7 +183,7 @@
         // la mano tira de la anilla
         ctx.beginPath(); ctx.arc(d.fin[0] + 6 * Math.cos(th), d.fin[1] - 6 * Math.sin(th), 7 * k, 0, 2 * Math.PI);
         ctx.fillStyle = '#F1D6BE'; ctx.fill(); ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.2; ctx.stroke();
-        if (w > 380) pildora(ctx, [['dinamómetro: ' + N1(est.lecturas.dinamometro) + ' N', false]], d.fin[0] + 10, d.fin[1] - 20 * k, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
+        if (!E.sinLecturas && w > 380) pildora(ctx, [['dinamómetro: ' + N1(est.lecturas.dinamometro) + ' N', false]], d.fin[0] + 10, d.fin[1] - 20 * k, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
       } else if (par.modo === 'soltar' && est.t >= window.Dinamica.SOLTAR) pildora(ctx, [['se soltó el dinamómetro', false]], Math.min(w - 90, cx + 110), cy - 20, 12, COL.ambar, COL.ambarFondo, COL.ambar, 4, w - 4);
       if (par.mus === 0 && par.mud === 0) pildora(ctx, [['sin rozamiento', false]], w - 70, 16, 12, COL.ambar, COL.ambarFondo, COL.ambar, 4, w - 4);
       pildora(ctx, [['derecha +', false]], 44, 16, 12, COL.azul, COL.azulFondo, COL.azulOsc);
@@ -271,9 +271,9 @@
       const lect = est.lecturas.balanza;
       if (w > 330) {
         const px = Math.min(w - 76, xw1 + 40);
-        pildora(ctx, [['balanza: ' + numero(lect, 0) + ' N', false]], px + 36, yS - 4, 12, COL.azul, COL.azulFondo, COL.azulOsc, xw1 + 34, w - 3);
-        ctx.strokeStyle = COL.suave; ctx.lineWidth = 1; linea(ctx, cxp + ws / 2, yS - hs / 2, xw1 + 32, yS - 4);
-        pildora(ctx, [['peso: ' + numero(est.lecturas.peso, 0) + ' N', false]], px + 36, yS - 30, 12, FZ.Fg.color, '#EFECF6', FZ.Fg.color, xw1 + 34, w - 3);
+        if (!E.sinLecturas) pildora(ctx, [['balanza: ' + numero(lect, 0) + ' N', false]], px + 36, yS - 4, 12, COL.azul, COL.azulFondo, COL.azulOsc, xw1 + 34, w - 3);
+        if (!E.sinLecturas) { ctx.strokeStyle = COL.suave; ctx.lineWidth = 1; linea(ctx, cxp + ws / 2, yS - hs / 2, xw1 + 32, yS - 4); }
+        if (!E.sinLecturas) pildora(ctx, [['peso: ' + numero(est.lecturas.peso, 0) + ' N', false]], px + 36, yS - 30, 12, FZ.Fg.color, '#EFECF6', FZ.Fg.color, xw1 + 34, w - 3);
       }
       pildora(ctx, [['arriba +', false]], 40, 16, 12, COL.azul, COL.azulFondo, COL.azulOsc);
       if (Math.abs(par.a + 9.81) < 1e-9 && par.modo === 'constante') pildora(ctx, [['caída libre', false]], 40, 40, 12, COL.ambar, COL.ambarFondo, COL.ambar);
@@ -313,7 +313,7 @@
       polea(ctx, cxp, yP, R, QUIETO ? 0 : -est.x * pxm / R);
       bloque(ctx, cxp - R, y1 + h1 / 2, wb, h1, 0, [['m', true], ['₁', false]]);
       bloque(ctx, cxp + R, y2 + h2 / 2, wb, h2, 0, [['m', true], ['₂', false]]);
-      if (w > 330) pildora(ctx, [['dinamómetro: ' + N1(lectura) + ' N', false]], cxp + 100, d.medio[1], 12, COL.azul, COL.azulFondo, COL.azulOsc, cxp + 20, w - 3);
+      if (!E.sinLecturas && w > 330) pildora(ctx, [['dinamómetro: ' + N1(lectura) + ' N', false]], cxp + 100, d.medio[1], 12, COL.azul, COL.azulFondo, COL.azulOsc, cxp + 20, w - 3);
       pildora(ctx, [['m', true], ['₂', false], [' hacia abajo +', false]], 70, 16, 12, COL.azul, COL.azulFondo, COL.azulOsc, 4, w - 4);
       if (E.ver.fuerzas) {
         const [c1, c2] = est.cuerpos, lista = [];
@@ -391,8 +391,8 @@
       };
       const d1 = tramo(xA, yC + 6, xN, yN, est.lecturas.T1), d2 = tramo(xB, yC + 6, xN, yN, est.lecturas.T2);
       if (w > 360) {
-        pildora(ctx, [['F', true], ['T1', false, true], [' = ' + N1(est.lecturas.T1) + ' N', false]], d1.medio[0] - 50, d1.medio[1] + 4, 12, FZ.FT.color, '#E3F2F3', FZ.FT.color, 3, w - 3);
-        pildora(ctx, [['F', true], ['T2', false, true], [' = ' + N1(est.lecturas.T2) + ' N', false]], d2.medio[0] + 50, d2.medio[1] + 4, 12, FZ.FT.color, '#E3F2F3', FZ.FT.color, 3, w - 3);
+        if (!E.sinLecturas) pildora(ctx, [['F', true], ['T1', false, true], [' = ' + N1(est.lecturas.T1) + ' N', false]], d1.medio[0] - 50, d1.medio[1] + 4, 12, FZ.FT.color, '#E3F2F3', FZ.FT.color, 3, w - 3);
+        if (!E.sinLecturas) pildora(ctx, [['F', true], ['T2', false, true], [' = ' + N1(est.lecturas.T2) + ' N', false]], d2.medio[0] + 50, d2.medio[1] + 4, 12, FZ.FT.color, '#E3F2F3', FZ.FT.color, 3, w - 3);
       }
       // anilla y cuerpo
       ctx.strokeStyle = COL.tinta; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(xN, yN, 4, 0, 2 * Math.PI); ctx.stroke();

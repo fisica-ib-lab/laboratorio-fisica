@@ -2,11 +2,15 @@
    flechas: [{ id, tipo, ang }] con tipo 'Fg'…'Fd' o 'x:<distractor>'; ángulos en grados (0° derecha, 90° arriba).
    Orden de la corrección (se informa del primer problema; las flechas implicadas se marcan):
    1. fuerzas que no existen o no van en el diagrama; 2. fuerzas que sobran o están repetidas;
-   3. fuerzas que faltan (pista gradual según el intento); 4. direcciones (tolerancia ±10°). */
+   3. fuerzas que faltan (pista gradual según el intento); 4. direcciones (tolerancia ±10°);
+   5. longitudes: la suma de las flechas (cada una con su longitud L) debe comportarse como la fuerza neta:
+      · si el cuerpo está en equilibrio, las flechas se compensan: |ΣL| ≤ 25 % de la flecha más larga;
+      · si acelera, la suma apunta hacia la aceleración (componente ≥ 8 % de la más larga) y en la dirección
+        perpendicular se compensan (≤ 25 %). Así, por ejemplo, F_N tiene que ser más corta que F_g en el ascensor que baja. */
 
 (function (raiz) {
   'use strict';
-  const TOL = 10;
+  const TOL = 10, TOL_EQ = 0.25, MIN_PAR = 0.08;
   const angulo = (x, y) => Math.round(Math.atan2(y, x) * 180 / Math.PI * 100) / 100;
   const dif = (a, b) => { let d = Math.abs(((a - b) % 360 + 360) % 360); return d > 180 ? 360 - d : d; };
   const F = (sub) => `<span class="var">F</span><sub>${sub}</sub>`;
@@ -71,16 +75,35 @@
       else pista = `Falta ${C.NOMBRE[t]} (${F(SUB[t])}).`;
       return { bien: false, marcadas: [], mensaje: `<b>Todavía no.</b> ${pista}` };
     }
-    // 4. direcciones
+    // 4. direcciones (y se guarda la dirección correcta de cada flecha para juzgar después solo su longitud)
+    const dirCorrecta = {};
     for (const t of tipos) {
       for (const [p, e] of emparejar(flechas.filter(f => f.tipo === t), esp.filter(f => f.tipo === t))) {
         if (dif(p.ang, e.ang) > TOL) return { bien: false, marcadas: [p.id], mensaje: `<b>La dirección de ${C.NOMBRE[t]} (${F(SUB[t])}) no es correcta.</b> ${C.DIRECCION[t]}` };
+        dirCorrecta[p.id] = e.ang;
       }
+    }
+    // 5. longitudes
+    const L = (f) => (f.L === undefined ? 1 : f.L);
+    const Lmax = Math.max(...flechas.map(L));
+    let Rx = 0, Ry = 0;
+    // cada longitud a lo largo de la dirección correcta: el pequeño error de ángulo ya admitido no cuenta aquí
+    for (const f of flechas) { const a = dirCorrecta[f.id] * Math.PI / 180; Rx += L(f) * Math.cos(a); Ry += L(f) * Math.sin(a); }
+    let Nx = 0, Ny = 0, Fmax = 0;
+    if (s.modelo === false) { Nx = Math.cos(s.neta * Math.PI / 180); Ny = Math.sin(s.neta * Math.PI / 180); Fmax = 1; }
+    else for (const f of esp) { Nx += f.x; Ny += f.y; Fmax = Math.max(Fmax, f.mod); }
+    const Nm = Math.hypot(Nx, Ny), todas = flechas.map(f => f.id);
+    if (Nm < 0.03 * Fmax) {
+      if (Math.hypot(Rx, Ry) > TOL_EQ * Lmax) return { bien: false, marcadas: todas, mensaje: `<b>Las fuerzas son las correctas, pero sus longitudes no cuadran.</b> El cuerpo está ${s.equilibrio || 'en equilibrio'}: la fuerza neta es cero, así que las flechas deben compensarse. Arrastra las puntas para ajustar las longitudes.` };
+    } else {
+      const ux = Nx / Nm, uy = Ny / Nm, par = Rx * ux + Ry * uy, perp = Math.abs(-Rx * uy + Ry * ux);
+      if (par < MIN_PAR * Lmax) return { bien: false, marcadas: todas, mensaje: `<b>Las fuerzas son las correctas, pero sus longitudes no cuadran.</b> El cuerpo acelera ${s.haciaA}: la suma de las flechas tiene que apuntar hacia allí. ¿Qué flecha debe ser más larga que la otra?` };
+      if (perp > TOL_EQ * Lmax) return { bien: false, marcadas: todas, mensaje: `<b>Las fuerzas son las correctas, pero sus longitudes no cuadran.</b> En la dirección perpendicular a la aceleración no hay aceleración: ahí las flechas deben compensarse.` };
     }
     return { bien: true, marcadas: [], mensaje: `<b>¡Correcto!</b> ${s.explica.replace(/F_([a-zA-Z]+)/g, (_, x) => F(x))}` };
   }
 
-  const api = { esperadas, corregir, angulo, dif, TOL };
+  const api = { esperadas, corregir, angulo, dif, TOL, TOL_EQ, MIN_PAR };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.ConstruirCorrector = api;
 })(this);

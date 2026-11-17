@@ -29,7 +29,22 @@ for (const s of C.SITUACIONES) {
     if (s.id === 'esfera') ok(e.a > 0 && e.lecturas.Fd > 0, 'esfera: debía estar acelerando con arrastre');
   }
   // el corrector acepta la respuesta correcta (en cualquier orden y con ±10°) y detecta los errores típicos
-  const bien = esp.map((f, i) => ({ id: i, tipo: f.tipo, ang: f.ang + (i % 2 ? 8 : -8) })).reverse();
+  // respuesta correcta: longitudes proporcionales a los módulos (carrito: F_N = F_g, rozamiento menor) y ±4° de error
+  const max = Math.max(...esp.map(f => f.mod));
+  const Lde = (f) => s.modelo === false ? (f.tipo === 'Ff' ? 40 : 90) : 100 * f.mod / max;
+  const bien = esp.map((f, i) => ({ id: i, tipo: f.tipo, ang: f.ang + (i % 2 ? 4 : -4), L: Lde(f) })).reverse();
+  // con ±8° y longitudes exactas también debe aceptarse (la dirección se acepta hasta ±10°)
+  ok(corregir(s, esp.map((f, i) => ({ id: i, tipo: f.tipo, ang: f.ang + (i % 2 ? 8 : -8), L: Lde(f) })), 1, D).bien, `${s.id}: con ±8° el corrector debía aceptar`);
+  // todas las flechas iguales: solo puede valer si de verdad son iguales y se compensan
+  const iguales = esp.map((f, i) => ({ id: i, tipo: f.tipo, ang: f.ang, L: 70 }));
+  if (['planoQuieto', 'tirado', 'bloqueMesa', 'esfera', 'ascensorBaja', 'colgante', 'cuerdas'].includes(s.id)) ok(!corregir(s, iguales, 1, D).bien && /longitudes/.test(corregir(s, iguales, 1, D).mensaje), `${s.id}: con todas las flechas iguales debía pedir ajustar las longitudes`);
+  if (['ascensorBaja', 'colgante'].includes(s.id)) {
+    // F_N (o F_T) igual o más larga que F_g: debe rechazarse
+    const mal = esp.map((f, i) => ({ id: i, tipo: f.tipo, ang: f.ang, L: f.tipo === 'Fg' ? 80 : 85 }));
+    ok(!corregir(s, mal, 1, D).bien, `${s.id}: con la fuerza hacia arriba más larga que el peso debía rechazarse`);
+  }
+  if (s.equilibrio) ok(['reposoMesa', 'planoQuieto', 'cuerdas'].includes(s.id) && Math.abs(D.crear(s.escena, s.par).estado(s.t).a) < 1e-12, `${s.id}: marcado en equilibrio sin estarlo`);
+  else ok(!!s.haciaA, `${s.id}: falta haciaA`);
   ok(corregir(s, bien, 1, D).bien, `${s.id}: el corrector rechaza la respuesta correcta`);
   const falta = bien.slice(1);
   const rf = corregir(s, falta, 1, D); ok(!rf.bien && /Falta/.test(rf.mensaje), `${s.id}: no detecta una fuerza que falta`);
