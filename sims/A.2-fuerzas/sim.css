@@ -319,3 +319,42 @@ input[type="range"] { accent-color: var(--azul); height: 24px; margin: 0; cursor
   .col-principal .escena-caja canvas { height: 260px; }
   .escenas .nivel { font-size: 14px; padding: 3px 10px; }
 }
+
+/* ---------- Niveles y preguntas guiadas ---------- */
+.niveles { margin-bottom: 8px; }
+.niveles .libre { margin-left: auto; }
+.escenas { margin-top: -2px; }
+.guia { border-color: var(--azul); background: #FFFFFF; }
+.guia-cab { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.guia-num { font-weight: 700; color: var(--azul-oscuro); font-size: 15px; }
+.guia-puntos { display: inline-flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
+.guia-puntos button { width: 13px; height: 13px; padding: 0; border-radius: 50%; border: 1.5px solid var(--gris-borde); background: #FFF; cursor: pointer; }
+.guia-puntos button.actual { border-color: var(--azul); box-shadow: 0 0 0 1.5px var(--azul); }
+.guia-puntos button.bien { background: #1E7B4F; border-color: #1E7B4F; }
+.guia-sit { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 3px 0 4px; font-size: 13px; color: var(--tinta-suave); }
+.guia-sit span { font-weight: 700; }
+.guia-texto { font-size: 15px; line-height: 1.3; margin-bottom: 6px; }
+.guia-resp { display: flex; flex-direction: column; gap: 4px; }
+.guia-resp .opc { font-size: 14px; line-height: 1.2; padding: 5px 9px; border-width: 1.5px; border-radius: 8px; }
+.guia-resp .opc.bien { background: #E6F3EC; }
+.guia-valor { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 700; }
+.guia-valor input { width: 96px; padding: 5px 8px; border: 1.5px solid var(--gris-borde); border-radius: 8px; font-size: 16px; }
+.guia .correccion { margin-top: 6px; font-size: 14px; line-height: 1.3; padding: 5px 9px; }
+.guia .correccion .boton { margin-top: 4px; }
+.guia-nav { display: flex; justify-content: space-between; margin-top: 6px; }
+.ajustes > summary { list-style: none; cursor: pointer; }
+.ajustes > summary::-webkit-details-marker { display: none; }
+.ajustes > summary h2 { display: inline; }
+.ajustes > summary::after { content: " ▾"; color: var(--azul-oscuro); }
+.ajustes:not([open]) > summary::after { content: " ▸"; }
+/* En pantallas angostas la pregunta va antes que el montaje */
+@media (max-width: 899px) {
+  .taller.fuerzas { display: flex; flex-direction: column; gap: 10px; }
+  .taller.fuerzas .col-principal, .taller.fuerzas .lateral { display: contents; }
+  .taller.fuerzas .guia { order: 0; }
+  .taller.fuerzas .escena-caja { order: 1; }
+  .taller.fuerzas .reproduccion { order: 2; }
+  .taller.fuerzas .graficas { order: 3; }
+  .taller.fuerzas .ajustes { order: 4; }
+  .taller.fuerzas .valores { order: 5; }
+}

@@ -27,8 +27,9 @@
         cMasa('m', `Masa del bloque ${v_('m')}`, 0.5, 5, 0.5, 2),
         { id: 'F', tipo: 'rango', rotulo: `Fuerza del dinamómetro ${F_('H')}`, min: 0, max: 30, paso: 0.5, unidad: 'N', dec: 1, ini: 12 },
         { id: 'ang', tipo: 'rango', rotulo: `Ángulo de la fuerza ${v_('θ')}`, min: 0, max: 60, paso: 5, unidad: '°', dec: 0, ini: 0 },
-        { id: 'modo', tipo: 'opciones', rotulo: 'La fuerza', opciones: [['constante', 'es constante'], ['rampa', 'crece poco a poco'], ['soltar', 'se suelta en 1,5 s']], ini: 'constante' },
-        Object.assign({}, cMus, { ini: 0.5 }), Object.assign({}, cMud, { ini: 0.3 })
+        { id: 'modo', tipo: 'opciones', rotulo: 'La fuerza', opciones: [['constante', 'es constante'], ['rampa', 'crece poco a poco'], ['soltar', 'se suelta en 1 s']], ini: 'constante' },
+        Object.assign({}, cMus, { ini: 0.5 }), Object.assign({}, cMud, { ini: 0.3 }),
+        { id: 'u', tipo: 'rango', rotulo: `Velocidad inicial ${v_('u')}`, min: 0, max: 2, paso: 0.5, unidad: 'm s⁻¹', dec: 1, ini: 0 }
       ],
       limites(par) { const s = Math.sin(par.ang * Math.PI / 180); return { F: s > 0 ? Math.min(30, Math.floor(0.95 * par.m * G / s * 2) / 2) : 30 }; },
       nota: `El dinamómetro es un resorte: tira del bloque con la fuerza elástica ${F_('H')} = ${v_('kx')} (${v_('k')} = 200 N m⁻¹).`
@@ -184,7 +185,7 @@
           { partes: [['F', true], ['N', false, true], [' = ', false], ['mg', true], [' cos θ', false]], valor: L.FN, color: FZ.FN.color, separador: true },
           { partes: [['mg', true]], valor: e.cuerpos[0].m * G, color: FZ.Fg.color }
         ],
-        nota: [['Ángulo límite: ', false], ['θ', true], [' = arctan ', false], ['μ', true], ['s', false, true], [' = ' + numero(L.anguloLimite, 1) + '°', false]]
+        nota: oculto('anguloLimite') ? [['Busca el ángulo en que ', false], ['mg', true], [' sen θ supera a ', false], ['μ', true], ['s', false, true], ['F', true], ['N', false, true]] : [['Ángulo límite: ', false], ['θ', true], [' = arctan ', false], ['μ', true], ['s', false, true], [' = ' + numero(L.anguloLimite, 1) + '°', false]]
       });
       return;
     }
@@ -295,7 +296,7 @@
     const neta = esc === 'atwood' || esc === 'mesa' ? `${F_('neta')} <small>del sistema</small>` : F_('neta');
     h += fila(neta, esc === 'esfera' ? numero(L.Fneta * 1000, 2) : n2(L.Fneta), esc === 'esfera' ? 'mN' : 'N', 'c-ace');
     if (esc === 'horizontal') { h += fila('Dinamómetro', n2(L.dinamometro), 'N'); h += fila(`Alargamiento ${v_('x')} <small>del resorte</small>`, numero(L.alargamiento * 100, 1), 'cm'); }
-    if (esc === 'plano') h += fila(`Ángulo límite <small>arctan ${MU_S}</small>`, numero(L.anguloLimite, 1), '°');
+    if (esc === 'plano' && !oculto('anguloLimite')) h += fila(`Ángulo límite <small>arctan ${MU_S}</small>`, numero(L.anguloLimite, 1), '°');
     if (esc === 'ascensor') { h += fila('Balanza', numero(L.balanza, 0), 'N'); h += fila(`Peso ${v_('mg')}`, numero(L.peso, 0), 'N'); }
     if (esc === 'atwood') { h += fila(`Tensión ${F_('T')}`, n2(L.FT), 'N'); h += fila('Dinamómetro de la polea', n2(L.polea), 'N'); }
     if (esc === 'mesa') h += fila(`Tensión ${F_('T')}`, n2(L.FT), 'N');
@@ -389,9 +390,10 @@
     }
     visibilidad();
   }
+  const oculto = (id) => { const q = estado.modo ? window.NivelesFuerzas.NIVELES[estado.modo - 1].preguntas[estado.preg[estado.modo]] : null; return !!(q && q.oculta && q.oculta.includes(id) && q.sit === estado.sit); };
   function visibilidad() {
     const cfg = CFG(), par = P();
-    for (const c of cfg.controles) $('g-' + c.id).hidden = c.vis ? !c.vis(par) : false;
+    for (const c of cfg.controles) $('g-' + c.id).hidden = (c.vis ? !c.vis(par) : false) || oculto(c.id);
     // límites que dependen de otros controles
     if (cfg.limites) {
       const lim = cfg.limites(par);
@@ -476,12 +478,110 @@
     if (parte === 'explorar') dibujarTodo(); else pausar();
   }));
 
+  /* ---------- Niveles con preguntas guiadas ---------- */
+  const NV = window.NivelesFuerzas;
+  estado.modo = 1; estado.preg = { 1: 0, 2: 0, 3: 0, 4: 0 }; estado.resp = {}; estado.sit = null;
+  function ponerVer(ver) {
+    const v = Object.assign({ fuerzas: true, valores: false, componentes: false }, ver || {});
+    for (const [id, k] of [['chkFuerzas', 'fuerzas'], ['chkValores', 'valores'], ['chkComponentes', 'componentes']]) { estado.ver[k] = v[k]; $(id).checked = v[k]; }
+    estado.lupa = false; $('chkLupa').checked = false;
+  }
+  function cargarSituacion(id) {
+    const sit = NV.SIT[id];
+    const base = {}; for (const c of ESCENAS[sit.escena].controles) base[c.id] = c.ini;
+    estado.par[sit.escena] = Object.assign(base, sit.par);
+    estado.sit = id;
+    ponerVer(sit.ver);
+    ponerEscena(sit.escena);
+  }
+  function pintarNiveles() {
+    $('niveles').innerHTML = NV.NIVELES.map((nv, i) => `<button class="nivel${estado.modo === i + 1 ? ' activo' : ''}" data-modo="${i + 1}" aria-pressed="${estado.modo === i + 1}"><b>Nivel ${i + 1}</b> ${nv.corto}</button>`).join('') +
+      `<button class="nivel libre${estado.modo === 0 ? ' activo' : ''}" data-modo="0" aria-pressed="${estado.modo === 0}">Laboratorio libre</button>`;
+    document.querySelectorAll('#niveles .nivel').forEach(b => b.addEventListener('click', () => ponerModo(Number(b.dataset.modo))));
+  }
+  function ponerModo(m) {
+    pausar();
+    estado.modo = m;
+    pintarNiveles();
+    $('escenas').hidden = m !== 0;
+    $('guia').hidden = m === 0;
+    if (m === 0) { estado.sit = null; $('ajustes').open = true; ponerEscena(estado.escena); return; }
+    irPregunta(estado.preg[m], true);
+  }
+  const clave = () => `${estado.modo}-${estado.preg[estado.modo]}`;
+  const pregActual = () => NV.NIVELES[estado.modo - 1].preguntas[estado.preg[estado.modo]];
+  function irPregunta(i, forzar) {
+    const nv = NV.NIVELES[estado.modo - 1];
+    i = Math.max(0, Math.min(nv.preguntas.length - 1, i));
+    estado.preg[estado.modo] = i;
+    const q = nv.preguntas[i];
+    if (forzar || q.sit !== estado.sit) cargarSituacion(q.sit);
+    else { visibilidad(); dibujarTodo(); }
+    $('ajustes').open = !!q.ajustes;
+    pintarGuia();
+  }
+  function pintarGuia() {
+    const nv = NV.NIVELES[estado.modo - 1], i = estado.preg[estado.modo], q = nv.preguntas[i], r = estado.resp[clave()] || {};
+    $('guiaNum').textContent = `Pregunta ${i + 1} de ${nv.preguntas.length}`;
+    $('guiaPuntos').innerHTML = nv.preguntas.map((_, j) => {
+      const rj = estado.resp[`${estado.modo}-${j}`];
+      return `<button class="${j === i ? 'actual' : ''}${rj && rj.bien ? ' bien' : ''}" data-i="${j}" aria-label="Pregunta ${j + 1}${rj && rj.bien ? ' (resuelta)' : ''}"></button>`;
+    }).join('');
+    $('guiaPuntos').querySelectorAll('button').forEach(b => b.addEventListener('click', () => irPregunta(Number(b.dataset.i))));
+    $('guiaSit').textContent = NV.SIT[q.sit].nombre;
+    $('guiaTexto').innerHTML = q.texto;
+    const corr = $('guiaCorr');
+    if (q.tipo === 'opcion') {
+      $('guiaResp').innerHTML = q.opciones.map((o, j) => {
+        const cls = r.bien && o[1] ? ' bien' : (r.malas || []).includes(j) ? ' mal' : '';
+        return `<button class="opc${cls}" data-j="${j}"${r.bien || cls ? ' disabled' : ''}>${o[0]}</button>`;
+      }).join('');
+      $('guiaResp').querySelectorAll('.opc').forEach(b => b.addEventListener('click', () => elegir(Number(b.dataset.j))));
+    } else {
+      $('guiaResp').innerHTML = `<div class="guia-valor"><input id="guiaInput" inputmode="decimal" autocomplete="off" aria-label="Tu respuesta"${r.bien ? ' disabled' : ''} value="${r.texto || ''}">` +
+        `<span>${q.unidad || ''}</span><button class="boton mini primario" id="guiaComprobar"${r.bien ? ' disabled' : ''}>Comprobar</button></div>`;
+      $('guiaComprobar').addEventListener('click', comprobar);
+      $('guiaInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') comprobar(); });
+    }
+    corr.hidden = !r.mensaje; corr.className = 'correccion ' + (r.clase || ''); corr.innerHTML = r.mensaje || '';
+    const ver = $('guiaVerRes'); if (ver) ver.addEventListener('click', verResolucion);
+    $('guiaAnt').disabled = i === 0; $('guiaSig').disabled = i === nv.preguntas.length - 1;
+  }
+  function elegir(j) {
+    const q = pregActual(), r = estado.resp[clave()] = estado.resp[clave()] || { malas: [] };
+    if (q.opciones[j][1]) Object.assign(r, { bien: true, clase: 'bien', mensaje: `<b>¡Correcto!</b> ${q.explicacion}` });
+    else { r.malas.push(j); Object.assign(r, { clase: 'pista', mensaje: `<b>No es así.</b> ${q.opciones[j][2]}` }); }
+    pintarGuia();
+  }
+  function comprobar() {
+    const q = pregActual(), r = estado.resp[clave()] = estado.resp[clave()] || { intentos: 0 };
+    const txt = $('guiaInput').value.trim(); r.texto = txt;
+    const x = Number(txt.replace(/\s/g, '').replace(',', '.').replace('−', '-'));
+    if (!txt || !isFinite(x)) { Object.assign(r, { clase: 'pista', mensaje: 'Escribe un número (con coma o punto decimal).' }); pintarGuia(); return; }
+    const correcta = q.respuesta(P()), tol = q.tol || 0.02;
+    if (Math.abs(x - correcta) <= tol * Math.abs(correcta) + 1e-9) {
+      Object.assign(r, { bien: true, clase: 'bien', mensaje: `<b>¡Correcto!</b><br>${q.resolucion(P())}` });
+    } else {
+      r.intentos = (r.intentos || 0) + 1;
+      Object.assign(r, { clase: 'pista', mensaje: `<b>Todavía no.</b> ${q.pista}` + (r.intentos >= 2 ? '<br><button class="boton mini" id="guiaVerRes">Ver resolución</button>' : '') });
+    }
+    pintarGuia();
+  }
+  function verResolucion() {
+    const q = pregActual(), r = estado.resp[clave()];
+    Object.assign(r, { clase: 'solucion', mensaje: q.resolucion(P()) });
+    pintarGuia();
+  }
+  $('guiaAnt').addEventListener('click', () => irPregunta(estado.preg[estado.modo] - 1));
+  $('guiaSig').addEventListener('click', () => irPregunta(estado.preg[estado.modo] + 1));
+  $('guiaReiniciar').addEventListener('click', () => { if (estado.sit) cargarSituacion(estado.sit); });
+
   // ---------- Inicio ----------
   pintarSelector();
-  ponerEscena('horizontal');
+  ponerModo(1);
   new ResizeObserver(() => dibujarTodo()).observe(document.querySelector('.taller'));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(dibujarTodo);
 
   // Para las pruebas automáticas
-  window.__simFuerzas = { estado, ponerEscena, irA, dibujarTodo, recalcular, P };
+  window.__simFuerzas = { estado, ponerEscena, irA, dibujarTodo, recalcular, P, ponerModo, irPregunta, cargarSituacion };
 })();

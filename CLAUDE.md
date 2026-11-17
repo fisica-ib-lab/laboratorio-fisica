@@ -107,7 +107,7 @@ La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de l
 ## Cuarta simulación: «Diagramas de cuerpo libre y segunda ley» (A.2) — `sims/A.2-fuerzas/`
 
 Plan aprobado por el profesor (16 nov 2026). Siete montajes con selector: bloque en la mesa tirado por un dinamómetro
-(fuerza constante, que crece poco a poco o que se suelta en 1,5 s; ángulo opcional), plano inclinado (con velocidad inicial
+(fuerza constante, que crece poco a poco o que se suelta en 1 s; ángulo opcional), plano inclinado (con velocidad inicial
 hacia arriba opcional), persona sobre una balanza en un ascensor (viaje de subida/bajada o aceleración constante, hasta caída
 libre), máquina de Atwood con la polea colgada de un dinamómetro (marca 2F_T), bloque con masa colgante, cuerpo colgado de
 dos cuerdas con un dinamómetro en cada una, y esfera de acero o vidrio en glicerina o aceite de ricino (Stokes, Re < 1).
@@ -118,12 +118,23 @@ partícula y la **fuerza neta va en un recuadro aparte, nunca dentro del diagram
 Rigor: F_f estático = lo necesario para el reposo, ≤ μs F_N; al llegar a v = 0 el bloque se detiene y se vuelve a evaluar
 (no retrocede); μd ≤ μs forzado en los controles; F_H sen θ ≤ 0,95 mg (el bloque no se despega).
 
-Archivos: `comun/dinamica.js` (física, sin pantalla), `escena.js` (montajes, diagrama, barras, triángulo de fuerzas), `sim.js`.
-Verificación: `node pruebas/verificar-dinamica.js` (≈2,4 millones de comprobaciones contra fórmulas analíticas, 0 fallos).
-**Hecho (16 nov 2026): etapa 1** — los siete montajes en «Explorar» como laboratorio libre, pendiente de revisión del profesor.
-**Falta:** etapa 2 Explorar por niveles (1 equilibrio y primera ley, 2 rozamiento, 3 plano, fuerza oblicua y ascensor,
-4 sistemas unidos) con preguntas guiadas; etapa 3 Construir (diagrama arrastrando flechas desde un banco con distractores;
-parejas de tercera ley con los cuatro criterios); etapa 4 Practicar (términos de instrucción del IB, ±2 %, resolución paso a paso).
+Archivos: `comun/dinamica.js` (física, sin pantalla), `niveles.js` (situaciones y preguntas, sin pantalla), `escena.js`
+(montajes, diagrama, barras, triángulo de fuerzas), `sim.js`.
+Verificación: `node pruebas/verificar-dinamica.js` (≈2,4 millones de comprobaciones contra fórmulas analíticas) y
+`node pruebas/verificar-niveles-fuerzas.js` (cada situación hace lo que dicen las preguntas y cada respuesta numérica
+coincide con lo que mide la simulación). Las dos con 0 fallos antes de publicar.
+
+**Hecho (16 nov 2026): etapas 1 y 2**, pendientes de revisión del profesor.
+- Etapa 1: los siete montajes en «Laboratorio libre» (selector de montajes y todos los deslizadores).
+- Etapa 2: Explorar por niveles (34 preguntas): 1 Equilibrio y primera ley (riel sin rozamiento, velocidad constante con
+  rozamiento, ascensor a velocidad constante, dos cuerdas, velocidad terminal); 2 Rozamiento (F_f estático = lo necesario,
+  salto de μs F_N a μd F_N, soltar y frenar sin retroceder); 3 Plano y ascensor (normal mg cos θ, sentido del rozamiento,
+  ángulo límite, fuerza con ángulo, balanza al arrancar y frenar, caída libre); 4 Sistemas unidos (Atwood, polea con
+  dinamómetro, masas iguales, bloque con masa colgante, masa límite). Tarjeta de pregunta en el lateral (en celular, antes
+  del montaje): opciones con comentario por error y explicación al acertar; valores con ±2 % calculados con los deslizadores
+  actuales, pista y «Ver resolución» tras dos errores. «oculta» esconde el dato que daría la respuesta (μd, μs, ángulo límite).
+**Falta:** etapa 3 Construir (diagrama arrastrando flechas desde un banco con distractores; parejas de tercera ley con los
+cuatro criterios); etapa 4 Practicar (términos de instrucción del IB, ±2 %, resolución paso a paso).
 
 ## Materiales para docentes — `materiales/`
 

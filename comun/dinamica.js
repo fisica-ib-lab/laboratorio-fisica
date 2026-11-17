@@ -109,16 +109,17 @@
      estado(t) = { t, x, v, a, cuerpos: [{ id, nombre, m, fuerzas: [...], a: {x, y} }], lecturas: {...} } */
 
   // 1. Bloque sobre una mesa horizontal, tirado por un dinamómetro (fuerza elástica F_H) con ángulo θ sobre la horizontal.
-  //    x: a lo largo de la mesa, derecha +. Modos: «constante», «rampa» (F crece de 0 a Fmax en 6 s) y «soltar» (F hasta 1,5 s).
+  //    x: a lo largo de la mesa, derecha +. Modos: «constante», «rampa» (F crece de 0 a Fmax en 6 s) y «soltar» (F hasta 1 s).
+  //    u: velocidad inicial (hacia la derecha), para la primera ley y la velocidad constante con rozamiento.
   const K_DINAMOMETRO = 200;            // N m⁻¹
-  const RAMPA = 6, SOLTAR = 1.5;
+  const RAMPA = 6, SOLTAR = 1;
   function horizontal(par) {
     const { m, mus, mud, F, ang, modo } = par;
     const th = ang * RAD, c = Math.cos(th), s = Math.sin(th);
     const Fde = (t) => modo === 'rampa' ? Math.min(F, F * t / RAMPA) : modo === 'soltar' ? (t < SOLTAR - 1e-9 ? F : 0) : F;
     const T = modo === 'rampa' ? 8 : 5;
     const N = (t) => m * G - Fde(t) * s;
-    const r = integrarYLeer({ M: m, D: (t) => Fde(t) * c, N, mus, mud, x0: 0, v0: 0, xmin: -0.01, xmax: 2.4, T });
+    const r = integrarYLeer({ M: m, D: (t) => Fde(t) * c, N, mus, mud, x0: 0, v0: par.u || 0, xmin: -0.01, xmax: 2.4, T });
     return {
       escena: 'horizontal', par, T: r.T, fin: r.fin, muestras: r.m, Fde,
       estado(t) {

@@ -31,7 +31,8 @@
 
 <!-- ============ EXPLORAR ============ -->
 <section class="panel" id="panel-visor" role="tabpanel" aria-labelledby="tab-explorar">
-  <div class="escenas" id="escenas" role="group" aria-label="Montaje"></div>
+  <div class="niveles" id="niveles" role="group" aria-label="Niveles"></div>
+  <div class="escenas" id="escenas" role="group" aria-label="Montaje" hidden></div>
 
   <div class="taller fuerzas">
     <div class="col-principal">
@@ -76,8 +77,23 @@
     </div>
 
     <aside class="lateral">
-      <div class="caja ajustes">
-        <h2>Prepara el experimento</h2>
+      <div class="caja guia" id="guia" hidden aria-live="polite">
+        <div class="guia-cab">
+          <span class="guia-num" id="guiaNum"></span>
+          <span class="guia-puntos" id="guiaPuntos"></span>
+        </div>
+        <div class="guia-sit"><span id="guiaSit"></span> <button class="boton mini" id="guiaReiniciar" title="Volver a los valores de esta situación">Reiniciar</button></div>
+        <div class="guia-texto" id="guiaTexto"></div>
+        <div class="guia-resp" id="guiaResp"></div>
+        <div class="correccion" id="guiaCorr" hidden></div>
+        <div class="guia-nav">
+          <button class="boton mini" id="guiaAnt">← Anterior</button>
+          <button class="boton mini" id="guiaSig">Siguiente →</button>
+        </div>
+      </div>
+
+      <details class="caja ajustes" id="ajustes" open>
+        <summary><h2>Prepara el experimento</h2></summary>
         <div id="controles"></div>
         <p class="ed-aviso" id="aviso" aria-live="polite"></p>
         <div class="casillas-2">
@@ -85,7 +101,7 @@
           <label class="casilla"><input type="checkbox" id="chkValores"> Valores</label>
           <label class="casilla"><input type="checkbox" id="chkComponentes"> Componentes</label>
         </div>
-      </div>
+      </details>
 
       <div class="caja valores">
         <h2 id="titLecturas">Lecturas en este instante</h2>
@@ -117,6 +133,7 @@
 <script src="../../comun/cinematica.js"></script>
 <script src="../../comun/dinamica.js"></script>
 <script src="../../comun/graficas.js"></script>
+<script src="niveles.js"></script>
 <script src="escena.js"></script>
 <script src="sim.js"></script>
 </body>

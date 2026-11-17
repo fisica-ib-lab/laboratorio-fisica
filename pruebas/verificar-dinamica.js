@@ -86,6 +86,23 @@ for (const m of [0.5, 1, 2.5, 5]) for (const mus of [0, 0.2, 0.5, 0.8]) for (con
   }
 }
 
+// Bloque con velocidad inicial: primera ley (sin fuerzas horizontales) y velocidad constante con F_H = μd F_N
+for (const m of [0.5, 1, 2, 5]) for (const u of [0.5, 1, 2]) for (const mud of [0, 0.1, 0.3, 0.6]) {
+  const n = `mesa con u=${u} m=${m} μd=${mud}`;
+  const F = mud * m * G;
+  const mod = D.crear('horizontal', { m, mus: Math.min(1, mud + 0.2), mud, F, ang: 0, modo: 'constante', u });
+  segundaLey(mod, n);
+  for (let k = 0; k <= 20; k++) { const e = mod.estado(mod.T * k / 20); ok(Math.abs(e.v - u) < 1e-9 && Math.abs(e.a) < 1e-9, `${n}: no sigue con velocidad constante (v=${e.v})`); }
+  ok(cerca(mod.T, Math.min(5, 2.4 / u), 1e-3), `${n}: llega al final de la mesa en ${mod.T}`);
+  // sin fuerza aplicada y con rozamiento: frena con a = −μd g hasta detenerse
+  if (mud > 0) {
+    const mod2 = D.crear('horizontal', { m, mus: Math.min(1, mud + 0.2), mud, F: 0, ang: 0, modo: 'constante', u });
+    uniforme(mod2, n + ' (frena)', -mud * G, 0, 0, u, u / (mud * G));
+    const ef = mod2.estado(mod2.T);
+    ok(ef.v === 0 && cerca(ef.x, u * u / (2 * mud * G), 2e-3), `${n}: distancia de frenado`);
+  }
+}
+
 // ---------- 2. Plano inclinado ----------
 for (const m of [0.5, 2]) for (const ang of rango(5, 60, 5)) for (const mus of [0, 0.2, 0.4, 0.6, 0.8]) for (const mud of rango(0, mus, 0.2)) for (const u of [0, 1, 2.5, 4]) {
   const n = `plano m=${m} θ=${ang} μs=${mus} μd=${mud} u=${u}`;
