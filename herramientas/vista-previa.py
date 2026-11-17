@@ -9,7 +9,7 @@ import os, subprocess, sys, tempfile, glob
 from PIL import Image, ImageDraw, ImageFont
 
 FUENTE = '/usr/share/fonts/truetype/crosextra/Carlito-Bold.ttf'
-LINEA = 'Vista previa · IB Seven · Telegram @Ibsevenoficial · ibseven.oficial@gmail.com'
+LINEA = 'Muestra · IB Seven'
 
 
 def marca(im):

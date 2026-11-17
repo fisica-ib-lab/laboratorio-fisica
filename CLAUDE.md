@@ -172,7 +172,7 @@ agua grabada («IB Seven · Física IB» en diagonal y línea de contacto); el p
 Imágenes y datos en `materiales/<subtema>/` (`datos.js` con páginas, secciones y diapositivas ocultas). Se generan desde los
 archivos de «03 Materiales finales/Tema A» con LibreOffice (necesita `libreoffice-math` para las ecuaciones) → PDF → 170 ppp.
 Imágenes nuevas: `python3 herramientas/vista-previa.py ARCHIVO.pdf materiales/<código>/<doc>` (WebP con marca «IB Seven · Física IB»
-y línea de contacto **sin nombres de personas**; las imágenes de A.1 aún llevan el nombre del profesor en la línea de contacto).
+y abajo solo «Muestra · IB Seven», **sin nombres ni Telegram**; las de A.1 se corrigieron así el 17 nov 2026).
 El visor carga cada `datos.js` con una etiqueta `<script>` propia en `ver/index.html`; cada material puede definir `volver`,
 `accion` (botón amarillo), y en cada documento `marcadas`, `marcaCorta` y `marcaLarga` (por defecto, soluciones ocultas).
 
