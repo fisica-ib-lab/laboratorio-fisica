@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagramas de cuerpo libre y segunda ley · A.2</title>
+<meta name="description" content="Simulación de las leyes de Newton: diagramas de cuerpo libre, rozamiento estático y dinámico, plano inclinado, ascensor, máquina de Atwood, dos cuerdas y velocidad terminal.">
+<link rel="stylesheet" href="../../comun/estilo.css">
+<script src="../../comun/docentes.js"></script>
+<link rel="stylesheet" href="sim.css">
+</head>
+<body>
+<header class="barra">
+  <a class="boton volver" href="../../">← Laboratorio</a>
+  <span class="marca">A.2</span>
+  <div>
+    <h1>Diagramas de cuerpo libre y segunda ley</h1>
+    <div class="sub">Fuerzas y cantidad de movimiento · Leyes de Newton · <span class="var">g</span> = 9,81 m s⁻²</div>
+  </div>
+  <nav class="accesos" aria-label="Accesos">
+    <a class="acceso acceso-materiales solo-docentes" href="../../materiales/"><span class="largo">Materiales para docentes</span><span class="corto">Docentes</span></a>
+    <a class="acceso acceso-pp" href="https://script.google.com/macros/s/AKfycbxDHmHfbRNaGnRdTrSKG6PamDaMl_wWhwGceZfeOowrxNBUlfYSZgq5N6ZK6btmq1Oo/exec" target="_blank" rel="noopener"><span class="largo">Past papers</span><span class="corto">Past papers</span></a>
+  </nav>
+</header>
+
+<nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
+  <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
+  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Construir <span class="proximamente">próximamente</span></button>
+  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar <span class="proximamente">próximamente</span></button>
+</nav>
+
+<!-- ============ EXPLORAR ============ -->
+<section class="panel" id="panel-visor" role="tabpanel" aria-labelledby="tab-explorar">
+  <div class="escenas" id="escenas" role="group" aria-label="Montaje"></div>
+
+  <div class="taller fuerzas">
+    <div class="col-principal">
+      <div class="caja escena-caja"><canvas id="escena" aria-label="Montaje de laboratorio con las fuerzas sobre cada cuerpo"></canvas></div>
+
+      <div class="reproduccion" id="reproduccion">
+        <button class="boton" id="btnReiniciar" title="Volver a t = 0" aria-label="Volver al inicio">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="2.5" height="12" fill="currentColor"/><polygon points="14,2 14,14 5.5,8" fill="currentColor"/></svg>
+        </button>
+        <button class="boton" id="btnAtras" title="Retroceder 0,05 s">−0,05 s</button>
+        <button class="boton primario" id="btnPlay" aria-label="Empezar">
+          <svg id="icoPlay" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><polygon points="3,2 14,8 3,14" fill="currentColor"/></svg>
+          <svg id="icoPausa" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" hidden><rect x="3" y="2" width="3.5" height="12" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" fill="currentColor"/></svg>
+          <span id="txtPlay">Empezar</span>
+        </button>
+        <button class="boton" id="btnAdelante" title="Avanzar 0,05 s">+0,05 s</button>
+        <label class="barra-tiempo"><span class="sr">Instante</span>
+          <input type="range" id="barraTiempo" min="0" max="1" step="0.001" value="0" aria-label="Instante t en segundos"></label>
+        <span class="tiempo" id="valT"></span>
+        <label class="rapidez"><span class="rap-txt">Rapidez</span>
+          <select id="rapidez" aria-label="Rapidez de reproducción">
+            <option value="0.25">×0,25</option>
+            <option value="0.5">×0,5</option>
+            <option value="1" selected>×1</option>
+            <option value="2">×2</option>
+            <option value="5">×5</option>
+            <option value="10">×10</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="caja graficas">
+        <div class="trio">
+          <div class="grafica"><canvas id="gDCL" aria-label="Diagrama de cuerpo libre"></canvas></div>
+          <div class="grafica"><canvas id="gV" aria-label="Gráfica velocidad–tiempo"></canvas></div>
+          <div class="grafica"><canvas id="gExtra" aria-label="Lecturas y comparación de fuerzas"></canvas></div>
+        </div>
+        <div class="pie-graficas">
+          <label class="casilla" id="grupoLupa" hidden><input type="checkbox" id="chkLupa"> Ampliar el comienzo (gráficas)</label>
+        </div>
+      </div>
+    </div>
+
+    <aside class="lateral">
+      <div class="caja ajustes">
+        <h2>Prepara el experimento</h2>
+        <div id="controles"></div>
+        <p class="ed-aviso" id="aviso" aria-live="polite"></p>
+        <div class="casillas-2">
+          <label class="casilla"><input type="checkbox" id="chkFuerzas" checked> Fuerzas</label>
+          <label class="casilla"><input type="checkbox" id="chkValores"> Valores</label>
+          <label class="casilla"><input type="checkbox" id="chkComponentes"> Componentes</label>
+        </div>
+      </div>
+
+      <div class="caja valores">
+        <h2 id="titLecturas">Lecturas en este instante</h2>
+        <p class="estado-roz" id="estadoRoz" hidden></p>
+        <table id="tablaLecturas"></table>
+        <h2 class="sub-h">Fuerzas <small>(quién la ejerce → sobre quién)</small></h2>
+        <table class="tabla-fuerzas" id="tablaFuerzas"></table>
+        <p class="nota" id="notaEscena"></p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="panel" id="panel-construir" role="tabpanel" aria-labelledby="tab-construir" hidden>
+  <div class="caja pronto">
+    <h2>Construir · próximamente</h2>
+    <p>Aquí arrastrarás flechas desde un banco de fuerzas para dibujar el diagrama de cuerpo libre de cada situación, y la simulación te dirá si falta o sobra una fuerza o si su dirección es incorrecta. En un segundo reto buscarás la pareja de tercera ley de una fuerza dada.</p>
+  </div>
+</section>
+<section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
+  <div class="caja pronto">
+    <h2>Practicar · próximamente</h2>
+    <p>Aquí habrá ejercicios que se corrigen uno a uno, sin puntaje: aceleración, tensión, coeficiente de rozamiento, lectura de la balanza, ángulo límite, velocidad terminal y «¿se mueve o no?».</p>
+  </div>
+</section>
+
+<footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
+
+<script src="../../comun/cinematica.js"></script>
+<script src="../../comun/dinamica.js"></script>
+<script src="../../comun/graficas.js"></script>
+<script src="escena.js"></script>
+<script src="sim.js"></script>
+</body>
+</html>

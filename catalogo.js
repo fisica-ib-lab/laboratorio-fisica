@@ -67,6 +67,15 @@ window.CATALOGO = {
       ruta: "sims/A.1-caida-libre/",
       miniatura: "sims/A.1-caida-libre/miniatura.svg",
       palabras: "caída libre lanzamiento vertical ecuaciones movimiento aceleración uniforme gravedad g suvat puerta fotoeléctrica cinemática"
+    },
+    {
+      subtema: "A.2",
+      titulo: "Diagramas de cuerpo libre y segunda ley",
+      descripcion: "Siete montajes de laboratorio con sus fuerzas a escala: bloque tirado con un dinamómetro, plano inclinado, ascensor con balanza, máquina de Atwood, bloque con masa colgante, dos cuerdas y esfera en un líquido. Rozamiento estático y dinámico, tensión, empuje y velocidad terminal.",
+      ficha: "A.2 · Leyes de Newton y fuerzas",
+      ruta: "sims/A.2-fuerzas/",
+      miniatura: "sims/A.2-fuerzas/miniatura.svg",
+      palabras: "fuerzas leyes de newton segunda ley primera ley diagrama de cuerpo libre peso normal rozamiento estático dinámico coeficiente tensión fuerza elástica hooke dinamómetro empuje arrastre viscoso stokes velocidad terminal plano inclinado ascensor balanza atwood polea equilibrio dinámica"
     }
   ],
 

@@ -104,6 +104,27 @@ con las distancias 1 : 3 : 5), nivel 2 lanzamiento hacia arriba, nivel 3 tabla d
 Usa `comun/proyectil.js` (θ = 90° o u = 0). Verificación: `node pruebas/verificar-caida-libre.js`.
 La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de la ficha).
 
+## Cuarta simulación: «Diagramas de cuerpo libre y segunda ley» (A.2) — `sims/A.2-fuerzas/`
+
+Plan aprobado por el profesor (16 nov 2026). Siete montajes con selector: bloque en la mesa tirado por un dinamómetro
+(fuerza constante, que crece poco a poco o que se suelta en 1,5 s; ángulo opcional), plano inclinado (con velocidad inicial
+hacia arriba opcional), persona sobre una balanza en un ascensor (viaje de subida/bajada o aceleración constante, hasta caída
+libre), máquina de Atwood con la polea colgada de un dinamómetro (marca 2F_T), bloque con masa colgante, cuerpo colgado de
+dos cuerdas con un dinamómetro en cada una, y esfera de acero o vidrio en glicerina o aceite de ricino (Stokes, Re < 1).
+
+Convenciones: símbolos **F_g** (peso), F_N, F_f, F_T, F_H, F_b, F_d con subíndice recto; colores por fuerza en `escena.js`
+(`FZ`). En la escena, cada fuerza sale de su punto de aplicación; el panel «Diagrama de cuerpo libre» usa el modelo de
+partícula y la **fuerza neta va en un recuadro aparte, nunca dentro del diagrama**. Tabla «quién la ejerce → sobre quién».
+Rigor: F_f estático = lo necesario para el reposo, ≤ μs F_N; al llegar a v = 0 el bloque se detiene y se vuelve a evaluar
+(no retrocede); μd ≤ μs forzado en los controles; F_H sen θ ≤ 0,95 mg (el bloque no se despega).
+
+Archivos: `comun/dinamica.js` (física, sin pantalla), `escena.js` (montajes, diagrama, barras, triángulo de fuerzas), `sim.js`.
+Verificación: `node pruebas/verificar-dinamica.js` (≈2,4 millones de comprobaciones contra fórmulas analíticas, 0 fallos).
+**Hecho (16 nov 2026): etapa 1** — los siete montajes en «Explorar» como laboratorio libre, pendiente de revisión del profesor.
+**Falta:** etapa 2 Explorar por niveles (1 equilibrio y primera ley, 2 rozamiento, 3 plano, fuerza oblicua y ascensor,
+4 sistemas unidos) con preguntas guiadas; etapa 3 Construir (diagrama arrastrando flechas desde un banco con distractores;
+parejas de tercera ley con los cuatro criterios); etapa 4 Practicar (términos de instrucción del IB, ±2 %, resolución paso a paso).
+
 ## Materiales para docentes — `materiales/`
 
 `materiales/index.html` (página de venta) muestra las tres piezas incrustadas en filas alternadas (descripción angosta | visor ancho, `ver/?…&incrustado`) y enlaza al visor `materiales/ver/?sub=A.1&doc=alumno|docente|presentacion&p=N`:
