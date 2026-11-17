@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/png" href="../../favicon.png?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prueba 1 NM · Noviembre 2026 resuelta · IB Seven</title>
+<meta name="description" content="Recurso gratuito para docentes de Física IB: las 25 preguntas de la Prueba 1 NM de noviembre de 2026 con procedimiento, esquema de calificación y nota para el corrector.">
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611171129">
+<script src="../../comun/docentes.js?v=202611171129"></script>
+<style>
+  .pagina { max-width: 1320px; margin: 0 auto; padding: 24px 24px 48px; display: grid; gap: 28px; }
+  .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
+  .barra .volver:hover { background: rgba(255,255,255,.12); }
+
+  .portada { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr); gap: 28px; align-items: start; }
+  .antetitulo { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--velocidad); font-weight: 700; }
+  .portada h2 { font-size: 36px; line-height: 1.08; margin: 6px 0 12px; color: var(--azul-oscuro); text-wrap: balance; }
+  .portada p { margin: 0 0 12px; max-width: 60ch; }
+  .datos { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; padding: 0; list-style: none; }
+  .datos li { padding: 2px 10px; border-radius: 999px; background: var(--azul-fondo); border: 1.5px solid var(--azul); color: var(--azul-oscuro); font-weight: 700; font-size: 14px; }
+  ul.lista { margin: 0 0 12px; padding-left: 20px; }
+  ul.lista li { margin: 4px 0; }
+  ul.lista li::marker { color: var(--velocidad); }
+
+  /* Formulario de descarga */
+  .descarga { border: 1.5px solid #3A8F64; background: #EAF5EE; border-radius: 14px; padding: 18px 20px; display: grid; gap: 10px; scroll-margin-top: 16px; }
+  .descarga h3 { margin: 0; font-size: 22px; color: var(--azul-oscuro); }
+  .descarga p { margin: 0; font-size: 15px; color: var(--tinta-suave); }
+  .campo { display: grid; gap: 4px; }
+  .campo span { font-weight: 700; font-size: 15px; color: var(--azul-oscuro); }
+  .campo input, .campo select { min-height: 42px; padding: 6px 10px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; }
+  .campo input:focus, .campo select:focus { outline: 3px solid #F2B84B; outline-offset: 1px; border-color: var(--azul); }
+  .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .casilla { display: flex; gap: 8px; align-items: flex-start; font-size: 15px; }
+  .casilla input { width: 18px; height: 18px; margin-top: 2px; flex: none; }
+  .descarga .enviar { background: var(--velocidad); border-color: var(--velocidad); color: #FFF; min-height: 44px; font-weight: 700; }
+  .descarga .enviar:hover { background: #18663F; }
+  .descarga .enviar[disabled] { opacity: .6; cursor: wait; }
+  .trampa { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .estado-envio { font-size: 15px; }
+  .estado-envio.ok { background: #FFF; border: 1.5px solid #3A8F64; border-radius: 10px; padding: 10px 12px; color: var(--tinta); }
+  .estado-envio.error { color: var(--aceleracion); }
+  .privacidad { font-size: 13px !important; }
+
+  /* Visor incrustado */
+  .visor h3 { margin: 0 0 4px; font-size: 24px; color: var(--azul-oscuro); }
+  .visor > p { margin: 0 0 12px; color: var(--tinta-suave); }
+  .marco { border-radius: 12px; overflow: hidden; border: 1.5px solid var(--gris-borde); box-shadow: 0 14px 34px rgba(31,77,120,.18); background: #EEF1F5; }
+  .marco iframe { display: block; width: 100%; height: min(760px, 82vh); border: 0; }
+
+  .mas { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; border: 1.5px solid #E0A33A; background: #FFF6E3; border-radius: 14px; padding: 18px 20px; }
+  .mas h3 { margin: 0 0 6px; color: var(--azul-oscuro); font-size: 22px; }
+  .mas p { margin: 0; max-width: 64ch; }
+  .aviso { font-size: 13px; color: var(--tinta-suave); text-align: center; margin: 0; }
+
+  @media (max-width: 900px) {
+    .portada, .mas { grid-template-columns: 1fr; }
+    .portada h2 { font-size: 29px; }
+    .dos { grid-template-columns: 1fr; }
+    .barra .sub, .barra .marca, .txt-volver { display: none; }
+    .barra h1 { font-size: 18px; }
+    .marco iframe { height: 520px; }
+  }
+</style>
+</head>
+<body>
+<header class="barra">
+  <a class="boton volver" href="../" aria-label="Volver a los materiales">←<span class="txt-volver"> Materiales</span></a>
+  <span class="marca">IB 7</span>
+  <div>
+    <h1>Recurso gratuito para docentes</h1>
+    <div class="sub">Física · Programa del Diploma · IB Seven</div>
+  </div>
+</header>
+
+<div class="pagina">
+
+  <section class="portada">
+    <div>
+      <div class="antetitulo">Gratis para docentes de Física IB</div>
+      <h2>Prueba 1 NM de noviembre de 2026, resuelta paso a paso</h2>
+      <ul class="datos"><li>25 preguntas</li><li>52 diapositivas</li><li>NM · Prueba 1</li><li>PDF</li></ul>
+      <p>Una presentación para repasar la prueba con tus alumnos: cada pregunta va en una diapositiva y la siguiente trae su resolución.</p>
+      <ul class="lista">
+        <li><b>Procedimiento</b> numerado, con las ecuaciones del Cuadernillo de datos.</li>
+        <li><b>Esquema de calificación</b> con lo que se pide para la respuesta correcta.</li>
+        <li><b>Nota para el corrector</b>: qué error lleva a cada respuesta incorrecta.</li>
+        <li>Al final, la <b>clave de respuestas</b> de las 25 preguntas.</li>
+      </ul>
+      <p>Mírala completa aquí abajo. Para descargarla, déjanos tu correo y te la enviamos.</p>
+    </div>
+
+    <form class="descarga" id="descargar" novalidate>
+      <h3>Recíbela en tu correo</h3>
+      <p>Te enviamos el PDF al instante. Es gratis.</p>
+      <label class="campo"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>
+      <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" inputmode="email" required></label>
+      <div class="dos">
+        <label class="campo"><span>Colegio</span><input name="colegio" autocomplete="organization" required></label>
+        <label class="campo"><span>País</span><input name="pais" autocomplete="country-name" required></label>
+      </div>
+      <label class="campo"><span>Enseñas</span>
+        <select name="nivel" required>
+          <option value="">Elige una opción</option>
+          <option>Física NM y NS</option>
+          <option>Solo Física NM</option>
+          <option>Solo Física NS</option>
+          <option>Otra asignatura del Diploma</option>
+        </select>
+      </label>
+      <label class="casilla"><input type="checkbox" name="novedades" value="sí" checked> Quiero recibir los próximos recursos gratuitos y novedades de IB Seven.</label>
+      <label class="trampa" aria-hidden="true">No llenar <input name="sitio" tabindex="-1" autocomplete="off"></label>
+      <input type="hidden" name="recurso" value="Prueba 1 NM · Noviembre 2026">
+      <button class="boton enviar" type="submit" id="enviar">Enviarme la presentación</button>
+      <div class="estado-envio" id="estadoEnvio" role="status" aria-live="polite"></div>
+      <p class="privacidad">Usamos tus datos solo para enviarte el recurso y, si lo marcas, avisarte de los próximos. Puedes pedir que los borremos escribiendo a ibseven.oficial@gmail.com.</p>
+    </form>
+  </section>
+
+  <section class="visor" aria-labelledby="t-visor">
+    <h3 id="t-visor">Mira la presentación completa</h3>
+    <p>Pasa las diapositivas con las flechas o deslizando. Las marcadas «Resolución» traen el desarrollo de la pregunta anterior.</p>
+    <div class="marco"><iframe title="Prueba 1 NM de noviembre de 2026 resuelta, para ver" src="../ver/?sub=N26-P1&amp;doc=presentacion&amp;incrustado" allowfullscreen></iframe></div>
+  </section>
+
+  <section class="mas" aria-labelledby="t-mas">
+    <div>
+      <h3 id="t-mas">¿Te sirvió? Así es todo nuestro material</h3>
+      <p>Fichas, solucionarios y presentaciones por subtema, con el Tema A completo. Hojea A.1 Cinemática entera antes de decidir.</p>
+    </div>
+    <a class="boton primario" href="../#muestra">Ver los materiales</a>
+  </section>
+
+  <p class="aviso">IB Seven · Materiales de Física IB en español. Material independiente, sin afiliación con la Organización del Bachillerato Internacional.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  // Dirección de la aplicación web de Apps Script que guarda el registro y envía el PDF
+  // (código en herramientas/registro-docentes.gs). Mientras esté vacía, el formulario abre un correo con los datos.
+  var REGISTRO_URL = '';
+  var CORREO = 'ibseven.oficial@gmail.com';
+
+  var form = document.getElementById('descargar');
+  var estado = document.getElementById('estadoEnvio');
+  var boton = document.getElementById('enviar');
+  var correoValido = function (c) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c); };
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    estado.className = 'estado-envio'; estado.textContent = '';
+    var datos = new FormData(form);
+    if (datos.get('sitio')) return; // relleno automático de robots
+    var faltan = ['nombre', 'correo', 'colegio', 'pais', 'nivel'].filter(function (k) { return !String(datos.get(k) || '').trim(); });
+    if (faltan.length) { estado.className = 'estado-envio error'; estado.textContent = 'Completa todos los campos, por favor.'; form.elements[faltan[0]].focus(); return; }
+    if (!correoValido(String(datos.get('correo')).trim())) { estado.className = 'estado-envio error'; estado.textContent = 'Revisa el correo: parece incompleto.'; form.elements.correo.focus(); return; }
+    if (!datos.get('novedades')) datos.set('novedades', 'no');
+
+    if (!REGISTRO_URL) {
+      var cuerpo = ['Hola, quiero recibir la Prueba 1 NM de noviembre de 2026 resuelta.', '',
+        'Nombre: ' + datos.get('nombre'), 'Correo: ' + datos.get('correo'), 'Colegio: ' + datos.get('colegio'),
+        'País: ' + datos.get('pais'), 'Enseño: ' + datos.get('nivel'), 'Novedades: ' + datos.get('novedades')].join('\n');
+      location.href = 'mailto:' + CORREO + '?subject=' + encodeURIComponent('Recurso gratuito: Prueba 1 NM noviembre 2026') + '&body=' + encodeURIComponent(cuerpo);
+      estado.className = 'estado-envio ok';
+      estado.textContent = 'Se abrió tu correo con los datos: envíalo y te respondemos con el PDF.';
+      return;
+    }
+
+    boton.disabled = true; boton.textContent = 'Enviando…';
+    fetch(REGISTRO_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(datos) })
+      .then(function () {
+        form.querySelectorAll('input:not([type=hidden]), select').forEach(function (el) { el.disabled = true; });
+        estado.className = 'estado-envio ok';
+        estado.innerHTML = '<b>¡Listo!</b> Te enviamos la presentación a <b>' + String(datos.get('correo')).replace(/[<>&]/g, '') +
+          '</b>. Si no llega en unos minutos, revisa la carpeta de spam o promociones.';
+        boton.textContent = 'Enviado';
+      })
+      .catch(function () {
+        boton.disabled = false; boton.textContent = 'Enviarme la presentación';
+        estado.className = 'estado-envio error';
+        estado.innerHTML = 'No se pudo enviar. Revisa tu conexión o escríbenos a <a href="mailto:' + CORREO + '">' + CORREO + '</a>.';
+      });
+  });
+})();
+</script>
+</body>
+</html>

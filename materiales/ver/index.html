@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ver materiales · IB Seven</title>
 <meta name="description" content="Ficha del alumno, versión docente y presentación de Física IB completas, para hojear antes de pedirlas.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611170633">
-<script src="../../comun/docentes.js?v=202611170633"></script>
+<link rel="icon" type="image/png" href="../../favicon.png?v=1">
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611171129">
+<script src="../../comun/docentes.js?v=202611171129"></script>
 <script>if (/[?&]incrustado(=|&|$)/.test(location.search)) document.documentElement.classList.add('incrustado');</script>
 <style>
   html, body { height: 100%; }
@@ -130,13 +131,13 @@
 </head>
 <body>
 <header class="barra">
-  <a class="boton volver" href="../" aria-label="Volver a los materiales">←<span class="txt-volver"> Materiales</span></a>
+  <a class="boton volver" id="volver" href="../" aria-label="Volver a los materiales">←<span class="txt-volver"> Materiales</span></a>
   <div>
     <h1 id="titulo">A.1 Cinemática</h1>
     <div class="sub" id="subtitulo"></div>
   </div>
   <nav class="docs" id="docs" aria-label="Documentos"></nav>
-  <a class="boton contactar" href="../#contacto"><span class="largo">Lo quiero · Escríbeme</span><span class="corto">Escríbeme</span></a>
+  <a class="boton contactar" id="accion" href="../#contacto"><span class="largo">Lo quiero · Escríbenos</span><span class="corto">Escríbenos</span></a>
 </header>
 
 <div class="herramientas">
@@ -180,7 +181,8 @@
   <div class="cuerpo"><div class="rejilla" id="rejilla"></div></div>
 </div>
 
-<script src="../A.1/datos.js?v=202611170633"></script>
+<script src="../A.1/datos.js?v=202611171129"></script>
+<script src="../N26-P1/datos.js?v=202611171129"></script>
 <script>
 (function () {
   'use strict';
@@ -194,7 +196,9 @@
   const N = D.paginas;
   const BASE = `../${SUB}/${clave}/`;
   const QUIETO = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ocultas = new Set(D.ocultas || []);
+  // Diapositivas marcadas: soluciones ocultas en clase (A.1…) o resoluciones (recursos gratuitos).
+  const ocultas = new Set(D.marcadas || D.ocultas || []);
+  const marcaCorta = D.marcaCorta || 'Solución', marcaLarga = D.marcaLarga || 'Solución · oculta en clase';
   const src = (p) => BASE + String(p).padStart(3, '0') + '.webp';
   const mini = (p) => BASE + 'mini/' + String(p).padStart(3, '0') + '.webp';
   const esDiapo = D.tipo === 'diapositivas';
@@ -205,6 +209,11 @@
   $('titulo').textContent = MAT.titulo;
   $('subtitulo').textContent = `${D.nombre} · ${N} ${esDiapo ? 'diapositivas' : 'páginas'}`;
   $('nota').textContent = D.nota || '';
+  if (MAT.volver) $('volver').href = MAT.volver;
+  if (MAT.accion) {
+    $('accion').href = MAT.accion.href;
+    $('accion').innerHTML = `<span class="largo">${MAT.accion.texto}</span><span class="corto">${MAT.accion.corto}</span>`;
+  }
   Object.keys(DOCS).forEach(k => {
     const a = document.createElement('a');
     a.href = `?sub=${encodeURIComponent(SUB)}&doc=${k}`;
@@ -351,7 +360,7 @@
     for (let p = 1; p <= N; p++) {
       const b = document.createElement('button');
       b.dataset.p = p; b.setAttribute('aria-label', `Diapositiva ${p}`);
-      b.innerHTML = `<img alt="" data-src="${mini(p)}"><span class="num">${p}</span>` + (ocultas.has(p) ? '<span class="sol">Solución</span>' : '');
+      b.innerHTML = `<img alt="" data-src="${mini(p)}"><span class="num">${p}</span>` + (ocultas.has(p) ? `<span class="sol">${marcaCorta}</span>` : '');
       b.addEventListener('click', () => ir(p));
       tira.appendChild(b);
       if (io) io.observe(b); else b.querySelector('img').src = mini(p);
@@ -400,7 +409,7 @@
     $('btnSig').disabled = $('ladoSig').disabled = ultima >= N;
     $('irA').value = '';
     $('irA').placeholder = v[0];
-    $('marcaSolucion').innerHTML = esDiapo && ocultas.has(actual) ? '<span class="etiqueta-solucion">Solución · oculta en clase</span>' : '';
+    $('marcaSolucion').innerHTML = esDiapo && ocultas.has(actual) ? `<span class="etiqueta-solucion">${marcaLarga}</span>` : '';
     // sección actual
     let sec = D.secciones[0];
     for (const s of D.secciones) if (s.pagina <= v[v.length - 1]) sec = s;
@@ -444,7 +453,7 @@
         if (inicios.has(p)) { const h = document.createElement('h3'); h.textContent = inicios.get(p); rej.appendChild(h); }
         const b = document.createElement('button');
         b.setAttribute('aria-label', `${unidad} ${p}`);
-        b.innerHTML = `<img loading="lazy" alt="" src="${mini(p)}"><span class="num">${p}</span>` + (ocultas.has(p) ? '<span class="sol">Solución</span>' : '');
+        b.innerHTML = `<img loading="lazy" alt="" src="${mini(p)}"><span class="num">${p}</span>` + (ocultas.has(p) ? `<span class="sol">${marcaCorta}</span>` : '');
         b.onclick = () => { $('todas').hidden = true; ir(p); };
         rej.appendChild(b);
       }

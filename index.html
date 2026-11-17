@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Laboratorio de Física IB</title>
 <meta name="description" content="Simulaciones interactivas de Física IB (Programa del Diploma) para practicar.">
-<link rel="stylesheet" href="comun/estilo.css?v=202611170633">
-<script src="comun/docentes.js?v=202611170633"></script>
+<link rel="stylesheet" href="comun/estilo.css?v=202611171129">
+<script src="comun/docentes.js?v=202611171129"></script>
 <style>
   .portal { display: grid; grid-template-columns: 290px 1fr; min-height: calc(100vh - 56px); }
   .menu {
@@ -99,12 +99,17 @@
     .barra { padding: 10px 16px; }
     .barra .sub { display: none; }
   }
-  .anuncio { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 18px; padding: 12px 16px;
+  .anuncios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+  @media (max-width: 1100px) { .anuncios { grid-template-columns: 1fr; } }
+  .anuncio { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 16px;
     border: 1.5px solid #E0A33A; border-radius: 12px; background: #FFF6E3; color: var(--tinta); text-decoration: none; }
   .anuncio:hover { background: #FDEFD0; }
   .anuncio-etiqueta { background: #F2B84B; color: #1F2A36; font-weight: 700; font-size: 13px; padding: 2px 10px; border-radius: 999px; }
   .anuncio-texto { flex: 1; min-width: 220px; }
-  .anuncio-flecha { font-weight: 700; color: var(--azul-oscuro); white-space: nowrap; }
+  .anuncio-flecha { font-weight: 700; color: var(--azul-oscuro); white-space: nowrap; margin-left: auto; }
+  .anuncio.gratis { border-color: #3A8F64; background: #EAF5EE; }
+  .anuncio.gratis:hover { background: #DCEFE3; }
+  .anuncio.gratis .anuncio-etiqueta { background: var(--velocidad); color: #FFF; }
 </style>
 <link rel="icon" type="image/png" href="./favicon.png?v=1">
 </head>
@@ -131,11 +136,18 @@
   </nav>
 
   <main class="contenido">
-    <a class="anuncio solo-docentes" href="materiales/">
-      <span class="anuncio-etiqueta">Para docentes</span>
-      <span class="anuncio-texto"><b>Fichas, solucionarios y presentaciones de Física IB en español.</b> Mira la muestra de A.1 Cinemática.</span>
-      <span class="anuncio-flecha">Ver materiales →</span>
-    </a>
+    <div class="anuncios solo-docentes">
+      <a class="anuncio" href="materiales/">
+        <span class="anuncio-etiqueta">Para docentes</span>
+        <span class="anuncio-texto"><b>Fichas, solucionarios y presentaciones de Física IB en español.</b> Tema A completo; mira la muestra de A.1 Cinemática.</span>
+        <span class="anuncio-flecha">Ver materiales →</span>
+      </a>
+      <a class="anuncio gratis" href="materiales/prueba1-noviembre-2026/">
+        <span class="anuncio-etiqueta">Gratis para docentes</span>
+        <span class="anuncio-texto"><b>Prueba 1 NM de noviembre de 2026, resuelta.</b> Las 25 preguntas con procedimiento y esquema de calificación.</span>
+        <span class="anuncio-flecha">Ver y descargar →</span>
+      </a>
+    </div>
     <div class="cabecera">
       <div>
         <h2 id="tituloVista">Todas las simulaciones</h2>
@@ -150,9 +162,9 @@
   </main>
 </div>
 
-<footer class="pie">Física · Programa del Diploma · Prof. Guillermo Escalante</footer>
+<footer class="pie">Física · Programa del Diploma · IB Seven</footer>
 
-<script src="catalogo.js?v=202611170633"></script>
+<script src="catalogo.js?v=202611171129"></script>
 <script>
 (function () {
   const C = window.CATALOGO;

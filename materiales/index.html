@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="../favicon.png?v=1">
 <title>Materiales para docentes · IB Seven</title>
 <meta name="description" content="Fichas, solucionarios y presentaciones de Física IB (Programa del Diploma, NM y NS) en español, listos para clase.">
-<link rel="stylesheet" href="../comun/estilo.css?v=202611170633">
-<script src="../comun/docentes.js?v=202611170633"></script>
+<link rel="stylesheet" href="../comun/estilo.css?v=202611171129">
+<script src="../comun/docentes.js?v=202611171129"></script>
 <style>
   .pagina { max-width: 1080px; margin: 0 auto; padding: 24px 20px 48px; display: grid; gap: 34px; }
   .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
@@ -67,12 +68,43 @@
   .tema h4 { margin: 0; padding: 10px 16px; background: var(--azul-fondo); color: var(--azul-oscuro); font-size: 18px; display: flex; gap: 10px; align-items: baseline; }
   .tema h4 .letra { font-size: 22px; }
   .tema ul { list-style: none; margin: 0; padding: 0; }
-  .tema li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px; border-top: 1px solid var(--gris-suave); }
-  .tema li .cod { font-weight: 700; color: var(--azul-oscuro); min-width: 34px; }
-  .tema li .nom { flex: 1; min-width: 160px; }
-  .tema li .estado { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .tema h4 .completo { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--velocidad); background: #E3F1E8; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .tema li { border-top: 1px solid var(--gris-suave); }
+  .tema .fila { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px; }
+  .tema .cod { font-weight: 700; color: var(--azul-oscuro); min-width: 34px; }
+  .tema .nom { flex: 1; min-width: 160px; }
+  .tema .estado { margin-left: auto; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
   .disponible { display: inline-block; padding: 0 8px; border-radius: 4px; background: #E3F1E8; color: var(--velocidad); font-weight: 700; font-size: .78em; }
   .tema li.vacio .nom, .tema li.vacio .cod { color: #8A97A6; }
+  /* Fila que se despliega */
+  .desplegar { display: flex; flex: 1; min-width: 240px; align-items: center; gap: 12px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+  .desplegar:hover .nom { color: var(--azul); }
+  .desplegar:focus-visible { outline: 3px solid #F2B84B; outline-offset: 4px; border-radius: 6px; }
+  .extension { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--tinta-suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .extension .barra-ext { width: 90px; height: 8px; border-radius: 99px; background: var(--gris-suave); overflow: hidden; }
+  .extension .barra-ext i { display: block; height: 100%; background: var(--azul); border-radius: 99px; }
+  .chevron { width: 26px; height: 26px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid var(--gris-borde); color: var(--azul-oscuro); font-size: 13px; transition: transform .2s ease; }
+  li.abierta .chevron { transform: rotate(180deg); background: var(--azul-fondo); border-color: var(--azul); }
+  .detalle { padding: 4px 16px 18px 62px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 16px 26px; }
+  .detalle[hidden] { display: none; }
+  .tema .estado.ver { min-width: 104px; margin-left: 0; justify-content: flex-end; }
+  .detalle h5 { margin: 14px 0 8px; }
+  .detalle h5:first-child { margin-top: 0; }
+  .detalle h5 { margin-bottom: 8px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--tinta-suave); }
+  .cifras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 12px; padding: 0; list-style: none; }
+  .cifras li { border: 0 !important; background: var(--azul-fondo); border-radius: 10px; padding: 8px 10px; line-height: 1.2; }
+  .cifras b { display: block; font-size: 24px; color: var(--azul-oscuro); font-variant-numeric: tabular-nums; }
+  .cifras span { font-size: 14px; color: var(--tinta-suave); }
+  .piezas { margin: 0 0 12px; padding: 0; list-style: none; display: grid; gap: 4px; }
+  .piezas li { border: 0 !important; padding-left: 22px; position: relative; }
+  .piezas li::before { content: "✓"; position: absolute; left: 2px; color: var(--velocidad); font-weight: 700; }
+  .piezas small { color: var(--tinta-suave); }
+  ol.apartados { margin: 0; padding: 0; list-style: none; columns: 2; column-gap: 22px; }
+  ol.apartados li { border: 0 !important; break-inside: avoid; padding: 3px 0 3px 46px; position: relative; font-size: 15px; line-height: 1.3; }
+  ol.apartados li b { position: absolute; left: 0; color: var(--azul); font-variant-numeric: tabular-nums; }
+  .detalle .acciones { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .detalle .acciones .nota-ns { font-size: 14px; color: var(--tinta-suave); }
+  .pista-catalogo { margin: -6px 0 12px; color: var(--tinta-suave); }
   .enlace-chico { font-size: 15px; font-weight: 700; color: var(--azul); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 
   .precio { font-size: 15px; color: var(--tinta-suave); margin-top: 12px !important; }
@@ -81,10 +113,23 @@
   .gratis h3 { margin: 4px 0 8px; font-size: 26px; color: var(--azul-oscuro); text-wrap: balance; }
   .gratis p { margin: 0; max-width: 60ch; }
   .gratis .antetitulo { color: #9A5B00; }
-  .autor { display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; }
-  .autor .foto { width: 96px; height: 96px; border-radius: 50%; background: var(--azul-fondo); border: 2px solid var(--azul); display: grid; place-items: center; font-size: 32px; font-weight: 700; color: var(--azul-oscuro); }
-  .autor h3 { margin: 0 0 6px; font-size: 22px; color: var(--azul-oscuro); }
-  .autor p { margin: 0; max-width: 64ch; }
+  /* Quiénes somos (IB Seven) */
+  .empresa { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr); gap: 22px 28px; align-items: start; }
+  .empresa .sello { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: var(--azul-oscuro); color: #FFF; font-weight: 700; font-size: 22px; margin-bottom: 10px; }
+  .empresa h3 { margin: 0 0 8px; font-size: 26px; color: var(--azul-oscuro); text-wrap: balance; }
+  .empresa p { margin: 0 0 10px; max-width: 52ch; }
+  .valores { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .valor { border: 1.5px solid var(--gris-borde); border-radius: 12px; padding: 12px 14px; background: #FFF; }
+  .valor b { display: block; color: var(--azul-oscuro); margin-bottom: 3px; }
+  .valor span { font-size: 15px; color: var(--tinta-suave); }
+
+  /* Recurso gratuito */
+  .recurso { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 22px; align-items: center; padding: 20px; border-radius: 14px; border: 1.5px solid #3A8F64; background: #EAF5EE; }
+  .recurso .antetitulo { color: var(--velocidad); }
+  .recurso h3 { margin: 4px 0 8px; font-size: 26px; color: var(--azul-oscuro); text-wrap: balance; }
+  .recurso p { margin: 0 0 12px; }
+  .recurso img { display: block; width: 100%; border-radius: 8px; box-shadow: 0 10px 26px rgba(31,77,120,.2); }
+  .recurso .verde { background: var(--velocidad); border-color: var(--velocidad); color: #FFF; }
 
   /* Plataforma */
   .plataforma { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: center; border: 1.5px solid var(--azul); border-radius: 14px; padding: 18px 20px; background: var(--azul-fondo); }
@@ -119,8 +164,13 @@
     .pieza-visor iframe, .pieza-visor.diapos iframe { height: 560px; }
     .pieza-visor .texto h4 { font-size: 22px; }
     .plataforma, .gratis { grid-template-columns: 1fr; }
-    .autor { grid-template-columns: 72px 1fr; }
-    .autor .foto { width: 72px; height: 72px; font-size: 24px; }
+    .empresa, .recurso { grid-template-columns: 1fr; }
+    .valores { grid-template-columns: 1fr; }
+    .detalle { grid-template-columns: 1fr; padding-left: 16px; }
+    ol.apartados { columns: 1; }
+    .extension .barra-ext { width: 54px; }
+    .tema .estado.ver:empty { display: none; }
+    .tema .estado.ver { min-width: 0; }
     .barra .sub { display: none; }
     .barra { padding: 8px 12px; gap: 10px; }
     .barra .marca, .txt-volver { display: none; }
@@ -240,7 +290,7 @@
     <div>
       <div class="antetitulo">Gratis para docentes</div>
       <h3 id="t-gratis">Prueba un apartado completo en tu clase</h3>
-      <p>Te envío el apartado <b>1.3.5 Gráfica velocidad–tiempo</b> de A.1 Cinemática: la parte de la ficha del alumno y sus diapositivas. El solucionario te lo envío cuando confirme que eres docente.</p>
+      <p>Te enviamos el apartado <b>1.3.5 Gráfica velocidad–tiempo</b> de A.1 Cinemática: la parte de la ficha del alumno y sus diapositivas. El solucionario te lo enviamos cuando confirmemos que eres docente.</p>
     </div>
     <div class="llamadas">
       <a class="boton primario" href="https://t.me/Ibsevenoficial" target="_blank" rel="noopener">Pedirla por Telegram</a>
@@ -248,16 +298,37 @@
     </div>
   </section>
 
-  <section class="autor" aria-labelledby="t-autor">
-    <div class="foto" aria-hidden="true">GE</div>
+  <section class="empresa" aria-labelledby="t-empresa">
     <div>
-      <h3 id="t-autor">Quién prepara estos materiales</h3>
-      <p>Soy Guillermo Escalante, profesor de Física del Programa del Diploma, NM y NS. Preparo cada ficha para mis propias clases y la uso con mis alumnos antes de ofrecerla a otros docentes.</p>
+      <span class="sello" aria-hidden="true">IB 7</span>
+      <h3 id="t-empresa">IB Seven: Física del Diploma, en español</h3>
+      <p>IB Seven se dedica solo a la Física del Programa del Diploma. Preparamos fichas, solucionarios, presentaciones, simulaciones y práctica de past papers para que docentes y alumnos tengan todo el curso en un mismo sistema.</p>
+      <p>Cada material se usa en el aula con alumnos del Diploma antes de ofrecerse a otros colegios.</p>
     </div>
+    <div class="valores">
+      <div class="valor"><b>Especialistas en Física IB</b><span>NM y NS, con la guía y el Cuadernillo de datos vigentes (primera evaluación 2025).</span></div>
+      <div class="valor"><b>Probado en clase</b><span>Cada ficha se usa con alumnos reales y se corrige antes de publicarse.</span></div>
+      <div class="valor"><b>Un sistema completo</b><span>Ficha, solucionario y presentación con la misma numeración, más simulaciones y past papers.</span></div>
+      <div class="valor"><b>Atención directa</b><span>Respondemos por Telegram y correo, y adaptamos licencias para colegios.</span></div>
+    </div>
+  </section>
+
+  <section class="recurso" aria-labelledby="t-recurso">
+    <div>
+      <div class="antetitulo">Recurso gratuito</div>
+      <h3 id="t-recurso">Prueba 1 NM de noviembre de 2026, resuelta</h3>
+      <p>Las 25 preguntas de opción múltiple con su procedimiento, el esquema de calificación y una nota para el corrector con el error que lleva a cada distractor. Lista para repasar la prueba con tus alumnos.</p>
+      <div class="llamadas">
+        <a class="boton verde" href="prueba1-noviembre-2026/#descargar">Descargar gratis</a>
+        <a class="boton" href="prueba1-noviembre-2026/">Ver la presentación</a>
+      </div>
+    </div>
+    <a href="prueba1-noviembre-2026/" aria-label="Ver la presentación de la Prueba 1 de noviembre de 2026"><img src="N26-P1/presentacion/003.webp" alt="Diapositiva de la resolución de la pregunta 1" loading="lazy"></a>
   </section>
 
   <section aria-labelledby="t-catalogo">
     <h3 class="seccion" id="t-catalogo">Catálogo por temas</h3>
+    <p class="pista-catalogo">Toca un subtema para ver qué trae y cuánto contenido tiene.</p>
     <div class="temas" id="temas"></div>
   </section>
 
@@ -273,8 +344,8 @@
   </section>
 
   <section class="contacto" id="contacto" aria-labelledby="t-contacto">
-    <h3 id="t-contacto">Escríbeme</h3>
-    <p>Cuéntame qué subtemas te interesan, tu nivel (NM o NS) y si es para ti o para tu colegio. Te envío los detalles y el precio.</p>
+    <h3 id="t-contacto">Escríbenos</h3>
+    <p>Cuéntanos qué subtemas te interesan, tu nivel (NM o NS) y si es para ti o para tu colegio. Te enviamos los detalles y el precio.</p>
     <div class="canales">
       <div class="canal">
         <span class="nombre">Telegram</span>
@@ -301,32 +372,78 @@
     </div>
   </section>
 
-  <p class="aviso">IB Seven · Guillermo Escalante. Material independiente, sin afiliación con la Organización del Bachillerato Internacional.</p>
+  <p class="aviso">IB Seven · Materiales de Física IB en español. Material independiente, sin afiliación con la Organización del Bachillerato Internacional.</p>
 </div>
 
 
-<script src="../catalogo.js?v=202611170633"></script>
+<script src="../catalogo.js?v=202611171129"></script>
+<script src="contenido.js?v=202611171129"></script>
 <script>
-  // Subtemas con materiales a la venta. Añadir uno = poner su código aquí y sus imágenes y datos.js en <código>/.
-  var DISPONIBLES = { "A.1": true };
+  // Subtemas con materiales listos. Su contenido (páginas, apartados, preguntas) está en contenido.js.
+  // «Ver completo» solo en los que tienen el visor con las tres piezas (MUESTRA).
+  var CONT = window.CONTENIDO || {};
+  var MUESTRA = { "A.1": "#muestra" };
   document.querySelectorAll('.pila img').forEach(function (im) {
     im.addEventListener('click', function () { location.href = 'ver/?sub=A.1&doc=' + im.dataset.doc + '&p=' + im.dataset.p; });
   });
 
+  var maxPag = Math.max.apply(null, Object.keys(CONT).map(function (k) { return CONT[k].paginas; }));
+  var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+
+  function detalle(s, c, id) {
+    var e = c.examen, n = c.apartados.length;
+    var h = '<div class="detalle" id="' + id + '" hidden><div>' +
+      '<h5>Qué trae</h5><ul class="cifras">' +
+      '<li><b>' + c.paginas + '</b><span>páginas en la ficha del alumno</span></li>' +
+      '<li><b>' + n + '</b><span>apartados en el Marco teórico</span></li>' +
+      '<li><b>' + c.ejemplos + '</b><span>ejemplos resueltos, cada uno con su «Ahora tú»</span></li>' +
+      '<li><b>' + (e.p1a + e.p1b + e.p2) + '</b><span>preguntas tipo examen: ' + e.p1a + ' de Prueba 1A, ' + e.p1b + ' de 1B y ' + e.p2 + ' de Prueba 2 (' + e.minutos + ' min)</span></li>' +
+      '</ul><h5>Incluye</h5><ul class="piezas">' +
+      '<li>Ficha del alumno <small>· Word editable y PDF</small></li>' +
+      '<li>Versión docente con todo resuelto' + (c.docente ? ' <small>· ' + c.docente + ' páginas</small>' : '') + '</li>' +
+      '<li>Presentación de clase' + (c.diapositivas ? ' <small>· ' + c.diapositivas + ' diapositivas</small>' : '') + '</li>' +
+      '<li>Práctica mixta graduada <small>· ' + c.practica + ' ejercicios de ● a ●●●</small></li>' +
+      (c.soloNS ? '<li>Sección «Solo NS» con preguntas de examen de NS</li>' : '') +
+      '</ul></div><div><h5>Apartados del Marco teórico</h5><ol class="apartados">' +
+      c.apartados.map(function (t, i) { return '<li><b>1.3.' + (i + 1) + '</b>' + esc(t) + '</li>'; }).join('') +
+      '</ol></div><div class="acciones">' +
+      (MUESTRA[s.codigo] ? '<a class="boton primario" href="' + MUESTRA[s.codigo] + '">Ver ' + s.codigo + ' completo</a>' : '') +
+      '<a class="boton" href="#contacto">Pedir información</a>' +
+      (s.ns ? '<span class="nota-ns">Subtema solo de NS.</span>' : '') +
+      '</div></div>';
+    return h;
+  }
+
   var temas = document.getElementById('temas');
   window.CATALOGO.temas.forEach(function (t) {
     var d = document.createElement('div'); d.className = 'tema';
-    var h = '<h4><span class="letra">' + t.codigo + '</span>' + t.nombre + '</h4><ul>';
+    var listos = t.subtemas.filter(function (s) { return CONT[s.codigo]; }).length;
+    var h = '<h4><span class="letra">' + t.codigo + '</span>' + t.nombre +
+      (listos === t.subtemas.length ? '<span class="completo">Tema completo · ' + listos + ' subtemas</span>' : '') + '</h4><ul>';
     t.subtemas.forEach(function (s) {
-      var ok = DISPONIBLES[s.codigo];
-      h += '<li class="' + (ok ? '' : 'vacio') + '"><span class="cod">' + s.codigo + '</span><span class="nom">' + s.nombre +
-        (s.ns ? ' <span class="etiqueta-ns">NS</span>' : '') + '</span><span class="estado">' +
-        (ok ? '<span class="disponible">Disponible</span><a class="enlace-chico" href="#muestra">Ver completo</a><a class="enlace-chico" href="#contacto">Pedir información</a>'
-            : '<span class="proximamente">En preparación</span><a class="enlace-chico" href="#contacto">Avísame</a>') +
-        '</span></li>';
+      var c = CONT[s.codigo], ns = s.ns ? ' <span class="etiqueta-ns">NS</span>' : '';
+      if (!c) {
+        h += '<li class="vacio"><div class="fila"><span class="cod">' + s.codigo + '</span><span class="nom">' + s.nombre + ns +
+          '</span><span class="estado"><span class="proximamente">En preparación</span><a class="enlace-chico" href="#contacto">Avísame</a></span></div></li>';
+        return;
+      }
+      var id = 'det-' + s.codigo.replace('.', '-');
+      h += '<li><div class="fila"><button class="desplegar" type="button" aria-expanded="false" aria-controls="' + id + '">' +
+        '<span class="cod">' + s.codigo + '</span><span class="nom">' + s.nombre + ns + '</span>' +
+        '<span class="extension" title="Extensión de la ficha del alumno"><span class="barra-ext"><i style="width:' + Math.round(100 * c.paginas / maxPag) + '%"></i></span>' + c.paginas + ' págs.</span>' +
+        '<span class="disponible">Completo</span><span class="chevron" aria-hidden="true">▼</span></button>' +
+        '<span class="estado ver">' + (MUESTRA[s.codigo] ? '<a class="enlace-chico" href="' + MUESTRA[s.codigo] + '">Ver completo</a>' : '') + '</span>' +
+        '</div>' + detalle(s, c, id) + '</li>';
     });
     d.innerHTML = h + '</ul>';
     temas.appendChild(d);
+  });
+  temas.addEventListener('click', function (ev) {
+    var b = ev.target.closest('.desplegar'); if (!b) return;
+    var abrir = b.getAttribute('aria-expanded') !== 'true';
+    b.setAttribute('aria-expanded', abrir);
+    document.getElementById(b.getAttribute('aria-controls')).hidden = !abrir;
+    b.closest('li').classList.toggle('abierta', abrir);
   });
 
   function copiar(texto, boton) {

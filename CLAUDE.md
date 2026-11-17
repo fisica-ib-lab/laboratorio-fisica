@@ -171,6 +171,23 @@ las ocultas marcadas «Solución»). Ficha del alumno, versión docente y presen
 agua grabada («IB Seven · Física IB» en diagonal y línea de contacto); el profesor quiere que se vean enteras y en alta resolución.
 Imágenes y datos en `materiales/<subtema>/` (`datos.js` con páginas, secciones y diapositivas ocultas). Se generan desde los
 archivos de «03 Materiales finales/Tema A» con LibreOffice (necesita `libreoffice-math` para las ecuaciones) → PDF → 170 ppp.
+Imágenes nuevas: `python3 herramientas/vista-previa.py ARCHIVO.pdf materiales/<código>/<doc>` (WebP con marca «IB Seven · Física IB»
+y línea de contacto **sin nombres de personas**; las imágenes de A.1 aún llevan el nombre del profesor en la línea de contacto).
+El visor carga cada `datos.js` con una etiqueta `<script>` propia en `ver/index.html`; cada material puede definir `volver`,
+`accion` (botón amarillo), y en cada documento `marcadas`, `marcaCorta` y `marcaLarga` (por defecto, soluciones ocultas).
+
+**Catálogo (17 nov 2026):** todo el Tema A figura como completo. Cada fila se despliega con lo que trae el subtema
+(`materiales/contenido.js`: páginas, apartados, ejemplos, práctica y preguntas tipo examen, sacados de la ficha del alumno final).
+«Ver completo» solo en A.1 (objeto `MUESTRA` del script). Añadir un subtema listo = una entrada en `contenido.js`.
+
+**Voz de empresa:** los textos públicos hablan como IB Seven («te enviamos», «escríbenos»), nunca en primera persona del profesor
+ni con su nombre.
+
+**Recurso gratuito «Prueba 1 NM · Noviembre 2026» — `materiales/prueba1-noviembre-2026/`:** visor incrustado
+(`ver/?sub=N26-P1&doc=presentacion`, imágenes en `materiales/N26-P1/`) y formulario de descarga con correo. El formulario envía a
+la aplicación web de Apps Script `herramientas/registro-docentes.gs` (guarda la fila en la hoja «Registros» y envía el PDF
+adjunto); su URL va en `REGISTRO_URL`. Mientras esté vacía, el formulario abre un correo con los datos. Anuncio verde
+«Gratis para docentes» junto al amarillo en el portal (vista de docentes) y tarjeta en la página de materiales.
 
 ## Fases (revisión del profesor entre cada una)
 
@@ -178,6 +195,8 @@ archivos de «03 Materiales finales/Tema A» con LibreOffice (necesita `libreoff
 5. Verificación final, publicación, copia en Drive («03 Materiales finales/Laboratorio») y código QR.
 
 ## Publicación
+
+Toda página nueva lleva `<link rel="icon" type="image/png" href="…/favicon.png?v=1">` (ruta relativa a la raíz).
 
 Commits directos a `main` (GitHub Pages publica solo). Mensajes de commit en español.
 **Antes de cada commit que se publique: `node herramientas/sellar-version.js`.** Pone `?v=AAAAMMDDhhmm` en todos los .js y .css
