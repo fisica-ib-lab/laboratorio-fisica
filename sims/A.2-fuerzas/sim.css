@@ -358,3 +358,55 @@ input[type="range"] { accent-color: var(--azul); height: 24px; margin: 0; cursor
   .taller.fuerzas .ajustes { order: 4; }
   .taller.fuerzas .valores { order: 5; }
 }
+
+/* ================= Construir ================= */
+.construir { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 10px 14px; }
+.c-principal { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: 10px; min-width: 0; min-height: 0; }
+.c-mini, .c-trabajo { position: relative; padding: 4px; }
+.c-mini canvas { display: block; width: 100%; height: 300px; }
+.c-trabajo canvas { display: block; width: 100%; height: 420px; touch-action: none; cursor: grab; }
+.c-trabajo canvas:focus-visible { outline: 3px solid #F2B84B; outline-offset: -3px; }
+.banco-tit { font-weight: 700; font-size: 14px; color: var(--azul-oscuro); margin-top: 4px; }
+.banco-tit small { font-weight: 400; color: var(--tinta-suave); }
+.banco { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 4px 0 6px; }
+.banco.apagado { opacity: .45; pointer-events: none; }
+.ficha { display: flex; align-items: center; gap: 5px; padding: 3px 6px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF;
+  font-weight: 700; color: var(--c); cursor: grab; touch-action: none; user-select: none; text-align: left; line-height: 1.1; min-height: 32px; }
+.ficha small { font-weight: 400; color: var(--tinta-suave); font-size: 12px; }
+.ficha:hover { border-color: var(--c); }
+.ficha.falsa small { color: var(--tinta); font-size: 12.5px; }
+.muestra-f { flex: none; width: 14px; height: 4px; border-radius: 2px; background: var(--c); }
+.fantasma { position: fixed; z-index: 50; transform: translate(-50%, -130%); pointer-events: none; padding: 2px 10px; border-radius: 999px;
+  border: 2px solid var(--c); background: #FFF; color: var(--c); font-weight: 700; box-shadow: 0 4px 12px rgba(31,77,120,.25); }
+.c-botones { display: flex; gap: 6px; flex-wrap: wrap; }
+.construir .guia { border-color: var(--azul); }
+/* Reto 2 */
+.construir2 { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 14px; max-width: 1100px; }
+.pareja { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin: 6px 0 8px; }
+.pareja label { display: flex; flex-direction: column; gap: 2px; font-weight: 700; font-size: 14px; color: var(--azul-oscuro); }
+.pareja label:last-child { grid-column: 1 / -1; }
+.pareja select { padding: 5px 6px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; font-weight: 400; color: var(--tinta); }
+.criterios { margin: 4px 0 0; padding-left: 4px; list-style: none; }
+.criterios li.si { color: #1E7B4F; } .criterios li.no { color: #9C1C1C; }
+.r2-ayuda ol { margin: 4px 0; padding-left: 20px; font-size: 15px; } .r2-ayuda li + li { margin-top: 4px; }
+@media (min-width: 900px) and (min-height: 600px) {
+  .construir { flex: 1; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+  .construir .lateral { overflow-y: auto; }
+  .c-principal { grid-template-rows: minmax(0, 1fr); }
+  .c-mini canvas, .c-trabajo canvas { position: absolute; inset: 4px; width: calc(100% - 8px); height: calc(100% - 8px); }
+  #panel-construir:not([hidden]) { overflow: auto; }
+}
+@media (max-width: 1100px) and (min-width: 900px) { .construir { grid-template-columns: minmax(0, 1fr) 290px; } .c-principal { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); } }
+@media (max-width: 899px) {
+  .construir, .construir2 { grid-template-columns: minmax(0, 1fr); }
+  .c-principal { grid-template-columns: minmax(0, 1fr); }
+  .c-mini canvas { height: 220px; }
+  .c-trabajo canvas { height: 380px; }
+  .construir .lateral { display: block; }
+}
+.construir .lateral, .construir .c-principal { grid-area: auto; }
+.ficha sub, .correccion sub, .guia-texto sub, .criterios sub { font-size: 0.72em; font-style: normal; }
+.ficha .var { font-size: 1.05em; }
+.construir .guia-cab, .construir2 .guia-cab { flex-direction: column; align-items: flex-start; gap: 3px; }
+.c-botones .boton { min-height: 30px; padding: 2px 9px; font-size: 14px; }
+.construir .lateral, .construir .c-botones, .banco { user-select: none; -webkit-user-select: none; }

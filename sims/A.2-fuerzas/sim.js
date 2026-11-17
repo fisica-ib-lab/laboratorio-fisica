@@ -476,6 +476,7 @@
     $('panel-construir').hidden = parte !== 'construir';
     $('panel-practicar').hidden = parte !== 'practicar';
     if (parte === 'explorar') dibujarTodo(); else pausar();
+    if (parte === 'construir' && window.ConstruirFuerzas) window.ConstruirFuerzas.mostrar();
   }));
 
   /* ---------- Niveles con preguntas guiadas ---------- */

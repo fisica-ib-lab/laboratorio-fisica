@@ -126,7 +126,7 @@ Verificación: `node pruebas/verificar-dinamica.js` (≈2,4 millones de comproba
 `node pruebas/verificar-niveles-fuerzas.js` (cada situación hace lo que dicen las preguntas y cada respuesta numérica
 coincide con lo que mide la simulación). Las dos con 0 fallos antes de publicar.
 
-**Hecho (16 nov 2026): etapas 1 y 2**, pendientes de revisión del profesor.
+**Hecho (16 nov 2026): etapas 1, 2 y 3**, pendientes de revisión del profesor.
 - Etapa 1: los siete montajes en «Laboratorio libre» (selector de montajes y todos los deslizadores).
 - Etapa 2: Explorar por niveles (34 preguntas): 1 Equilibrio y primera ley (riel sin rozamiento, velocidad constante con
   rozamiento, ascensor a velocidad constante, dos cuerdas, velocidad terminal); 2 Rozamiento (F_f estático = lo necesario,
@@ -135,8 +135,20 @@ coincide con lo que mide la simulación). Las dos con 0 fallos antes de publicar
   dinamómetro, masas iguales, bloque con masa colgante, masa límite). Tarjeta de pregunta en el lateral (en celular, antes
   del montaje): opciones con comentario por error y explicación al acertar; valores con ±2 % calculados con los deslizadores
   actuales, pista y «Ver resolución» tras dos errores. «oculta» esconde el dato que daría la respuesta (μd, μs, ángulo límite).
-**Falta:** etapa 3 Construir (diagrama arrastrando flechas desde un banco con distractores; parejas de tercera ley con los
-cuatro criterios); etapa 4 Practicar (términos de instrucción del IB, ±2 %, resolución paso a paso).
+- Etapa 3 (16 nov 2026): **Construir**, pendiente de revisión del profesor.
+  Reto 1 «Diagrama de cuerpo libre» (12 situaciones: bloque en reposo, tirado, después de soltar, quieto/subiendo/bajando
+  en el plano, persona en el ascensor que arranca hacia abajo, masa colgante, bloque unido a la masa colgante, dos cuerdas,
+  esfera en glicerina, bloque sobre un carrito que acelera). Zona de trabajo con el cuerpo aislado (y el montaje al lado);
+  las fichas se arrastran desde el banco (o se tocan) y la flecha se gira y alarga arrastrando su punta (cuadrícula de 5°);
+  se quita soltándola sobre el cuerpo, con «Quitar flecha» o Supr. Banco con las siete fuerzas + distractores («fuerza del
+  movimiento», «de inercia», «neta» y otros por situación). Las fuerzas correctas salen del modelo en ese instante
+  (`construir-corrector.js`), salvo el carrito. Corrección en orden: distractor → sobra/repetida → falta (pista gradual:
+  «falta una fuerza» → de contacto/a distancia → cuál) → dirección (±10°). «Ver solución» tras tres intentos.
+  Reto 2 «Parejas de tercera ley» (9 preguntas): construir la pareja (quién, sobre quién, tipo, sentido, módulo) con los
+  cuatro criterios marcados ✓/✗, y preguntas de opción (peso y normal, choque camión–auto, balanza del ascensor, Atwood).
+  Archivos: `construir-datos.js`, `construir-corrector.js` (sin pantalla) y `construir.js`.
+  Verificación: `node pruebas/verificar-construir-fuerzas.js` (0 fallos).
+**Falta:** etapa 4 Practicar (términos de instrucción del IB, ±2 %, resolución paso a paso).
 
 ## Materiales para docentes — `materiales/`
 

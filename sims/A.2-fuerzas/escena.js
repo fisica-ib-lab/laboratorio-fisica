@@ -573,5 +573,5 @@
     ctx.fillText('El triángulo se cierra: la fuerza neta es cero.', 8, h - 9);
   }
 
-  window.FuerzasEscena = { FZ, NETA, simbolo, N1, dibujarEscena, dibujarDCL, dibujarBarras, dibujarTriangulo };
+  window.FuerzasEscena = { FZ, NETA, simbolo, N1, salida, bloque, mesaLab, dibujarEscena, dibujarDCL, dibujarBarras, dibujarTriangulo };
 })();

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagramas de cuerpo libre y segunda ley · A.2</title>
 <meta name="description" content="Simulación de las leyes de Newton: diagramas de cuerpo libre, rozamiento estático y dinámico, plano inclinado, ascensor, máquina de Atwood, dos cuerdas y velocidad terminal.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611162325">
-<script src="../../comun/docentes.js?v=202611162325"></script>
-<link rel="stylesheet" href="sim.css?v=202611162325">
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611162334">
+<script src="../../comun/docentes.js?v=202611162334"></script>
+<link rel="stylesheet" href="sim.css?v=202611162334">
 </head>
 <body>
 <header class="barra">
@@ -25,7 +25,7 @@
 
 <nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
   <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
-  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Construir <span class="proximamente">próximamente</span></button>
+  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Construir</button>
   <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar <span class="proximamente">próximamente</span></button>
 </nav>
 
@@ -116,9 +116,57 @@
 </section>
 
 <section class="panel" id="panel-construir" role="tabpanel" aria-labelledby="tab-construir" hidden>
-  <div class="caja pronto">
-    <h2>Construir · próximamente</h2>
-    <p>Aquí arrastrarás flechas desde un banco de fuerzas para dibujar el diagrama de cuerpo libre de cada situación, y la simulación te dirá si falta o sobra una fuerza o si su dirección es incorrecta. En un segundo reto buscarás la pareja de tercera ley de una fuerza dada.</p>
+  <div class="niveles" id="retos" role="group" aria-label="Retos">
+    <button class="nivel activo" data-reto="1" aria-pressed="true"><b>Reto 1</b> Diagrama de cuerpo libre</button>
+    <button class="nivel" data-reto="2" aria-pressed="false"><b>Reto 2</b> Parejas de tercera ley</button>
+  </div>
+
+  <div class="construir" id="reto1">
+    <div class="c-principal">
+      <div class="caja c-mini"><canvas id="cMini" aria-label="Montaje de la situación"></canvas></div>
+      <div class="caja c-trabajo"><canvas id="cTrabajo" tabindex="0" aria-label="Zona de trabajo: el cuerpo aislado donde se colocan las flechas"></canvas></div>
+    </div>
+    <aside class="lateral">
+      <div class="caja guia">
+        <div class="guia-cab"><span class="guia-num" id="cNum"></span><span class="guia-puntos" id="cPuntos"></span></div>
+        <div class="guia-sit"><span id="cNombre"></span></div>
+        <div class="guia-texto" id="cTexto"></div>
+        <div class="banco-tit">Banco de fuerzas <small>(arrástralas hasta el cuerpo o tócalas)</small></div>
+        <div class="banco" id="banco"></div>
+        <div class="c-botones">
+          <button class="boton mini primario" id="cComprobar">Comprobar</button>
+          <button class="boton mini" id="cQuitar" disabled>Quitar flecha</button>
+          <button class="boton mini" id="cBorrar">Borrar todo</button>
+        </div>
+        <div class="correccion" id="cCorr" hidden></div>
+        <div class="guia-nav">
+          <button class="boton mini" id="cAnt">← Anterior</button>
+          <button class="boton mini" id="cSig">Siguiente →</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="construir2" id="reto2" hidden>
+    <div class="caja guia r2">
+      <div class="guia-cab"><span class="guia-num" id="pNum"></span><span class="guia-puntos" id="pPuntos"></span></div>
+      <div id="pCuerpo"></div>
+      <div class="correccion" id="pCorr" hidden></div>
+      <div class="guia-nav">
+        <button class="boton mini" id="pAnt">← Anterior</button>
+        <button class="boton mini" id="pSig">Siguiente →</button>
+      </div>
+    </div>
+    <div class="caja r2-ayuda">
+      <h2>Los cuatro criterios de una pareja de tercera ley</h2>
+      <ol>
+        <li>Actúan sobre <b>cuerpos distintos</b>: si A empuja a B, la pareja es la de B sobre A.</li>
+        <li>Son del <b>mismo tipo</b> de interacción (gravitatoria con gravitatoria, normal con normal…).</li>
+        <li>Tienen <b>sentidos opuestos</b>.</li>
+        <li>Tienen el <b>mismo módulo</b>, siempre, aunque los cuerpos aceleren o tengan masas muy distintas.</li>
+      </ol>
+      <p class="nota">Por eso dos fuerzas que actúan sobre el mismo cuerpo nunca son pareja de tercera ley, aunque sean iguales y opuestas.</p>
+    </div>
   </div>
 </section>
 <section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
@@ -130,11 +178,14 @@
 
 <footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
 
-<script src="../../comun/cinematica.js?v=202611162325"></script>
-<script src="../../comun/dinamica.js?v=202611162325"></script>
-<script src="../../comun/graficas.js?v=202611162325"></script>
-<script src="niveles.js?v=202611162325"></script>
-<script src="escena.js?v=202611162325"></script>
-<script src="sim.js?v=202611162325"></script>
+<script src="../../comun/cinematica.js?v=202611162334"></script>
+<script src="../../comun/dinamica.js?v=202611162334"></script>
+<script src="../../comun/graficas.js?v=202611162334"></script>
+<script src="niveles.js?v=202611162334"></script>
+<script src="escena.js?v=202611162334"></script>
+<script src="construir-datos.js?v=202611162334"></script>
+<script src="construir-corrector.js?v=202611162334"></script>
+<script src="sim.js?v=202611162334"></script>
+<script src="construir.js?v=202611162334"></script>
 </body>
 </html>
