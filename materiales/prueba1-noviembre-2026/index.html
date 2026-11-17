@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prueba 1 NM · Noviembre 2026 resuelta · IB Seven</title>
 <meta name="description" content="Recurso gratuito para docentes de Física IB: las 25 preguntas de la Prueba 1 NM de noviembre de 2026 con procedimiento, esquema de calificación y nota para el corrector.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611171336">
-<script src="../../comun/docentes.js?v=202611171336"></script>
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611171547">
+<script src="../../comun/docentes.js?v=202611171547"></script>
 <style>
   .pagina { max-width: 1320px; margin: 0 auto; padding: 24px 24px 48px; display: grid; gap: 28px; }
   .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
@@ -29,6 +29,7 @@
   .descarga p { margin: 0; font-size: 15px; color: var(--tinta-suave); }
   .campo { display: grid; gap: 4px; }
   .campo span { font-weight: 700; font-size: 15px; color: var(--azul-oscuro); }
+  .campo span small { font-weight: 400; color: var(--tinta-suave); }
   .campo input, .campo select { min-height: 42px; padding: 6px 10px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; }
   .campo input:focus, .campo select:focus { outline: 3px solid #F2B84B; outline-offset: 1px; border-color: var(--azul); }
   .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -95,7 +96,10 @@
       <h3>Recíbela en tu correo</h3>
       <p>Te enviamos el PDF al instante. Es gratis.</p>
       <label class="campo"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>
-      <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" inputmode="email" required></label>
+      <div class="dos">
+        <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" inputmode="email" required></label>
+        <label class="campo"><span>Celular o WhatsApp <small>(opcional)</small></span><input name="celular" type="tel" autocomplete="tel" inputmode="tel" placeholder="+51 999 999 999"></label>
+      </div>
       <div class="dos">
         <label class="campo"><span>Colegio</span><input name="colegio" autocomplete="organization" required></label>
         <label class="campo"><span>País</span><input name="pais" autocomplete="country-name" required></label>
@@ -114,7 +118,7 @@
       <input type="hidden" name="recurso" value="Prueba 1 NM · Noviembre 2026">
       <button class="boton enviar" type="submit" id="enviar">Enviarme la presentación</button>
       <div class="estado-envio" id="estadoEnvio" role="status" aria-live="polite"></div>
-      <p class="privacidad">Usamos tus datos solo para enviarte el recurso y, si lo marcas, avisarte de los próximos. Puedes pedir que los borremos escribiendo a ibseven.oficial@gmail.com.</p>
+      <p class="privacidad">Usamos tus datos solo para enviarte el recurso y, si lo marcas, avisarte de los próximos. No compartimos tu correo ni tu celular. Puedes pedir que los borremos escribiendo a ibseven.oficial@gmail.com.</p>
     </form>
   </section>
 
@@ -156,11 +160,14 @@
     var faltan = ['nombre', 'correo', 'colegio', 'pais', 'nivel'].filter(function (k) { return !String(datos.get(k) || '').trim(); });
     if (faltan.length) { estado.className = 'estado-envio error'; estado.textContent = 'Completa todos los campos, por favor.'; form.elements[faltan[0]].focus(); return; }
     if (!correoValido(String(datos.get('correo')).trim())) { estado.className = 'estado-envio error'; estado.textContent = 'Revisa el correo: parece incompleto.'; form.elements.correo.focus(); return; }
+    var cel = String(datos.get('celular') || '').trim();
+    if (cel && !/^\+?[\d\s().-]{7,20}$/.test(cel)) { estado.className = 'estado-envio error'; estado.textContent = 'Revisa el celular: solo números, con el código de país (por ejemplo, +51 999 999 999).'; form.elements.celular.focus(); return; }
+    datos.set('celular', cel);
     if (!datos.get('novedades')) datos.set('novedades', 'no');
 
     if (!REGISTRO_URL) {
       var cuerpo = ['Hola, quiero recibir la Prueba 1 NM de noviembre de 2026 resuelta.', '',
-        'Nombre: ' + datos.get('nombre'), 'Correo: ' + datos.get('correo'), 'Colegio: ' + datos.get('colegio'),
+        'Nombre: ' + datos.get('nombre'), 'Correo: ' + datos.get('correo'), 'Celular: ' + (datos.get('celular') || '—'), 'Colegio: ' + datos.get('colegio'),
         'País: ' + datos.get('pais'), 'Enseño: ' + datos.get('nivel'), 'Novedades: ' + datos.get('novedades')].join('\n');
       location.href = 'mailto:' + CORREO + '?subject=' + encodeURIComponent('Recurso gratuito: Prueba 1 NM noviembre 2026') + '&body=' + encodeURIComponent(cuerpo);
       estado.className = 'estado-envio ok';

@@ -39,7 +39,7 @@ function doPost(e) {
   try {
     const hoja = hoja_();
     hoja.appendRow([new Date(), limpiar_(p.nombre), correo, limpiar_(p.colegio), limpiar_(p.pais),
-                    limpiar_(p.nivel), p.novedades === 'sí' ? 'sí' : 'no', p.recurso]);
+                    limpiar_(p.nivel), p.novedades === 'sí' ? 'sí' : 'no', p.recurso, limpiar_(p.celular)]);
   } finally {
     bloqueo.releaseLock();
   }
@@ -62,7 +62,7 @@ function doPost(e) {
     attachments: [pdf],
   });
   MailApp.sendEmail(AVISAR_A, 'Nuevo registro: ' + p.recurso,
-    [limpiar_(p.nombre), correo, limpiar_(p.colegio), limpiar_(p.pais), limpiar_(p.nivel), 'Novedades: ' + p.novedades].join('\n'));
+    [limpiar_(p.nombre), correo, 'Celular: ' + (limpiar_(p.celular) || '—'), limpiar_(p.colegio), limpiar_(p.pais), limpiar_(p.nivel), 'Novedades: ' + p.novedades].join('\n'));
   return respuesta_(true);
 }
 
@@ -71,15 +71,16 @@ function hoja_() {
   let hoja = libro.getSheetByName('Registros');
   if (!hoja) {
     hoja = libro.insertSheet('Registros');
-    hoja.appendRow(['Fecha', 'Nombre', 'Correo', 'Colegio', 'País', 'Enseña', 'Acepta novedades', 'Recurso']);
+    hoja.appendRow(['Fecha', 'Nombre', 'Correo', 'Colegio', 'País', 'Enseña', 'Acepta novedades', 'Recurso', 'Celular']);
     hoja.setFrozenRows(1);
     hoja.getRange('1:1').setFontWeight('bold');
   }
+  if (!hoja.getRange('I1').getValue()) hoja.getRange('I1').setValue('Celular').setFontWeight('bold');
   return hoja;
 }
 
 function limpiar_(t) {
-  return String(t || '').replace(/^[=+\-@]/, "'").slice(0, 200).trim();   // evita fórmulas en la hoja
+  return String(t || '').trim().replace(/^[=+\-@]/, "'$&").slice(0, 200);   // evita fórmulas (y conserva el + del celular)
 }
 
 function respuesta_(ok) {
@@ -89,5 +90,5 @@ function respuesta_(ok) {
 /** Para probar desde el editor: Ejecutar → probar (te llega el correo a ti). */
 function probar() {
   doPost({ parameter: { nombre: 'Prueba', correo: AVISAR_A, colegio: 'Colegio de prueba', pais: 'Perú',
-                        nivel: 'Física NM y NS', novedades: 'sí', recurso: 'Prueba 1 NM · Noviembre 2026' } });
+                        nivel: 'Física NM y NS', novedades: 'sí', celular: '+51 999 999 999', recurso: 'Prueba 1 NM · Noviembre 2026' } });
 }
