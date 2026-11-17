@@ -155,4 +155,8 @@ archivos de «03 Materiales finales/Tema A» con LibreOffice (necesita `libreoff
 ## Publicación
 
 Commits directos a `main` (GitHub Pages publica solo). Mensajes de commit en español.
+**Antes de cada commit que se publique: `node herramientas/sellar-version.js`.** Pone `?v=AAAAMMDDhhmm` en todos los .js y .css
+locales de las páginas, para que los navegadores descarguen los archivos nuevos en vez de usar la copia guardada (GitHub Pages
+deja que el navegador guarde cada archivo unos 10 minutos; con el sello, a lo sumo la página tarda eso en renovarse).
+Archivo nuevo de .js o .css enlazado desde una página: el sello se le pone solo al ejecutar el script.
 Los alumnos no deben ver respuestas fuera de la corrección del ejercicio que están resolviendo.
