@@ -61,8 +61,11 @@ function doPost(e) {
       '<p>Un saludo,<br>IB Seven · Física IB</p>',
     attachments: [pdf],
   });
+  const digitos = String(p.celular || '').replace(/\D/g, '');
   MailApp.sendEmail(AVISAR_A, 'Nuevo registro: ' + p.recurso,
-    [limpiar_(p.nombre), correo, 'Celular: ' + (limpiar_(p.celular) || '—'), limpiar_(p.colegio), limpiar_(p.pais), limpiar_(p.nivel), 'Novedades: ' + p.novedades].join('\n'));
+    [limpiar_(p.nombre), correo, 'Celular: ' + (String(p.celular || '').trim() || '—'),
+     digitos ? 'WhatsApp: https://wa.me/' + digitos : '', limpiar_(p.colegio), limpiar_(p.pais), limpiar_(p.nivel),
+     'Novedades: ' + p.novedades].join('\n'));
   return respuesta_(true);
 }
 

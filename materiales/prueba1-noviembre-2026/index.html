@@ -6,8 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prueba 1 NM · Noviembre 2026 resuelta · IB Seven</title>
 <meta name="description" content="Recurso gratuito para docentes de Física IB: las 25 preguntas de la Prueba 1 NM de noviembre de 2026 con procedimiento, esquema de calificación y nota para el corrector.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611171547">
-<script src="../../comun/docentes.js?v=202611171547"></script>
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611171550">
+<script src="../../comun/docentes.js?v=202611171550"></script>
 <style>
   .pagina { max-width: 1320px; margin: 0 auto; padding: 24px 24px 48px; display: grid; gap: 28px; }
   .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
@@ -29,7 +29,12 @@
   .descarga p { margin: 0; font-size: 15px; color: var(--tinta-suave); }
   .campo { display: grid; gap: 4px; }
   .campo span { font-weight: 700; font-size: 15px; color: var(--azul-oscuro); }
-  .campo span small { font-weight: 400; color: var(--tinta-suave); }
+  .telefono { display: flex; gap: 6px; }
+  .telefono #codigo { flex: none; max-width: 190px; }
+  .telefono #codigoOtro { flex: none; width: 72px; }
+  .telefono [name=numero] { flex: 1; min-width: 0; }
+  .telefono select, .telefono input { min-height: 42px; padding: 6px 8px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; font: inherit; }
+  .telefono select:focus, .telefono input:focus { outline: 3px solid #F2B84B; outline-offset: 1px; border-color: var(--azul); }
   .campo input, .campo select { min-height: 42px; padding: 6px 10px; border: 1.5px solid var(--gris-borde); border-radius: 8px; background: #FFF; }
   .campo input:focus, .campo select:focus { outline: 3px solid #F2B84B; outline-offset: 1px; border-color: var(--azul); }
   .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -96,13 +101,61 @@
       <h3>Recíbela en tu correo</h3>
       <p>Te enviamos el PDF al instante. Es gratis.</p>
       <label class="campo"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>
-      <div class="dos">
-        <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" inputmode="email" required></label>
-        <label class="campo"><span>Celular o WhatsApp <small>(opcional)</small></span><input name="celular" type="tel" autocomplete="tel" inputmode="tel" placeholder="+51 999 999 999"></label>
-      </div>
+      <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" inputmode="email" required></label>
       <div class="dos">
         <label class="campo"><span>Colegio</span><input name="colegio" autocomplete="organization" required></label>
-        <label class="campo"><span>País</span><input name="pais" autocomplete="country-name" required></label>
+        <label class="campo"><span>País</span>
+          <select name="pais" id="pais" required>
+          <option data-codigo="51" selected>Perú</option>
+          <option data-codigo="54">Argentina</option>
+          <option data-codigo="591">Bolivia</option>
+          <option data-codigo="56">Chile</option>
+          <option data-codigo="57">Colombia</option>
+          <option data-codigo="506">Costa Rica</option>
+          <option data-codigo="593">Ecuador</option>
+          <option data-codigo="503">El Salvador</option>
+          <option data-codigo="34">España</option>
+          <option data-codigo="1">Estados Unidos</option>
+          <option data-codigo="502">Guatemala</option>
+          <option data-codigo="504">Honduras</option>
+          <option data-codigo="52">México</option>
+          <option data-codigo="505">Nicaragua</option>
+          <option data-codigo="507">Panamá</option>
+          <option data-codigo="595">Paraguay</option>
+          <option data-codigo="1">Puerto Rico</option>
+          <option data-codigo="1">República Dominicana</option>
+          <option data-codigo="598">Uruguay</option>
+          <option data-codigo="58">Venezuela</option>
+          <option data-codigo="">Otro país</option>
+          </select>
+        </label>
+      </div>
+      <div class="campo"><span id="t-cel">Celular o WhatsApp <small>(elige el código de tu país)</small></span>
+        <div class="telefono">
+          <select id="codigo" aria-label="Código de país">
+          <option value="+1">+1 EE. UU.</option>
+          <option value="+34">+34 España</option>
+          <option value="+51" selected>+51 Perú</option>
+          <option value="+52">+52 México</option>
+          <option value="+54">+54 Argentina</option>
+          <option value="+56">+56 Chile</option>
+          <option value="+57">+57 Colombia</option>
+          <option value="+58">+58 Venezuela</option>
+          <option value="+502">+502 Guatemala</option>
+          <option value="+503">+503 El Salvador</option>
+          <option value="+504">+504 Honduras</option>
+          <option value="+505">+505 Nicaragua</option>
+          <option value="+506">+506 Costa Rica</option>
+          <option value="+507">+507 Panamá</option>
+          <option value="+591">+591 Bolivia</option>
+          <option value="+593">+593 Ecuador</option>
+          <option value="+595">+595 Paraguay</option>
+          <option value="+598">+598 Uruguay</option>
+          <option value="otro">Otro…</option>
+          </select>
+          <input id="codigoOtro" aria-label="Código de país" inputmode="tel" placeholder="+00" hidden>
+          <input name="numero" type="tel" autocomplete="tel-national" inputmode="tel" placeholder="999 999 999" aria-labelledby="t-cel" required>
+        </div>
       </div>
       <label class="campo"><span>Enseñas</span>
         <select name="nivel" required>
@@ -152,17 +205,39 @@
   var boton = document.getElementById('enviar');
   var correoValido = function (c) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c); };
 
+  // Celular: código de país (Perú por defecto, cambia con el país) + número. Se guarda como «+51 987654321».
+  var selCodigo = document.getElementById('codigo'), otroCodigo = document.getElementById('codigoOtro'), selPais = document.getElementById('pais');
+  function mostrarOtro() { otroCodigo.hidden = selCodigo.value !== 'otro'; }
+  selCodigo.addEventListener('change', mostrarOtro);
+  selPais.addEventListener('change', function () {
+    var c = selPais.selectedOptions[0].dataset.codigo;
+    selCodigo.value = c ? '+' + c : 'otro'; mostrarOtro();
+    if (!c) otroCodigo.focus();
+  });
+  function celularCompleto() {
+    var num = String(form.elements.numero.value || '').trim();
+    var limpio = num.replace(/[\s().-]/g, '');
+    if (/^\+\d{8,15}$/.test(limpio)) return limpio;                    // ya escribió el número con +código
+    var cod = selCodigo.value === 'otro' ? otroCodigo.value.replace(/[^\d]/g, '') : selCodigo.value.slice(1);
+    if (!/^\d{1,4}$/.test(cod)) return '';
+    if (limpio.indexOf('00' + cod) === 0) limpio = limpio.slice(2 + cod.length);
+    else if (limpio.indexOf(cod) === 0 && limpio.length > 9 && cod.length > 1) limpio = limpio.slice(cod.length); // repitió el código sin +
+    limpio = limpio.replace(/^0+/, '');
+    if (!/^\d{6,13}$/.test(limpio)) return '';
+    return '+' + cod + ' ' + limpio;
+  }
+
   form.addEventListener('submit', function (ev) {
     ev.preventDefault();
     estado.className = 'estado-envio'; estado.textContent = '';
     var datos = new FormData(form);
     if (datos.get('sitio')) return; // relleno automático de robots
-    var faltan = ['nombre', 'correo', 'colegio', 'pais', 'nivel'].filter(function (k) { return !String(datos.get(k) || '').trim(); });
+    var faltan = ['nombre', 'correo', 'numero', 'colegio', 'pais', 'nivel'].filter(function (k) { return !String(datos.get(k) || '').trim(); });
     if (faltan.length) { estado.className = 'estado-envio error'; estado.textContent = 'Completa todos los campos, por favor.'; form.elements[faltan[0]].focus(); return; }
     if (!correoValido(String(datos.get('correo')).trim())) { estado.className = 'estado-envio error'; estado.textContent = 'Revisa el correo: parece incompleto.'; form.elements.correo.focus(); return; }
-    var cel = String(datos.get('celular') || '').trim();
-    if (cel && !/^\+?[\d\s().-]{7,20}$/.test(cel)) { estado.className = 'estado-envio error'; estado.textContent = 'Revisa el celular: solo números, con el código de país (por ejemplo, +51 999 999 999).'; form.elements.celular.focus(); return; }
-    datos.set('celular', cel);
+    var cel = celularCompleto();
+    if (!cel) { estado.className = 'estado-envio error'; estado.textContent = 'Revisa el celular: escribe solo el número (por ejemplo, 987 654 321) y elige el código de tu país.'; form.elements.numero.focus(); return; }
+    datos.delete('numero'); datos.set('celular', cel);
     if (!datos.get('novedades')) datos.set('novedades', 'no');
 
     if (!REGISTRO_URL) {
