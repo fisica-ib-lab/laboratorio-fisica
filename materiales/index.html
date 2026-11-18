@@ -6,8 +6,8 @@
 <link rel="icon" type="image/png" href="../favicon.png?v=1">
 <title>Materiales para docentes · IB Seven</title>
 <meta name="description" content="Fichas, solucionarios y presentaciones de Física IB (Programa del Diploma, NM y NS) en español, listos para clase.">
-<link rel="stylesheet" href="../comun/estilo.css?v=202611171930">
-<script src="../comun/docentes.js?v=202611171930"></script>
+<link rel="stylesheet" href="../comun/estilo.css?v=202611171942">
+<script src="../comun/docentes.js?v=202611171942"></script>
 <style>
   .pagina { max-width: 1080px; margin: 0 auto; padding: 24px 20px 48px; display: grid; gap: 34px; }
   .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
@@ -80,9 +80,7 @@
   .desplegar { display: flex; flex: 1; min-width: 240px; align-items: center; gap: 12px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
   .desplegar:hover .nom { color: var(--azul); }
   .desplegar:focus-visible { outline: 3px solid #F2B84B; outline-offset: 4px; border-radius: 6px; }
-  .extension { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--tinta-suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .extension .barra-ext { width: 90px; height: 8px; border-radius: 99px; background: var(--gris-suave); overflow: hidden; }
-  .extension .barra-ext i { display: block; height: 100%; background: var(--azul); border-radius: 99px; }
+  .extension { display: inline-flex; justify-content: flex-end; min-width: 76px; align-items: center; gap: 8px; font-size: 14px; color: var(--tinta-suave); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .chevron { width: 26px; height: 26px; flex: none; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid var(--gris-borde); color: var(--azul-oscuro); font-size: 13px; transition: transform .2s ease; }
   li.abierta .chevron { transform: rotate(180deg); background: var(--azul-fondo); border-color: var(--azul); }
   .detalle { padding: 4px 16px 18px 62px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 16px 26px; }
@@ -168,7 +166,6 @@
     .valores { grid-template-columns: 1fr; }
     .detalle { grid-template-columns: 1fr; padding-left: 16px; }
     ol.apartados { columns: 1; }
-    .extension .barra-ext { width: 54px; }
     .tema .estado.ver:empty { display: none; }
     .tema .estado.ver { min-width: 0; }
     .barra .sub { display: none; }
@@ -204,7 +201,7 @@
         <a class="boton primario" href="#gratis">Recibe gratis un apartado completo</a>
         <a class="boton" href="#muestra">Ver A.1 completo</a>
       </div>
-      <p class="precio">Desde <b>S/ 89</b> por subtema · licencias para colegios</p>
+      <p class="precio">Desde <b>S/ 49.90</b> o <b>US$ 15</b> por subtema · licencias para colegios</p>
     </div>
     <div class="pila" aria-hidden="true">
       <img src="A.1/alumno/001.webp" alt="" data-doc="alumno" data-p="1">
@@ -376,8 +373,8 @@
 </div>
 
 
-<script src="../catalogo.js?v=202611171930"></script>
-<script src="contenido.js?v=202611171930"></script>
+<script src="../catalogo.js?v=202611171942"></script>
+<script src="contenido.js?v=202611171942"></script>
 <script>
   // Subtemas con materiales listos. Su contenido (páginas, apartados, preguntas) está en contenido.js.
   // «Ver completo» solo en los que tienen el visor con las tres piezas (MUESTRA).
@@ -387,7 +384,6 @@
     im.addEventListener('click', function () { location.href = 'ver/?sub=A.1&doc=' + im.dataset.doc + '&p=' + im.dataset.p; });
   });
 
-  var maxPag = Math.max.apply(null, Object.keys(CONT).map(function (k) { return CONT[k].paginas; }));
   var esc = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
 
   function detalle(s, c, id) {
@@ -430,7 +426,7 @@
       var id = 'det-' + s.codigo.replace('.', '-');
       h += '<li><div class="fila"><button class="desplegar" type="button" aria-expanded="false" aria-controls="' + id + '">' +
         '<span class="cod">' + s.codigo + '</span><span class="nom">' + s.nombre + ns + '</span>' +
-        '<span class="extension" title="Extensión de la ficha del alumno"><span class="barra-ext"><i style="width:' + Math.round(100 * c.paginas / maxPag) + '%"></i></span>' + c.paginas + ' págs.</span>' +
+        '<span class="extension" title="Páginas de la ficha del alumno">' + c.paginas + ' págs.</span>' +
         '<span class="disponible">Completo</span><span class="chevron" aria-hidden="true">▼</span></button>' +
         '<span class="estado ver">' + (MUESTRA[s.codigo] ? '<a class="enlace-chico" href="' + MUESTRA[s.codigo] + '">Ver completo</a>' : '') + '</span>' +
         '</div>' + detalle(s, c, id) + '</li>';
