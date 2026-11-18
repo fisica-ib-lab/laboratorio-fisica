@@ -184,7 +184,7 @@ El visor carga cada `datos.js` con una etiqueta `<script>` propia en `ver/index.
 ni con su nombre.
 
 **Recurso gratuito «Prueba 1 NM · Noviembre 2026» — `materiales/prueba1-noviembre-2026/`:** visor incrustado
-(`ver/?sub=N26-P1&doc=presentacion`, imágenes en `materiales/N26-P1/`) y formulario de descarga con correo. El formulario envía a
+(`ver/?sub=N26-P1&doc=presentacion`, imágenes en `materiales/N26-P1/`) arriba y, debajo, el registro para recibir el PDF sin marca de agua. El formulario envía a
 la aplicación web de Apps Script `herramientas/registro-docentes.gs` (guarda la fila en la hoja «Registros» y envía el PDF
 adjunto; columna I = celular obligatorio, con código de país); su URL va en `REGISTRO_URL` (instalado el 17 nov 2026 en la hoja «IB Seven · Registros de docentes» de ibseven.oficial). Si se vacía, el formulario abre un correo con los datos. Anuncio verde
 «Gratis para docentes» junto al amarillo en el portal (vista de docentes) y tarjeta en la página de materiales.

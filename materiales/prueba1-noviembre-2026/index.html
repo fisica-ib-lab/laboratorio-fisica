@@ -6,14 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prueba 1 NM · Noviembre 2026 resuelta · IB Seven</title>
 <meta name="description" content="Recurso gratuito para docentes de Física IB: las 25 preguntas de la Prueba 1 NM de noviembre de 2026 con procedimiento, esquema de calificación y nota para el corrector.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611171611">
-<script src="../../comun/docentes.js?v=202611171611"></script>
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611171930">
+<script src="../../comun/docentes.js?v=202611171930"></script>
 <style>
   .pagina { max-width: 1320px; margin: 0 auto; padding: 24px 24px 48px; display: grid; gap: 28px; }
   .barra .volver { background: transparent; color: #FFF; border-color: #FFF; }
   .barra .volver:hover { background: rgba(255,255,255,.12); }
 
-  .portada { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr); gap: 28px; align-items: start; }
+  .portada { max-width: 900px; }
+  .portada .llamada { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+  .ir-registro { margin-top: 4px; }
+  .registro { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr); gap: 28px; align-items: start; scroll-margin-top: 16px; }
+  .registro h3 { font-size: 28px; line-height: 1.12; margin: 6px 0 12px; color: var(--azul-oscuro); text-wrap: balance; }
+  .registro p { margin: 0 0 12px; max-width: 54ch; }
   .antetitulo { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--velocidad); font-weight: 700; }
   .portada h2 { font-size: 36px; line-height: 1.08; margin: 6px 0 12px; color: var(--azul-oscuro); text-wrap: balance; }
   .portada p { margin: 0 0 12px; max-width: 60ch; }
@@ -61,7 +66,7 @@
   .aviso { font-size: 13px; color: var(--tinta-suave); text-align: center; margin: 0; }
 
   @media (max-width: 900px) {
-    .portada, .mas { grid-template-columns: 1fr; }
+    .registro, .mas { grid-template-columns: 1fr; }
     .portada h2 { font-size: 29px; }
     .dos { grid-template-columns: 1fr; }
     .barra .sub, .barra .marca, .txt-volver { display: none; }
@@ -88,18 +93,33 @@
       <h2>Prueba 1 NM de noviembre de 2026, resuelta paso a paso</h2>
       <ul class="datos"><li>25 preguntas</li><li>52 diapositivas</li><li>NM · Prueba 1</li><li>PDF</li></ul>
       <p>Una presentación para repasar la prueba con tus alumnos: cada pregunta va en una diapositiva y la siguiente trae su resolución.</p>
+      <div class="llamada"><p style="margin:0">Mírala completa aquí abajo. Si te sirve, regístrate al final y te enviamos el PDF <b>sin marca de agua</b>.</p>
+      <a class="boton ir-registro" href="#descargar">Quiero el PDF ↓</a></div>
+    </div>
+  </section>
+
+  <section class="visor" aria-labelledby="t-visor">
+    <h3 id="t-visor">Mira la presentación completa</h3>
+    <p>Pasa las diapositivas con las flechas o deslizando. Las marcadas «Resolución» traen el desarrollo de la pregunta anterior.</p>
+    <div class="marco"><iframe title="Prueba 1 NM de noviembre de 2026 resuelta, para ver" src="../ver/?sub=N26-P1&amp;doc=presentacion&amp;incrustado" allowfullscreen></iframe></div>
+  </section>
+
+  <section class="registro" aria-labelledby="t-registro">
+    <div class="registro-texto">
+      <div class="antetitulo">¿Te sirvió?</div>
+      <h3 id="t-registro">Llévatela en PDF, sin marca de agua</h3>
+      <p>Déjanos tus datos y te enviamos al instante la presentación completa, lista para proyectar en clase. Incluye:</p>
       <ul class="lista">
         <li><b>Procedimiento</b> numerado, con las ecuaciones del Cuadernillo de datos.</li>
         <li><b>Esquema de calificación</b> con lo que se pide para la respuesta correcta.</li>
         <li><b>Nota para el corrector</b>: qué error lleva a cada respuesta incorrecta.</li>
         <li>Al final, la <b>clave de respuestas</b> de las 25 preguntas.</li>
       </ul>
-      <p>Mírala completa aquí abajo. Para descargarla, déjanos tu correo y te la enviamos.</p>
+      <p>Si marcas la casilla, también te avisamos cuando publiquemos el próximo recurso gratuito.</p>
     </div>
-
     <form class="descarga" id="descargar" novalidate>
-      <h3>Recíbela en tu correo</h3>
-      <p>Te enviamos el PDF al instante. Es gratis.</p>
+      <h3>Recíbela sin marca de agua</h3>
+      <p>Te enviamos el PDF a tu correo al instante. Es gratis.</p>
       <label class="campo"><span>Nombre</span><input name="nombre" autocomplete="name" required></label>
       <label class="campo"><span>Correo</span><input name="correo" type="email" autocomplete="email" inputmode="email" required></label>
       <div class="dos">
@@ -175,15 +195,9 @@
     </form>
   </section>
 
-  <section class="visor" aria-labelledby="t-visor">
-    <h3 id="t-visor">Mira la presentación completa</h3>
-    <p>Pasa las diapositivas con las flechas o deslizando. Las marcadas «Resolución» traen el desarrollo de la pregunta anterior.</p>
-    <div class="marco"><iframe title="Prueba 1 NM de noviembre de 2026 resuelta, para ver" src="../ver/?sub=N26-P1&amp;doc=presentacion&amp;incrustado" allowfullscreen></iframe></div>
-  </section>
-
   <section class="mas" aria-labelledby="t-mas">
     <div>
-      <h3 id="t-mas">¿Te sirvió? Así es todo nuestro material</h3>
+      <h3 id="t-mas">¿Buscas más? Así es todo nuestro material</h3>
       <p>Fichas, solucionarios y presentaciones por subtema, con el Tema A completo. Hojea A.1 Cinemática entera antes de decidir.</p>
     </div>
     <a class="boton primario" href="../#muestra">Ver los materiales</a>
