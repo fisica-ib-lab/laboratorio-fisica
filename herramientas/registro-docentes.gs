@@ -1,84 +1,157 @@
 /**
- * Registro de docentes y envío de recursos gratuitos · IB Seven
+ * Registro de docentes y envío de recursos gratuitos · IB Seven  (versión 2, 19 nov 2026)
  *
- * Recibe el formulario de materiales/prueba1-noviembre-2026/, guarda una fila en la hoja «Registros»
- * y envía al docente el PDF de la presentación como adjunto (así el correo queda comprobado).
+ * Recibe el formulario de materiales/noviembre-2026/ (uno o varios «recurso»), registra al docente en una sola fila
+ * de la pestaña «Registros» (si ya existe su correo, la actualiza) y le envía los PDF sin marca de agua.
+ * Qué se puede enviar se lee de la pestaña «Recursos» de la misma hoja: un recurso nuevo = una fila nueva,
+ * sin tocar este código.
  *
- * Cómo instalarlo (una sola vez):
- *  1. En Google Drive: Nuevo → Hojas de cálculo. Nómbrala «IB Seven · Registros de docentes».
- *  2. En esa hoja: Extensiones → Apps Script. Borra lo que haya y pega este archivo completo. Guarda.
- *  3. Implementar → Nueva implementación → tipo «Aplicación web».
- *     Ejecutar como: «Yo». Quién tiene acceso: «Cualquier usuario». Implementar y aceptar los permisos.
- *  4. Copia la URL de la aplicación web (termina en /exec) y pégala en REGISTRO_URL de
- *     materiales/prueba1-noviembre-2026/index.html.
- *
- * Para un recurso nuevo: añade una entrada en RECURSOS con el ID del archivo de Drive
- * (Presentaciones de Google, Documentos o PDF) y usa ese nombre en el campo oculto «recurso» del formulario.
- * Límite de Gmail personal: unos 100 correos al día.
+ * Instalación: Extensiones → Apps Script de la hoja «IB Seven · Registros de docentes», pegar este archivo, guardar,
+ * ejecutar «instalar» una vez y publicar con Implementar → Gestionar implementaciones → editar → Nueva versión.
  */
 
-const RECURSOS = {
-  'Prueba 1 NM · Noviembre 2026': {
-    archivo: '1cnVQugoPlXnbGrTeDh_RliYBz7S7JlkNgseRedb4Diw',      // «Noviembre 2026 Fisica Prueba 1 NM» (Presentaciones de Google)
-    nombrePdf: 'IB Seven · Física NM · Prueba 1 · Noviembre 2026 resuelta.pdf',
-    asunto: 'Tu Prueba 1 NM de noviembre de 2026 resuelta · IB Seven',
-  },
-};
-const AVISAR_A = 'ibseven.oficial@gmail.com';   // recibe un aviso por cada registro nuevo
+const AVISAR_A = 'ibseven.oficial@gmail.com';
 const ENLACE_MATERIALES = 'https://fisica-ib-lab.github.io/laboratorio-fisica/materiales/';
+const MAX_MB_POR_CORREO = 18;   // los adjuntos se reparten en varios correos si pasan de esto (límite de Gmail: 25 MB)
+
+// Solo se usan la primera vez, para llenar la pestaña «Recursos» si está vacía.
+const RECURSOS_INICIALES = [
+  ['Prueba 1A NM · Noviembre 2026', '1cnVQugoPlXnbGrTeDh_RliYBz7S7JlkNgseRedb4Diw',
+   'IB Seven · Física NM · Prueba 1A · Noviembre 2026 resuelta.pdf', 'sí'],
+  ['Prueba 1B NM · Noviembre 2026', '1aBpI1PnMuUmCY0J5l6-IoyQJlIeW5FflBhLyVrgMbF0',
+   'IB Seven · Física NM · Prueba 1B · Noviembre 2026 resuelta.pdf', 'sí'],
+  ['Prueba 2 NM · Noviembre 2026', '1tBFer1MvkUyNWrrtdzV7zy4qq6ZdC-Isr_qrahgL8vA',
+   'IB Seven · Física NM · Prueba 2 · Noviembre 2026 resuelta.pdf', 'sí'],
+];
+// Nombres antiguos que todavía pueden llegar de páginas guardadas en el navegador.
+const ALIAS = { 'Prueba 1 NM · Noviembre 2026': 'Prueba 1A NM · Noviembre 2026' };
+
+const COLUMNAS = ['Fecha de registro', 'Nombre', 'Correo', 'Colegio', 'País', 'Enseña', 'Acepta novedades',
+                  'Recursos enviados', 'Celular', 'Última solicitud'];
 
 function doPost(e) {
   const p = (e && e.parameter) || {};
-  if (p.sitio) return respuesta_(true);                      // robots
+  if (p.sitio) return respuesta_(true);                                   // robots
   const correo = String(p.correo || '').trim();
-  const recurso = RECURSOS[p.recurso];
-  if (!recurso || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return respuesta_(false);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return respuesta_(false);
+
+  const disponibles = recursos_();
+  const pedidos = [...new Set(((e.parameters && e.parameters.recurso) || [p.recurso]).filter(Boolean)
+                    .map(n => ALIAS[n] || n))].filter(n => disponibles[n]);
+  if (!pedidos.length) return respuesta_(false);
 
   const bloqueo = LockService.getScriptLock();
   bloqueo.waitLock(20000);
+  let nombre;
   try {
-    const hoja = hoja_();
-    hoja.appendRow([new Date(), limpiar_(p.nombre), correo, limpiar_(p.colegio), limpiar_(p.pais),
-                    limpiar_(p.nivel), p.novedades === 'sí' ? 'sí' : 'no', p.recurso, limpiar_(p.celular)]);
+    nombre = registrar_(p, correo, pedidos);
   } finally {
     bloqueo.releaseLock();
   }
 
-  const pdf = DriveApp.getFileById(recurso.archivo).getAs('application/pdf').setName(recurso.nombrePdf);
-  const nombre = limpiar_(p.nombre).split(' ')[0] || 'colega';
-  MailApp.sendEmail({
-    to: correo,
-    name: 'IB Seven',
-    replyTo: AVISAR_A,
-    subject: recurso.asunto,
-    htmlBody:
-      '<p>Hola, ' + nombre + ':</p>' +
-      '<p>Gracias por tu interés. Te adjuntamos la presentación <b>' + p.recurso + '</b>, con la resolución paso a paso ' +
-      'de cada pregunta, el esquema de calificación y la clave de respuestas.</p>' +
-      '<p>También preparamos fichas, solucionarios y presentaciones por subtema de Física IB en español. ' +
-      'Puedes hojear A.1 Cinemática completo aquí: <a href="' + ENLACE_MATERIALES + '">' + ENLACE_MATERIALES + '</a></p>' +
-      '<p>Si tienes cualquier consulta, responde a este correo o escríbenos por Telegram: @Ibsevenoficial.</p>' +
-      '<p>Un saludo,<br>IB Seven · Física IB</p>',
-    attachments: [pdf],
-  });
+  enviar_(correo, String(nombre || 'colega').split(' ')[0], pedidos.map(n => disponibles[n]));
+
   const digitos = String(p.celular || '').replace(/\D/g, '');
-  MailApp.sendEmail(AVISAR_A, 'Nuevo registro: ' + p.recurso,
-    [limpiar_(p.nombre), correo, 'Celular: ' + (String(p.celular || '').trim() || '—'),
+  MailApp.sendEmail(AVISAR_A, 'Nuevo pedido: ' + pedidos.join(', '),
+    [limpiar_(p.nombre) || nombre, correo, 'Celular: ' + (String(p.celular || '').trim() || '—'),
      digitos ? 'WhatsApp: https://wa.me/' + digitos : '', limpiar_(p.colegio), limpiar_(p.pais), limpiar_(p.nivel),
-     'Novedades: ' + p.novedades].join('\n'));
+     'Novedades: ' + (p.novedades || '—'), '', 'Pidió: ' + pedidos.join(', ')].join('\n'));
   return respuesta_(true);
 }
 
-function hoja_() {
+/** Una fila por docente: si el correo ya está, se completa esa fila; si no, se crea. Devuelve el nombre. */
+function registrar_(p, correo, pedidos) {
+  const hoja = hojaRegistros_();
+  const ahora = new Date();
+  const celda = hoja.getRange('C:C').createTextFinder(correo).matchCase(false).matchEntireCell(true).findNext();
+  if (celda && celda.getRow() > 1) {
+    const fila = celda.getRow();
+    const v = hoja.getRange(fila, 1, 1, COLUMNAS.length).getValues()[0];
+    const previos = String(v[7] || '').split(/\s*,\s*/).filter(Boolean).map(n => ALIAS[n] || n);
+    const juntos = [...new Set(previos.concat(pedidos))];
+    const nuevos = [v[0], limpiar_(p.nombre) || v[1], v[2], limpiar_(p.colegio) || v[3], limpiar_(p.pais) || v[4],
+                    limpiar_(p.nivel) || v[5], p.novedades ? (p.novedades === 'sí' ? 'sí' : 'no') : v[6],
+                    juntos.join(', '), limpiar_(p.celular) || v[8], ahora];
+    hoja.getRange(fila, 1, 1, COLUMNAS.length).setValues([nuevos]);
+    return String(nuevos[1]);
+  }
+  hoja.appendRow([ahora, limpiar_(p.nombre), correo, limpiar_(p.colegio), limpiar_(p.pais), limpiar_(p.nivel),
+                  p.novedades === 'sí' ? 'sí' : 'no', pedidos.join(', '), limpiar_(p.celular), ahora]);
+  return limpiar_(p.nombre);
+}
+
+/** Envía los PDF, juntando en un mismo correo los que quepan (≤ MAX_MB_POR_CORREO). */
+function enviar_(correo, nombre, lista) {
+  const grupos = [];
+  let actual = [], peso = 0;
+  lista.forEach(r => {
+    const pdf = DriveApp.getFileById(r.archivo).getAs('application/pdf').setName(r.pdf);
+    const mb = pdf.getBytes().length / 1048576;
+    if (actual.length && peso + mb > MAX_MB_POR_CORREO) { grupos.push(actual); actual = []; peso = 0; }
+    actual.push({ r: r, pdf: pdf }); peso += mb;
+  });
+  if (actual.length) grupos.push(actual);
+
+  grupos.forEach((g, i) => {
+    const nombres = g.map(x => x.r.nombre);
+    const parte = grupos.length > 1 ? ' (' + (i + 1) + ' de ' + grupos.length + ')' : '';
+    MailApp.sendEmail({
+      to: correo,
+      name: 'IB Seven',
+      replyTo: AVISAR_A,
+      subject: (nombres.length === 1 ? 'Tu ' + nombres[0] + ' resuelta' : 'Tus pruebas resueltas de Física NM') +
+               ' · IB Seven' + parte,
+      htmlBody:
+        '<p>Hola, ' + nombre + ':</p>' +
+        '<p>Gracias por tu interés. Te adjuntamos, sin marca de agua:</p><ul>' +
+        nombres.map(n => '<li><b>' + n + '</b></li>').join('') + '</ul>' +
+        '<p>Cada presentación trae la resolución paso a paso de cada pregunta, el esquema de calificación y las respuestas.</p>' +
+        (grupos.length > 1 ? '<p>Por el tamaño de los archivos, te llegan en ' + grupos.length + ' correos.</p>' : '') +
+        '<p>También preparamos fichas, solucionarios y presentaciones por subtema de Física IB en español. ' +
+        'Puedes hojear A.1 Cinemática completo aquí: <a href="' + ENLACE_MATERIALES + '">' + ENLACE_MATERIALES + '</a></p>' +
+        '<p>Si tienes cualquier consulta, responde a este correo o escríbenos por WhatsApp al +51 936 467 998.</p>' +
+        '<p>Un saludo,<br>IB Seven · Física IB</p>',
+      attachments: g.map(x => x.pdf),
+    });
+  });
+}
+
+/** Lee la pestaña «Recursos»: Recurso | ID del archivo en Drive | Nombre del PDF | Activo (sí/no). */
+function recursos_() {
+  const hoja = hojaRecursos_();
+  const filas = hoja.getRange(2, 1, Math.max(hoja.getLastRow() - 1, 1), 4).getValues();
+  const mapa = {};
+  filas.forEach(f => {
+    const nombre = String(f[0]).trim(), archivo = String(f[1]).trim();
+    if (nombre && archivo && String(f[3]).trim().toLowerCase() !== 'no')
+      mapa[nombre] = { nombre: nombre, archivo: archivo, pdf: String(f[2]).trim() || ('IB Seven · ' + nombre + '.pdf') };
+  });
+  return mapa;
+}
+
+function hojaRecursos_() {
+  const libro = SpreadsheetApp.getActiveSpreadsheet();
+  let hoja = libro.getSheetByName('Recursos');
+  if (!hoja) {
+    hoja = libro.insertSheet('Recursos');
+    hoja.appendRow(['Recurso (igual que en la página)', 'ID del archivo en Drive', 'Nombre del PDF', 'Activo']);
+    hoja.setFrozenRows(1);
+    hoja.getRange('1:1').setFontWeight('bold');
+    RECURSOS_INICIALES.forEach(r => hoja.appendRow(r));
+    hoja.autoResizeColumns(1, 4);
+  }
+  return hoja;
+}
+
+function hojaRegistros_() {
   const libro = SpreadsheetApp.getActiveSpreadsheet();
   let hoja = libro.getSheetByName('Registros');
   if (!hoja) {
     hoja = libro.insertSheet('Registros');
-    hoja.appendRow(['Fecha', 'Nombre', 'Correo', 'Colegio', 'País', 'Enseña', 'Acepta novedades', 'Recurso', 'Celular']);
     hoja.setFrozenRows(1);
-    hoja.getRange('1:1').setFontWeight('bold');
   }
-  if (!hoja.getRange('I1').getValue()) hoja.getRange('I1').setValue('Celular').setFontWeight('bold');
+  const titulos = hoja.getRange(1, 1, 1, COLUMNAS.length);
+  if (titulos.getValues()[0].join('|') !== COLUMNAS.join('|')) titulos.setValues([COLUMNAS]).setFontWeight('bold');
   return hoja;
 }
 
@@ -90,8 +163,19 @@ function respuesta_(ok) {
   return ContentService.createTextOutput(JSON.stringify({ ok: ok })).setMimeType(ContentService.MimeType.JSON);
 }
 
-/** Para probar desde el editor: Ejecutar → probar (te llega el correo a ti). */
+/** Ejecutar una vez después de pegar el código: crea la pestaña «Recursos», ordena «Registros» y pide los permisos. */
+function instalar() {
+  hojaRecursos_();
+  hojaRegistros_();
+  Object.values(recursos_()).forEach(r => DriveApp.getFileById(r.archivo).getName());
+  SpreadsheetApp.getActiveSpreadsheet().toast('Listo: pestañas «Recursos» y «Registros» preparadas.');
+}
+
+/** Prueba: te envía a ti las tres presentaciones y deja la fila de prueba en «Registros». */
 function probar() {
-  doPost({ parameter: { nombre: 'Prueba', correo: AVISAR_A, colegio: 'Colegio de prueba', pais: 'Perú',
-                        nivel: 'Física NM y NS', novedades: 'sí', celular: '+51 999 999 999', recurso: 'Prueba 1 NM · Noviembre 2026' } });
+  doPost({
+    parameter: { nombre: 'Prueba', correo: AVISAR_A, colegio: 'Colegio de prueba', pais: 'Perú',
+                 nivel: 'Física NM y NS', novedades: 'sí', celular: '+51 999999999' },
+    parameters: { recurso: RECURSOS_INICIALES.map(r => r[0]) },
+  });
 }

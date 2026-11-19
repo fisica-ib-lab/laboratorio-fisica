@@ -183,11 +183,16 @@ El visor carga cada `datos.js` con una etiqueta `<script>` propia en `ver/index.
 **Voz de empresa:** los textos públicos hablan como IB Seven («te enviamos», «escríbenos»), nunca en primera persona del profesor
 ni con su nombre.
 
-**Recurso gratuito «Prueba 1 NM · Noviembre 2026» — `materiales/prueba1-noviembre-2026/`:** visor incrustado
-(`ver/?sub=N26-P1&doc=presentacion`, imágenes en `materiales/N26-P1/`) arriba y, debajo, el registro para recibir el PDF sin marca de agua. El formulario envía a
-la aplicación web de Apps Script `herramientas/registro-docentes.gs` (guarda la fila en la hoja «Registros» y envía el PDF
-adjunto; columna I = celular obligatorio, con código de país); su URL va en `REGISTRO_URL` (instalado el 17 nov 2026 en la hoja «IB Seven · Registros de docentes» de ibseven.oficial). Si se vacía, el formulario abre un correo con los datos. Anuncio verde
-«Gratis para docentes» junto al amarillo en el portal (vista de docentes) y tarjeta en la página de materiales.
+**Recursos gratuitos «Física NM · Noviembre 2026» — `materiales/noviembre-2026/`** (la antigua `prueba1-noviembre-2026/`
+redirige aquí): pestañas Prueba 1A, 1B y 2 sobre un visor incrustado (`ver/?sub=N26-P1A|N26-P1B|N26-P2&doc=presentacion`,
+imágenes en `materiales/N26-*`; `?prueba=1a|1b|2` abre una pestaña) y, debajo, un **registro único** con casillas para elegir
+qué recibir. El navegador recuerda al docente (`localStorage` «ibseven-registro-recursos»; no usar «ibseven-docente», que
+borra `comun/docentes.js`) y marca «ya enviado»; si vuelve, solo pulsa enviar. Recurso nuevo = imágenes con
+`herramientas/vista-previa.py` + `datos.js` (secciones por OCR) + una entrada en `RECURSOS` de la página + una fila en la
+pestaña «Recursos» de la hoja (nombre idéntico, ID de Drive, nombre del PDF, Activo). El formulario envía a la aplicación web
+de Apps Script `herramientas/registro-docentes.gs` (versión 2: una fila por docente en «Registros», junta los PDF en correos
+de ≤ 18 MB, aviso al profesor con enlace de WhatsApp); su URL va en `REGISTRO_URL` (hoja «IB Seven · Registros de docentes»
+de ibseven.oficial). Anuncio verde «Gratis para docentes» en el portal (vista de docentes) y tarjeta en la página de materiales.
 
 ## Fases (revisión del profesor entre cada una)
 
