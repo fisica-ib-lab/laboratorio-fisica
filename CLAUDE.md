@@ -191,7 +191,7 @@ borra `comun/docentes.js`) y marca «ya enviado»; si vuelve, solo pulsa enviar.
 `herramientas/vista-previa.py` + `datos.js` (secciones por OCR) + una entrada en `RECURSOS` de la página + una fila en la
 pestaña «Recursos» de la hoja (nombre idéntico, ID de Drive, nombre del PDF, Activo). El formulario envía a la aplicación web
 de Apps Script `herramientas/registro-docentes.gs` (versión 2: una fila por docente en «Registros», junta los PDF en correos
-de ≤ 18 MB, aviso al profesor con enlace de WhatsApp); su URL va en `REGISTRO_URL` (hoja «IB Seven · Registros de docentes»
+de ≤ 18 MB, aviso al profesor con enlace de WhatsApp; versión 3: `enviarNovedades` diario ≈ 8 a. m. con los recursos publicados después del registro, columna E «Publicado» de «Recursos»); su URL va en `REGISTRO_URL` (hoja «IB Seven · Registros de docentes»
 de ibseven.oficial). Anuncio verde «Gratis para docentes» en el portal (vista de docentes) y tarjeta en la página de materiales.
 
 ## Fases (revisión del profesor entre cada una)
