@@ -10,6 +10,7 @@
   const { COL, fmt, LETRAS } = D;
   const $ = (id) => document.getElementById(id);
 
+  let guia = null;                 // tarjeta de preguntas guiadas (se crea al final)
   const PISTA = { min: -30, max: 30 };
   const TMAX = 10;                 // s (eje de tiempo de las gráficas)
   const V_CONSTRUIR = 6;           // m s⁻¹ (límite de la gráfica v–t al construir)
@@ -322,6 +323,7 @@
     pausar();
     estado.nivel = n; estado.anterior = null; estado.ptsAnt = null; estado.t = 0;
     pintarControles(); recalcular(false); dibujarTodo();
+    if (guia && estado.modo === 'explorar') guia.ponerNivel(n);
   }
   document.querySelectorAll('.nivel').forEach(b => b.addEventListener('click', () => ponerNivel(Number(b.dataset.nivel))));
 
@@ -506,6 +508,7 @@
     pintarObservar();
     recalcular(false);
     dibujarTodo();
+    if (guia) { if (modo === 'explorar') guia.ponerNivel(estado.nivel); else guia.ocultar(); }
   }
   document.querySelectorAll('.pestanas [role="tab"]').forEach(tab => tab.addEventListener('click', () => {
     const parte = tab.dataset.panel;
@@ -518,14 +521,31 @@
     else { window.dispatchEvent(new CustomEvent('a1-practicar', { detail: false })); ponerModo(parte); }
   }));
 
+  // ---------- Preguntas guiadas (comun/guia.js + preguntas.js) ----------
+  const PQ = window.PreguntasA1;
+  guia = window.Guia.crear({
+    contenedor: document.querySelector('#panel-visor .lateral'),
+    niveles: PQ.NIVELES, situaciones: PQ.SIT,
+    cargar: (id) => {
+      const sit = PQ.SIT[id];
+      pausar();
+      if (sit.nivel === 3) estado.caso3 = sit.caso; else Object.assign(estado.par[sit.nivel], sit.par);
+      estado.t = 0; estado.anterior = null; estado.ptsAnt = null;
+      pintarControles(); recalcular(false); dibujarTodo();
+    },
+    contexto: () => ({ mov: estado.mov, par: estado.par[estado.nivel] }),
+    alOcultar: () => dibujarTodo()
+  });
+
   // ---------- Inicio ----------
   pintarControles();
   recalcular(false);
+  guia.ponerNivel(estado.nivel);
   new ResizeObserver(() => dibujarTodo()).observe(document.querySelector('.explorar'));
   window.addEventListener('resize', dibujarTodo);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(dibujarTodo);
   dibujarTodo();
 
   // Para las pruebas automáticas
-  window.__simA1 = { estado, irA, dibujarTodo, ponerNivel, ponerModo, intentarPlan, moverNodo, recalcular, reproducir, pausar, NIVELES };
+  window.__simA1 = { guia, estado, irA, dibujarTodo, ponerNivel, ponerModo, intentarPlan, moverNodo, recalcular, reproducir, pausar, NIVELES };
 })();

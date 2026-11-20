@@ -12,6 +12,7 @@
   const $ = (id) => document.getElementById(id);
   const V = '<span class="var">v</span>', U = '<span class="var">u</span>', A = '<span class="var">a</span>', S = '<span class="var">s</span>', T = '<span class="var">t</span>', GG = '<span class="var">g</span>';
 
+  let guia = null;   // tarjeta de preguntas guiadas (se crea al final)
   const NIVELES = {
     1: { modo: 'caida', ini: { u: 0, h: 1.5, puerta: 0.75 }, rangoH: [0.4, 2, 0.1], rotH: 'Altura de salida',
       observar: [
@@ -224,6 +225,7 @@
     pausar();
     estado.nivel = n;
     pintarControles(); recalcular(); dibujarTodo();
+    if (guia) guia.ponerNivel(n);
   }
   document.querySelectorAll('.nivel').forEach(b => b.addEventListener('click', () => ponerNivel(Number(b.dataset.nivel))));
 
@@ -282,15 +284,31 @@
     if (window.ProblemasUI) window.ProblemasUI.mostrar(parte);
   }));
 
+  // ---------- Preguntas guiadas (comun/guia.js + preguntas.js) ----------
+  const PQ = window.PreguntasCaida;
+  guia = window.Guia.crear({
+    contenedor: document.querySelector('#panel-visor .lateral'),
+    niveles: PQ.NIVELES, situaciones: PQ.SIT,
+    cargar: (id) => {
+      const sit = PQ.SIT[id];
+      pausar();
+      estado.par[sit.nivel] = Object.assign({}, sit.par);
+      pintarControles(); recalcular(); dibujarTodo();
+    },
+    contexto: () => ({ par: q(), p: estado.p, cruces: estado.cruces, nivel: estado.nivel }),
+    alOcultar: () => dibujarTodo()
+  });
+
   // ---------- Inicio ----------
   armarEcuaciones();
   pintarControles();
   recalcular();
+  guia.ponerNivel(estado.nivel);
   new ResizeObserver(() => dibujarTodo()).observe(document.querySelector('.taller'));
   window.addEventListener('resize', dibujarTodo);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(dibujarTodo);
   dibujarTodo();
 
   // Para las pruebas automáticas
-  window.__simCaida = { estado, irA, dibujarTodo, ponerNivel, recalcular, reproducir, pausar, valor };
+  window.__simCaida = { guia, estado, irA, dibujarTodo, ponerNivel, recalcular, reproducir, pausar, valor };
 })();

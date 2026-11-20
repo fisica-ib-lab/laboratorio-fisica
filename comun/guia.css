@@ -1,0 +1,28 @@
+/* Tarjeta de preguntas guiadas de Explorar (comun/guia.js) */
+.guia-p { border-color: var(--azul); background: #FFFFFF; }
+.guia-cab { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.guia-num { font-weight: 700; color: var(--azul-oscuro); font-size: 15px; white-space: nowrap; }
+.guia-puntos { display: inline-flex; gap: 3px; flex-wrap: wrap; justify-content: flex-end; }
+.guia-puntos button { width: 13px; height: 13px; padding: 0; border-radius: 50%; border: 1.5px solid var(--gris-borde, #B8C2CC); background: #FFF; cursor: pointer; }
+.guia-puntos button.actual { border-color: var(--azul); box-shadow: 0 0 0 1.5px var(--azul); }
+.guia-puntos button.bien { background: #1E7B4F; border-color: #1E7B4F; }
+.guia-sit { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 3px 0 4px; font-size: 13px; color: var(--tinta-suave, #5A6B7D); }
+.guia-sit span { font-weight: 700; }
+.guia-texto { font-size: 15px; line-height: 1.3; margin-bottom: 6px; }
+.guia-texto sub, .guia-p .correccion sub, .guia-resp sub { font-size: 0.72em; font-style: normal; }
+.guia-resp { display: flex; flex-direction: column; gap: 4px; }
+.guia-resp .opc { font-size: 14px; line-height: 1.2; padding: 5px 9px; border-width: 1.5px; border-radius: 8px; text-align: left; background: #FFF; }
+.guia-resp .opc.bien { background: #E6F3EC; }
+.guia-valor { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 700; }
+.guia-valor input { width: 96px; padding: 5px 8px; border: 1.5px solid var(--gris-borde, #B8C2CC); border-radius: 8px; font-size: 16px; }
+.guia-p .correccion { margin-top: 6px; font-size: 14px; line-height: 1.3; padding: 5px 9px; }
+.guia-p .correccion .boton { margin-top: 4px; }
+.guia-nav { display: flex; justify-content: space-between; margin-top: 6px; }
+.boton.mini { min-height: 28px; padding: 2px 9px; font-size: 14px; }
+/* Lecturas que darían la respuesta: se ven como «?» hasta resolver la pregunta */
+.guia-oculto { color: transparent !important; position: relative; }
+.guia-oculto::after { content: '?'; color: var(--tinta-suave, #5A6B7D); position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-weight: 700; }
+.caja.guia-oculto { position: relative; }
+.caja.guia-oculto > * { visibility: hidden; }
+.caja.guia-oculto::after { content: 'Se muestra al resolver la pregunta'; right: auto; top: 0; left: 0; bottom: 0; width: 100%; transform: none;
+  display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 400; }

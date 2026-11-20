@@ -16,6 +16,7 @@
   const COLOR_AIRE = '#5A6B7D';
   const V = '<span class="var">v</span>', X = '<span class="var">x</span>', Y = '<span class="var">y</span>', T = '<span class="var">t</span>', H = '<span class="var">h</span>';
 
+  let guia = null;   // tarjeta de preguntas guiadas (se crea al final)
   const NIVELES = {
     1: { des: { h: [0.3, 1, 0.1], v: [1, 5, 0.5] }, ini: { h: 0.8, ang: 0, v: 2.5 }, usa: { h: true, ang: false, v: true }, casos: [],
       observar: [
@@ -152,7 +153,7 @@
     if (estado.pAire) bolas.push({ p: estado.pAire, etiqueta: 'con aire', color: COLOR_AIRE, relleno: '#E4E9EF', raya: [5, 4] });
     const E = {
       h: q.h, angulo: q.ang, bolas, t: estado.t, jugando: estado.jugando, disparo: estado.disparo,
-      ver: estado.ver, gemela: estado.gemela, cotas: exp, vista: vista(),
+      ver: estado.ver, gemela: estado.gemela, cotas: exp && !window.Guia.oculto('cotas'), vista: vista(),
       fantasmas: exp ? (estado.ver.anteriores ? estado.fantasmas : []) : estado.intentos.filter(i => !i.actual).slice(-3).map(i => ({ puntos: i.puntos })),
     };
     if (!exp) {
@@ -250,6 +251,7 @@
     pausar();
     estado.nivel = n; estado.fantasmas = [];
     pintarControles(); recalcular(); dibujarTodo();
+    if (guia && estado.modo === 'explorar') guia.ponerNivel(n);
   }
   document.querySelectorAll('.nivel').forEach(b => b.addEventListener('click', () => ponerNivel(Number(b.dataset.nivel))));
 
@@ -362,6 +364,7 @@
     document.querySelectorAll('.solo-construir').forEach(el => { el.hidden = modo !== 'construir'; });
     if (modo === 'construir' && !estado.blanco) nuevoBlanco();
     pintarControles(); recalcular(); dibujarTodo();
+    if (guia) { if (modo === 'explorar') guia.ponerNivel(estado.nivel); else guia.ocultar(); }
   }
   document.querySelectorAll('.pestanas [role="tab"]').forEach(tab => tab.addEventListener('click', () => {
     const parte = tab.dataset.panel;
@@ -374,14 +377,31 @@
     else { window.dispatchEvent(new CustomEvent('proy-practicar', { detail: false })); ponerModo(parte); }
   }));
 
+  // ---------- Preguntas guiadas (comun/guia.js + preguntas.js) ----------
+  const PQ = window.PreguntasProy;
+  guia = window.Guia.crear({
+    contenedor: document.querySelector('#panel-visor .lateral'),
+    niveles: PQ.NIVELES, situaciones: PQ.SIT,
+    cargar: (id) => {
+      const sit = PQ.SIT[id];
+      pausar();
+      estado.par[sit.nivel] = Object.assign({}, sit.par);
+      estado.aire = !!sit.aire; estado.fantasmas = [];
+      pintarControles(); recalcular(); dibujarTodo();
+    },
+    contexto: () => ({ par: parametros(), p: estado.p, pAire: estado.pAire }),
+    alOcultar: () => dibujarTodo()
+  });
+
   // ---------- Inicio ----------
   pintarControles();
   recalcular();
+  guia.ponerNivel(estado.nivel);
   new ResizeObserver(() => dibujarTodo()).observe(document.querySelector('.taller'));
   window.addEventListener('resize', dibujarTodo);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(dibujarTodo);
   dibujarTodo();
 
   // Para las pruebas automáticas
-  window.__simProy = { estado, irA, dibujarTodo, ponerNivel, ponerModo, recalcular, reproducir, pausar, nuevoBlanco, registrarIntento };
+  window.__simProy = { guia, estado, irA, dibujarTodo, ponerNivel, ponerModo, recalcular, reproducir, pausar, nuevoBlanco, registrarIntento };
 })();

@@ -176,6 +176,17 @@ coincide con lo que mide la simulación). Las dos con 0 fallos antes de publicar
   el modelo con los mismos datos; 0 fallos).
 **Simulación A.2 completa (etapas 1–4)**, pendiente de revisión del profesor.
 
+## Preguntas guiadas en Explorar de A.1 (20 nov 2026) — pendientes de revisión del profesor
+
+Tarjeta común `comun/guia.js` + `comun/guia.css` (arriba del lateral de Explorar, como en A.2): preguntas de opción
+(comentario por distractor y explicación) y de valor (±2 %, pista de signo, pista por error típico, «Ver resolución» tras dos
+errores); puntos por pregunta, Anterior/Siguiente, «Reiniciar» la situación. «oculta» pone «?» en las lecturas que darían la
+respuesta (`guia-oculto`; una `.caja` entera muestra «Se muestra al resolver la pregunta»); lo dibujado en el lienzo se
+consulta con `Guia.oculto('pildoras' | 'cotas' | 'pildoraS')`. Las respuestas se calculan con el modelo que se ve (siguen
+valiendo si el alumno mueve los deslizadores). Preguntas sin pantalla en `sims/A.1-*/preguntas.js`
+(tres gráficas 20, proyectiles 18, caída libre 17). Verificación: `node pruebas/verificar-preguntas-a1.js` (cada opción correcta
+comprobada con el modelo, cada valor igual al calculado a mano, resoluciones coherentes con 300 juegos de deslizadores al azar; 0 fallos).
+
 ## Materiales para docentes — `materiales/`
 
 `materiales/index.html` (página de venta) muestra las tres piezas incrustadas en filas alternadas (descripción angosta | visor ancho, `ver/?…&incrustado`) y enlaza al visor `materiales/ver/?sub=A.1&doc=alumno|docente|presentacion&p=N`:

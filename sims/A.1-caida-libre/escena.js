@@ -130,7 +130,7 @@
       if (Math.abs(s) * esc > 4) flecha(ctx, xs, yS, xs, Y(y), COL.des, 3, Math.min(11, Math.abs(s) * esc));
       if (E.t > 0 || E.jugando) {
         const yRot = Math.abs(s) * esc > 30 ? (yS + Y(y)) / 2 : (s <= 0 ? Math.max(yS, Y(y)) + 13 : Y(y) - 13);
-        pildora(ctx, [['s', true], [' = ' + numero(s, 2) + ' m', false]], xs + 44 * k, yRot, 12, COL.des, COL.desFondo, COL.des, xs + 6, w - 4);
+        if (!(window.Guia && window.Guia.oculto('pildoraS'))) pildora(ctx, [['s', true], [' = ' + numero(s, 2) + ' m', false]], xs + 44 * k, yRot, 12, COL.des, COL.desFondo, COL.des, xs + 6, w - 4);
       }
 
       // ----- Huellas cada 0,1 s -----

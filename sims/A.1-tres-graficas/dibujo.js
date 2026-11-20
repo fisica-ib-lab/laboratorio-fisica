@@ -342,6 +342,7 @@
       ctx.closePath(); ctx.fillStyle = '#F2B84B'; ctx.fill(); ctx.lineWidth = 1.1; ctx.stroke();
 
       if (E.vectores !== false) {
+        const sinPildoras = !!(window.Guia && window.Guia.oculto('pildoras'));
         // Flechas a escala: velocidad (verde) y, encima, aceleración (roja)
         const yV = yT - 30, yA = yV - 13, yPil = yA - 19;
         const kV = 62 / (E.vMax || 2.5), kA = 46 / (E.aMax || 1);
@@ -353,8 +354,8 @@
         // las dos píldoras van juntas y centradas sobre el carrito, sin salirse del dibujo
         let x0 = xc - (anchoV + 8 + anchoA) / 2;
         x0 = Math.max(4, Math.min(x0, w - 4 - (anchoV + 8 + anchoA)));
-        pildora(ctx, textoV, x0 + anchoV / 2, yPil, 13, COL.vel, COL.velFondo, COL.vel);
-        pildora(ctx, textoA, x0 + anchoV + 8 + anchoA / 2, yPil, 13, COL.ace, COL.aceFondo, COL.ace);
+        if (!sinPildoras) pildora(ctx, textoV, x0 + anchoV / 2, yPil, 13, COL.vel, COL.velFondo, COL.vel);
+        if (!sinPildoras) pildora(ctx, textoA, x0 + anchoV + 8 + anchoA / 2, yPil, 13, COL.ace, COL.aceFondo, COL.ace);
       }
 
       // Mientras el banderín no esté quieto, seguir dibujando aunque la simulación esté en pausa
