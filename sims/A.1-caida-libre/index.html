@@ -6,9 +6,9 @@
 <link rel="icon" type="image/png" href="../../favicon.png?v=1">
 <title>Ecuaciones del movimiento y caída libre · A.1</title>
 <meta name="description" content="Simulación de caída libre y lanzamiento vertical: las ecuaciones del movimiento con aceleración uniforme.">
-<link rel="stylesheet" href="../../comun/estilo.css?v=202611191114">
-<script src="../../comun/docentes.js?v=202611191114"></script>
-<link rel="stylesheet" href="sim.css?v=202611191114">
+<link rel="stylesheet" href="../../comun/estilo.css?v=202611200957">
+<script src="../../comun/docentes.js?v=202611200957"></script>
+<link rel="stylesheet" href="sim.css?v=202611200957">
 </head>
 <body>
 <header class="barra">
@@ -26,8 +26,8 @@
 
 <nav class="pestanas" role="tablist" aria-label="Partes de la simulación">
   <button role="tab" id="tab-explorar" aria-selected="true" aria-controls="panel-visor" data-panel="explorar">Explorar</button>
-  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Plantear problemas <span class="proximamente">próximamente</span></button>
-  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar <span class="proximamente">próximamente</span></button>
+  <button role="tab" id="tab-construir" aria-selected="false" aria-controls="panel-construir" data-panel="construir">Plantear problemas</button>
+  <button role="tab" id="tab-practicar" aria-selected="false" aria-controls="panel-practicar" data-panel="practicar">Practicar</button>
 </nav>
 
 <!-- ============ EXPLORAR ============ -->
@@ -133,24 +133,50 @@
 </section>
 
 <section class="panel" id="panel-construir" role="tabpanel" aria-labelledby="tab-construir" hidden>
-  <div class="caja pronto">
-    <h2>Plantear problemas · próximamente</h2>
-    <p>Aquí podrás marcar qué magnitudes conoces y cuál te piden, y la simulación resaltará la ecuación que conviene usar. Después introducirás los valores y verás el resultado y el movimiento que le corresponde.</p>
+  <div class="pp">
+    <div class="caja pp-fig"><canvas id="plFig" aria-label="Esquema del problema"></canvas></div>
+    <div class="caja pp-tarjeta" aria-live="polite">
+      <ol class="pp-pasos" id="plPasos"><li>Datos e incógnita</li><li>Ecuación</li><li>Resultado</li></ol>
+      <div class="pp-texto" id="plTexto"></div>
+      <h3>1 · Marca el papel de cada magnitud y escribe los datos con su signo <small>(arriba +, <span class="var">s</span> desde el punto de salida)</small></h3>
+      <table class="pp-tabla" id="plTabla"></table>
+      <button class="boton mini primario" id="plComprobar1">Comprobar los datos</button>
+      <div id="plPaso2" hidden>
+        <h3>2 · Elige la ecuación del Cuadernillo que conviene</h3>
+        <div class="pp-ecuaciones" id="plEcuaciones"></div>
+      </div>
+      <div id="plPaso3" hidden>
+        <h3>3 · Calcula la incógnita</h3>
+        <div class="valor-resp"><span id="plRotulo3"></span><input id="plInput3" inputmode="decimal" autocomplete="off" aria-label="Resultado"><span id="plUnidad3"></span><button class="boton mini primario" id="plComprobar3">Comprobar</button></div>
+      </div>
+      <div class="correccion" id="plCorr" hidden></div>
+      <div class="pp-pie"><span class="pp-nota">Sin puntaje · se acepta ±2 % en el resultado.</span><button class="boton primario" id="plNuevo">Nuevo problema →</button></div>
+    </div>
   </div>
 </section>
+
 <section class="panel" id="panel-practicar" role="tabpanel" aria-labelledby="tab-practicar" hidden>
-  <div class="caja pronto">
-    <h2>Practicar · próximamente</h2>
-    <p>Aquí habrá ejercicios que se corrigen uno a uno, sin puntaje: elegir la ecuación, calcular alturas, tiempos y rapideces, y problemas con dos soluciones.</p>
+  <div class="niveles" id="prGrupos" role="group" aria-label="Tipo de ejercicio"></div>
+  <div class="pp">
+    <div class="caja pp-fig"><canvas id="prFig" aria-label="Esquema del ejercicio"></canvas></div>
+    <div class="caja pp-tarjeta" aria-live="polite">
+      <div class="pp-cab"><span class="termino" id="prTermino"></span><span class="pp-grupo" id="prGrupo"></span></div>
+      <div class="pp-texto" id="prTexto"></div>
+      <div class="pp-resp" id="prResp"></div>
+      <div class="correccion" id="prCorr" hidden></div>
+      <div class="pp-pie"><span class="pp-nota">Sin puntaje: cada ejercicio se corrige al momento.</span><button class="boton primario" id="prNuevo">Nuevo ejercicio →</button></div>
+    </div>
   </div>
 </section>
 
 <footer class="pie">Física · Programa del Diploma · Laboratorio de Física IB</footer>
 
-<script src="../../comun/cinematica.js?v=202611191114"></script>
-<script src="../../comun/proyectil.js?v=202611191114"></script>
-<script src="../../comun/graficas.js?v=202611191114"></script>
-<script src="escena.js?v=202611191114"></script>
-<script src="sim.js?v=202611191114"></script>
+<script src="../../comun/cinematica.js?v=202611200957"></script>
+<script src="../../comun/proyectil.js?v=202611200957"></script>
+<script src="../../comun/graficas.js?v=202611200957"></script>
+<script src="escena.js?v=202611200957"></script>
+<script src="sim.js?v=202611200957"></script>
+<script src="problemas.js?v=202611200957"></script>
+<script src="problemas-ui.js?v=202611200957"></script>
 </body>
 </html>

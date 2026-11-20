@@ -279,6 +279,7 @@
     $('panel-practicar').hidden = parte !== 'practicar';
     document.querySelectorAll('.observar[open]').forEach(d => { d.open = false; });
     if (parte === 'explorar') dibujarTodo(); else pausar();
+    if (window.ProblemasUI) window.ProblemasUI.mostrar(parte);
   }));
 
   // ---------- Inicio ----------

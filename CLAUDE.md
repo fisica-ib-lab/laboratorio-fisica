@@ -97,11 +97,24 @@ Antes de publicar cambios: `node pruebas/verificar-proyectiles.js` y `node prueb
 Montaje vertical: varilla con escala, electroimán que suelta la bola o lanzador vertical, puerta fotoeléctrica móvil con
 cable e interfaz que muestra los tiempos de paso. Arriba +; s se mide desde el punto de salida (naranja).
 
-**Hecho (13 nov 2026): solo Explorar**, pendiente de revisión del profesor. Nivel 1 caída desde el reposo (huellas cada 0,1 s
+**Hecho (13 nov 2026): Explorar**, pendiente de revisión del profesor. Nivel 1 caída desde el reposo (huellas cada 0,1 s
 con las distancias 1 : 3 : 5), nivel 2 lanzamiento hacia arriba, nivel 3 tabla de las cuatro ecuaciones del Cuadernillo
 (✓/✗ de s, u, v, a, t) con los valores de cada instante sustituidos.
-**Falta:** pestaña «Plantear problemas» (marcar datos e incógnita → ecuación que conviene) y «Practicar»; ahora dicen «próximamente».
-Usa `comun/proyectil.js` (θ = 90° o u = 0). Verificación: `node pruebas/verificar-caida-libre.js`.
+**Hecho (20 nov 2026): «Plantear problemas» y «Practicar»**, pendientes de revisión del profesor.
+`problemas.js` (sin pantalla): 10 plantillas con datos al azar (tiempo de caída, velocidad de llegada con signo,
+desplazamiento a un tiempo, altura máxima, tiempo de subida, tiempo de vuelo desde un edificio [2.º grado, raíz positiva],
+velocidad a un tiempo [puede ser negativa], segundo instante a una altura [2.º grado, raíz mayor], lanzamiento hacia abajo,
+g de otro planeta) + en Practicar: puerta fotoeléctrica (v media = L/Δt = velocidad en el instante medio) y «Explica»
+(6 preguntas: a en la cumbre, masas distintas, simetría, 1 : 3 : 5, misma rapidez al subir y bajar, pluma y bola con aire).
+Cada plantilla trae los cinco valores reales (s, u, v, a, t), papeles (dato/incógnita/no interviene), avisos por error
+típico (signo de a, s y u; «se suelta» ⇒ u = 0; v = 0 en la cumbre) y resolución paso a paso.
+Plantear (`problemas-ui.js`): 1) papel y valor con signo de cada magnitud (±1 %), 2) ecuación del Cuadernillo (válida = contiene
+la incógnita y solo datos; se dice si también servía otra), 3) resultado ±2 % con pista de signo/raíz; «Mostrar los datos» tras
+3 intentos y «Ver resolución» tras 2. Esquema propio «no a escala» que solo muestra datos del enunciado (arriba +, s = 0).
+Practicar: filtros por grupo, término de instrucción del IB, ±2 % (3 % en la puerta), pistas de signo y unidades.
+Verificación: `node pruebas/verificar-problemas-caida.js` (1000 por tipo: las cuatro ecuaciones se cumplen con los cinco
+valores, la respuesta coincide con `comun/proyectil.js`, cada ecuación válida despejada da la respuesta; 0 fallos).
+Usa `comun/proyectil.js` (θ = 90° o u = 0). Verificación de Explorar: `node pruebas/verificar-caida-libre.js`.
 La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de la ficha).
 
 ## Cuarta simulación: «Diagramas de cuerpo libre y segunda ley» (A.2) — `sims/A.2-fuerzas/`
