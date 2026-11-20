@@ -11,10 +11,12 @@ function ok(cond, msg) { comprobaciones++; if (!cond) { fallos++; if (fallos <= 
 const cerca = (a, b, tol) => Math.abs(a - b) <= tol * Math.max(1, Math.abs(a), Math.abs(b));
 
 // integral numérica por tramos (puntos medios dentro de cada tramo, para no cruzar saltos)
-function integrar(m, f) {
+function integrar(m, f, hasta) {
   let total = 0;
   for (const tr of m.tramos) {
-    const n = 400, h = (tr.t1 - tr.t0) / n;
+    const fin = hasta === undefined ? tr.t1 : Math.min(tr.t1, hasta);
+    if (fin <= tr.t0) break;
+    const n = 400, h = (fin - tr.t0) / n;
     for (let i = 0; i < n; i++) total += f(tr.t0 + (i + 0.5) * h) * h;
   }
   return total;
@@ -77,6 +79,9 @@ for (const id of E.GRUPOS.todos) {
       let real;
       if (id === 'desplazamiento') real = integrar(m, t => m.v(t));
       else if (id === 'distancia') real = integrar(m, t => Math.abs(m.v(t)));
+      else if (id === 'velocidad-media') real = integrar(m, t => m.v(t)) / Tf;
+      else if (id === 'rapidez-media') { real = integrar(m, t => Math.abs(m.v(t))) / Tf; ok(Math.abs(real - Math.abs(integrar(m, t => m.v(t))) / Tf) > 0.04, `${n}: rapidez y velocidad medias casi iguales`); }
+      else if (id === 'at-v') { const tf = Number(ej.enunciado.match(/en <span class="var">t<\/span> = ([\d,−-]+) s\./)[1].replace(',', '.')); real = ej.def.u + integrar(m, t => m.a(t), tf); }
       else {
         const tr = m.tramos[ej.tramo], t = (tr.t0 + tr.t1) / 2, e = 1e-5;
         real = id === 'pendiente-a' ? (m.v(t + e) - m.v(t - e)) / (2 * e) : (m.s(t + e) - m.s(t - e)) / (2 * e);

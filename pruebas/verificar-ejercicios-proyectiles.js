@@ -18,7 +18,7 @@ function simular(h, v, ang) {
     if (yn <= 0 && vyn < 0) {
       // raíz exacta dentro del paso
       const d = (vy + Math.sqrt(vy * vy + 2 * G * y)) / G;
-      return { T: t + d, R: ux * (t + d), H: ymax, vf: Math.hypot(ux, vy - G * d), ux, uy, tCumbre };
+      return { T: t + d, R: ux * (t + d), H: ymax, vf: Math.hypot(ux, vy - G * d), vyf: vy - G * d, ux, uy, tCumbre };
     }
     y = yn; vy = vyn; t += dt; x += ux * dt;
     if (y > ymax) { ymax = y; tCumbre = t; }
@@ -47,24 +47,28 @@ for (const id of Object.keys(E.TIPOS)) {
       const real = {
         'componentes': /componente horizontal/.test(ej.enunciado) ? s.ux : s.uy,
         'tiempo-vuelo': s.T, 'altura-maxima': s.H, 'alcance': s.R,
-        'horizontal-tiempo': s.T, 'horizontal-alcance': s.R, 'rapidez-llegada': s.vf
+        'horizontal-tiempo': s.T, 'horizontal-alcance': s.R, 'rapidez-llegada': s.vf,
+        'elevado-tiempo': s.T, 'elevado-vy': s.vyf,
+        'elevado-vy-t': id !== 'elevado-vy-t' ? 0 : (() => { const t = Number(ej.enunciado.match(/<span class="var">t<\/span> = ([\d,]+) s después/)[1].replace(',', '.')); return s.uy - G * t; })()
       }[id];
       ok(cerca(ej.respuesta, real, 2e-4), `${n}: respuesta ${ej.respuesta} ≠ simulación ${real}`);
-      ok(ej.respuesta > 0, `${n}: respuesta no positiva`);
+      if (!/^elevado-vy/.test(id)) ok(ej.respuesta > 0, `${n}: respuesta no positiva`);
+      if (id === 'elevado-vy') ok(ej.respuesta < 0, `${n}: al llegar vy debe ser negativa`);
       ok(E.corregirNumero(ej, ej.respuesta, ej.unidad).ok === true, `${n}: no acepta la respuesta correcta`);
       // la respuesta redondeada a 3 cifras significativas también debe aceptarse
       ok(E.corregirNumero(ej, Number(ej.respuesta.toPrecision(3)), ej.unidad).ok === true, `${n}: no acepta 3 cifras significativas`);
       ok(E.corregirNumero(ej, Number(ej.respuesta.toPrecision(2)), ej.unidad).ok === true || Math.abs(Number(ej.respuesta.toPrecision(2)) - ej.respuesta) > ej.tolerancia, `${n}: 2 cifras`);
       ok(E.corregirNumero(ej, ej.respuesta, ej.unidad === 'm' ? 's' : 'm').ok === false, `${n}: acepta una unidad equivocada`);
-      ok(E.corregirNumero(ej, ej.respuesta * 1.2 + 0.1, ej.unidad).ok === false, `${n}: acepta un valor equivocado`);
+      ok(E.corregirNumero(ej, ej.respuesta + 0.2 * Math.abs(ej.respuesta) + 0.1, ej.unidad).ok === false, `${n}: acepta un valor equivocado`);
+      ok(E.corregirNumero(ej, -ej.respuesta, ej.unidad).ok === false, `${n}: acepta el signo contrario`);
       for (const p of ej.pistas) {
         ok(Math.abs(p.valor - ej.respuesta) > 2 * ej.tolerancia, `${n}: una pista coincide con la respuesta`);
         const c = E.corregirNumero(ej, p.valor, ej.unidad);
         ok(c.ok === false && c.pista === p.texto, `${n}: pista de error no reconocida (${p.valor})`);
       }
       // el resultado que se muestra en la explicación es la respuesta con 3 cifras significativas
-      const m = ej.explicacion.match(/<b>([\d,]+) [^<]*<\/b>/);
-      ok(m && cerca(Number(m[1].replace(',', '.')), ej.respuesta, 6e-3), `${n}: la explicación no muestra la respuesta`);
+      const m = ej.explicacion.match(/<b>(−?[\d,]+) [^<]*<\/b>/);
+      ok(m && cerca(Number(m[1].replace(',', '.').replace('−', '-')), ej.respuesta, 6e-3), `${n}: la explicación no muestra la respuesta`);
     }
 
     if (ej.tipo === 'texto') {

@@ -71,6 +71,8 @@ Archivos: `dibujo.js` (escena y gráficas), `sim.js` (Explorar niveles 1–3 y C
 «Área», «Vel. media» (secante arrastrable en la s–t), «Huellas» (cada 1 s) y «Predecir» (oculta las gráficas hasta «Revelar»).
 No queda nada pendiente del plan original.
 Antes de publicar cambios: `node pruebas/verificar-cinematica.js` y `node pruebas/verificar-ejercicios.js` (0 fallos).
+Practicar (20 nov 2026): + «Velocidad media», «Rapidez media» (con cambio de sentido; pistas: la otra media, signo, (u+v)/2)
+y «De la a–t a la velocidad» (u ≠ 0; pista si olvida u o el signo del área) → 16 tipos.
 
 ## Segunda simulación: «Movimiento de proyectiles» (A.1) — `sims/A.1-proyectiles/`
 
@@ -84,7 +86,9 @@ Colores: componente horizontal naranja, vertical violeta, velocidad verde, g roj
    aceleración, huellas cada 0,1 s.
 2. **Acierta al blanco** (pestaña Construir): bandeja en una posición al azar que siempre tiene solución en la cuadrícula
    de los deslizadores; intentos marcados; modo «Calcula primero» (rapidez fija).
-3. **Practicar**: 12 tipos (calcular, interpretar, gráficas y trayectorias, «coloca la bandeja»), con pista según el error.
+3. **Practicar**: 15 tipos (calcular, interpretar, gráficas y trayectorias, «coloca la bandeja»), con pista según el error.
+   20 nov 2026: + desde una altura con ángulo: tiempo de vuelo (2.º grado, pista de raíz y de «misma altura»), v_y al llegar
+   (negativa) y v_y en un instante (con signo); pistas de u vs u_y, signo de s y de a.
 
 Archivos: `comun/proyectil.js` (física exacta; con aire, Runge–Kutta 4 con k = 0,30 m⁻¹), `comun/graficas.js` (dibujo común
 para simulaciones nuevas), `escena.js`, `sim.js`, `ejercicios.js`, `practicar.js`.

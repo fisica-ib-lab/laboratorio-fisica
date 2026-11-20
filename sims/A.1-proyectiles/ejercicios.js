@@ -11,6 +11,7 @@
   const K_AIRE = 0.3;                    // m⁻¹: efecto bien visible a las rapideces del laboratorio
   const U = '<span class="var">u</span>', V = '<span class="var">v</span>', TH = '<span class="var">θ</span>', H = '<span class="var">h</span>',
     T = '<span class="var">t</span>', GG = '<span class="var">g</span>';
+  const A0 = '<span class="var">a</span>';
   const UX = `${U}<sub>x</sub>`, UY = `${U}<sub>y</sub>`, VX = `${V}<sub>x</sub>`, VY = `${V}<sub>y</sub>`;
 
   // ---------- Azar con semilla ----------
@@ -131,6 +132,65 @@
       ],
       pistaGeneral: `Son dos pasos: el tiempo de vuelo sale del movimiento vertical; el alcance, de ${UX} por ese tiempo.`,
       explicacion: `${paso1} y ${UX} = ${n1(v)} × cos ${ang}° = ${cs3(ux)} m s⁻¹. Tiempo de vuelo: ${T} = 2 ${UY} / ${GG} = ${cs3(Tf)} s. Alcance: ${UX} ${T} = ${cs3(ux)} × ${cs3(Tf)} = <b>${cs3(R)} m</b>.`
+    });
+  }
+
+  // ---------- Desde una altura, con ángulo: 2.º grado, signos ----------
+  function ejElevado(r, que) {
+    const v = elegir(r, RAPIDECES.slice(2)), ang = elegir(r, [20, 25, 30, 35, 40, 45, 50]), h = elegir(r, ALTURAS);
+    const ux = v * cos(ang), uy = v * sen(ang);
+    const disc = Math.sqrt(uy * uy + 2 * G * h), Tf = (uy + disc) / G, Tneg = (uy - disc) / G;
+    const vyf = uy - G * Tf;
+    const base = `Una bola sale del lanzador, situado a ${H} = ${n2(h)} m sobre la mesa, con rapidez ${U} = ${n1(v)} m s⁻¹ y un ángulo ${TH} = ${ang}° por encima de la horizontal, y cae sobre la mesa. Se desprecia la resistencia del aire; arriba es positivo.`;
+    const pasoUy = `${UY} = ${n1(v)} × sen ${ang}° = ${cs3(uy)} m s⁻¹`;
+    if (que === 'tiempo') {
+      return numerico({
+        id: 'elevado-tiempo', titulo: 'Desde una altura: tiempo de vuelo', esc: { h, v, ang },
+        enunciado: `${base} <b>Determine</b> el tiempo que tarda la bola en llegar a la mesa.`, respuesta: Tf, unidad: 's',
+        pistas: [
+          { valor: 2 * uy / G, texto: `Ese sería el tiempo para volver a la altura de salida. La mesa está ${n2(h)} m más abajo: el desplazamiento vertical es −${n2(h)} m.` },
+          { valor: -Tneg, texto: `Elegiste la raíz equivocada (cambiada de signo). De las dos raíces de la ecuación, la válida es la positiva y mayor.` },
+          { valor: Math.sqrt(2 * h / G), texto: `Ese tiempo valdría si la bola saliera en horizontal. Aquí sale con ${UY} hacia arriba.` },
+          { valor: (v + Math.sqrt(v * v + 2 * G * h)) / G, texto: `En la vertical se usa ${UY} = ${U} sen ${TH}, no ${U}.` },
+          { valor: (uy - Math.sqrt(Math.max(0, uy * uy - 2 * G * h))) / G, texto: `Revisa el signo del desplazamiento: con arriba positivo, la mesa está en ${'<span class="var">s</span>'} = −${n2(h)} m.` }
+        ],
+        pistaGeneral: `Vertical: −${n2(h)} = ${UY}${T} − ½${GG}${T}². Es una ecuación de segundo grado; elige la raíz positiva.`,
+        explicacion: `${pasoUy}. En vertical, con arriba +: −${n2(h)} = ${cs3(uy)}${T} − 4,905${T}², es decir, 4,905${T}² − ${cs3(uy)}${T} − ${n2(h)} = 0.<br>` +
+          `Raíces: ${T} = ${cs3(Tf)} s y ${T} = −${cs3(-Tneg)} s (un tiempo negativo no vale). Tiempo de vuelo: <b>${cs3(Tf)} s</b>.`
+      });
+    }
+    if (que === 'vy') {
+      return numerico({
+        id: 'elevado-vy', titulo: 'Desde una altura: velocidad vertical al llegar', esc: { h, v, ang },
+        enunciado: `${base} <b>Calcule</b> la componente vertical de la velocidad de la bola al llegar a la mesa (con su signo).`, respuesta: vyf, unidad: 'm s⁻¹',
+        pistas: [
+          { valor: -vyf, texto: 'El valor es correcto, pero al llegar la bola se mueve hacia abajo: con arriba positivo, la componente vertical es negativa.' },
+          { valor: -uy, texto: `Esa sería ${VY} al volver a la altura de salida. La bola cae ${n2(h)} m más: ${VY}² = ${UY}² + 2${GG}${H}.` },
+          { valor: -Math.sqrt(v * v + 2 * G * h), texto: `Usaste ${U} completa. En la vertical solo cuenta ${UY} = ${U} sen ${TH}; esa es la rapidez, no ${VY}.` },
+          { valor: -Math.sqrt(Math.max(0, uy * uy - 2 * G * h)), texto: `Revisa el signo de la caída: ${VY}² = ${UY}² + 2${GG}${H} (la bola gana rapidez al bajar).` },
+          { valor: -Math.sqrt(2 * G * h), texto: `La bola no parte del reposo en vertical: sale con ${UY} = ${U} sen ${TH}.` }
+        ],
+        pistaGeneral: `${VY}² = ${UY}² + 2${GG}${H} (la mesa está ${n2(h)} m por debajo de la salida); al llegar, la bola baja.`,
+        explicacion: `${pasoUy}. ${VY}² = ${UY}² − 2${GG}Δ${'<span class="var">y</span>'} = ${cs3(uy)}² + 2 × 9,81 × ${n2(h)} = ${cs3(vyf * vyf)}, y como la bola baja, ${VY} = <b>−${cs3(-vyf)} m s⁻¹</b>.`
+      });
+    }
+    // vy en un instante: puede ser positiva (subiendo) o negativa (bajando)
+    const t = Math.round((0.15 + r() * (Tf - 0.25)) * 20) / 20;
+    if (t <= 0.05 || t >= Tf - 0.05) return null;
+    const vy = uy - G * t;
+    if (Math.abs(vy) < 0.3) return null;
+    return numerico({
+      id: 'elevado-vy-t', titulo: 'Velocidad vertical en un instante', esc: { h, v, ang },
+      enunciado: `${base} <b>Calcule</b> la componente vertical de la velocidad ${T} = ${n2(t)} s después del lanzamiento (con su signo).`, respuesta: vy, unidad: 'm s⁻¹',
+      pistas: [
+        { valor: -vy, texto: `Revisa el signo: ${VY} = ${UY} − ${GG}${T}. Si sale positiva la bola sube; si sale negativa, baja.` },
+        { valor: uy + G * t, texto: `La aceleración es hacia abajo: con arriba positivo, ${A0} = −9,81 m s⁻². ${VY} = ${UY} − ${GG}${T}.` },
+        { valor: v - G * t, texto: `En la vertical se usa ${UY} = ${U} sen ${TH}, no ${U}.` },
+        { valor: ux, texto: `Esa es la componente horizontal, que no cambia. Pide la vertical.` },
+        { valor: Math.hypot(ux, vy), texto: `Esa es la rapidez (las dos componentes juntas). Pide solo la componente vertical, con su signo.` }
+      ],
+      pistaGeneral: `${VY} = ${UY} − ${GG}${T}, con ${UY} = ${U} sen ${TH}.`,
+      explicacion: `${pasoUy}. ${VY} = ${UY} − ${GG}${T} = ${cs3(uy)} − 9,81 × ${n2(t)} = <b>${vy < 0 ? '−' + cs3(-vy) : cs3(vy)} m s⁻¹</b> (${vy > 0 ? 'todavía sube' : 'ya está bajando'}).`
     });
   }
 
@@ -378,6 +438,9 @@
     'horizontal-tiempo': (r) => ejHorizontal(r, 'tiempo'),
     'horizontal-alcance': (r) => ejHorizontal(r, 'alcance'),
     'rapidez-llegada': (r) => ejHorizontal(r, 'llegada'),
+    'elevado-tiempo': (r) => ejElevado(r, 'tiempo'),
+    'elevado-vy': (r) => ejElevado(r, 'vy'),
+    'elevado-vy-t': (r) => ejElevado(r, 'vyt'),
     'conceptos': ejConcepto,
     'grafica-vy': (r) => ejGrafica(r, true),
     'grafica-vx': (r) => ejGrafica(r, false),
@@ -385,7 +448,7 @@
     'bandeja': ejBandeja
   };
   const GRUPOS = {
-    calcular: ['componentes', 'tiempo-vuelo', 'altura-maxima', 'alcance', 'horizontal-tiempo', 'horizontal-alcance', 'rapidez-llegada'],
+    calcular: ['componentes', 'tiempo-vuelo', 'altura-maxima', 'alcance', 'horizontal-tiempo', 'horizontal-alcance', 'rapidez-llegada', 'elevado-tiempo', 'elevado-vy', 'elevado-vy-t'],
     interpretar: ['conceptos'],
     graficas: ['grafica-vy', 'grafica-vx', 'trayectoria-aire'],
     bandeja: ['bandeja']

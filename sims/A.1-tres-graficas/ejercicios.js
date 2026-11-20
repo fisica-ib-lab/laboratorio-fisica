@@ -345,6 +345,66 @@
     };
   }
 
+  // Velocidad media o rapidez media en todo el movimiento (con cambio de sentido)
+  function ejMedia(r, rapidez) {
+    const def = movAleatorio(r, { nMin: 2, nMax: 3, cambioSentido: true }); if (!def) return null;
+    const m = crear(def), Tf = m.duracion, desp = m.desplazamiento(Tf), dist = m.distancia(Tf);
+    if (Math.abs(desp) < 0.5 || (dist - Math.abs(desp)) / Tf < 0.2) return null;   // que velocidad y rapidez medias se distingan bien
+    const resp = (rapidez ? dist : desp) / Tf, tol = tolerancia(resp);
+    const pistas = rapidez ? [
+      { valor: desp / Tf, texto: 'Esa es la velocidad media (desplazamiento/tiempo). La rapidez media usa la distancia recorrida.' },
+      { valor: Math.abs(desp) / Tf, texto: 'Usaste el desplazamiento. La rapidez media es la distancia recorrida (todas las áreas como positivas) entre el tiempo.' },
+      { valor: dist, texto: 'Esa es la distancia recorrida. Falta dividir entre el tiempo total.' },
+      { valor: (Math.abs(m.v(0)) + Math.abs(m.v(Tf))) / 2, texto: `No promedies la rapidez inicial y la final: eso solo vale con aceleración constante en todo el movimiento.` }
+    ] : [
+      { valor: dist / Tf, texto: 'Esa es la rapidez media (distancia/tiempo). La velocidad media usa el desplazamiento, con signo.' },
+      { valor: -desp / Tf, texto: 'Revisa el signo: el área por debajo del eje cuenta como negativa.' },
+      { valor: desp, texto: 'Ese es el desplazamiento. Falta dividir entre el tiempo total.' },
+      { valor: (m.v(0) + m.v(Tf)) / 2, texto: `No promedies la velocidad inicial y la final: (${U} + ${V})/2 solo vale con aceleración constante en todo el movimiento.` }
+    ];
+    return {
+      id: rapidez ? 'rapidez-media' : 'velocidad-media', tipo: 'numero', def,
+      titulo: rapidez ? 'Rapidez media' : 'Velocidad media',
+      enunciado: `La gráfica muestra la velocidad ${V} de un carrito; el sentido positivo es hacia la derecha. <b>Determine</b> ${rapidez ? 'la rapidez media' : 'la velocidad media'} del carrito entre ${T} = 0 y ${T} = ${fmt(Tf)} s.`,
+      dado: 'v', respuesta: resp, unidad: 'm s⁻¹', tolerancia: tol, pistas: limpiarPistas(pistas, resp, tol),
+      pistaGeneral: rapidez ? 'Rapidez media = distancia recorrida / tiempo. La distancia es el área total bajo la v–t, toda como positiva.'
+        : 'Velocidad media = desplazamiento / tiempo. El desplazamiento es el área bajo la v–t, con signo.',
+      explicacion: `Áreas bajo la ${V}–${T}: desplazamiento = ${fmt(desp)} m; distancia recorrida = ${fmt(dist)} m.<br>` +
+        (rapidez ? `Rapidez media = ${fmt(dist)} m / ${fmt(Tf)} s = <b>${fmt(resp)} m s⁻¹</b> (la velocidad media sería ${fmt(desp / Tf)} m s⁻¹).`
+          : `Velocidad media = ${fmt(desp)} m / ${fmt(Tf)} s = <b>${fmt(resp)} m s⁻¹</b> (la rapidez media sería ${fmt(dist / Tf)} m s⁻¹).`)
+    };
+  }
+
+  // De la a–t a la velocidad en un instante: hace falta la velocidad inicial u
+  function ejAtV(r) {
+    const def = movAleatorio(r, { nMin: 2, nMax: 3, conAceleracion: true }); if (!def) return null;
+    if (def.u === 0) return null;                                     // u ≠ 0: el error típico es olvidarla
+    const m = crear(def), Tf = m.duracion;
+    const cand = m.tramos.slice(1).map(tr => tr.t1).filter(t => t > 0);
+    const tf = elegir(r, cand.length ? cand : [Tf]);
+    const resp = m.v(tf), dv = resp - def.u, tol = tolerancia(resp);
+    if (Math.abs(resp) < 0.25) return null;
+    const pistas = [
+      { valor: dv, texto: `El área bajo la ${A}–${T} es Δ${V}, el <i>cambio</i> de velocidad. Falta sumar la velocidad inicial ${U}.` },
+      { valor: def.u - dv, texto: `Revisa el signo del área: por debajo del eje, Δ${V} es negativo. Luego ${V} = ${U} + Δ${V}.` },
+      { valor: -resp, texto: 'Revisa los signos de cada área y de la velocidad inicial.' },
+      { valor: def.u + m.a(tf - 1e-9) * tf, texto: `La aceleración no es la misma en todo el intervalo: suma el área de cada tramo por separado.` }
+    ];
+    const partes = m.tramos.filter(tr => tr.t0 < tf - 1e-9).map((tr) => {
+      const fin = Math.min(tr.t1, tf);
+      return `${intervalo({ t0: tr.t0, t1: fin })}: Δ${V} = (${fmt(tr.a)})(${fmt(fin - tr.t0)}) = ${fmt(tr.a * (fin - tr.t0))} m s⁻¹`;
+    });
+    return {
+      id: 'at-v', tipo: 'numero', def,
+      titulo: 'De la a–t a la velocidad',
+      enunciado: `La gráfica muestra la aceleración ${A} de un carrito, que en ${T} = 0 tiene velocidad ${U} = ${fmt(def.u)} m s⁻¹. <b>Determine</b> su velocidad en ${T} = ${fmt(tf)} s.`,
+      dado: 'a', respuesta: resp, unidad: 'm s⁻¹', tolerancia: tol, pistas: limpiarPistas(pistas, resp, tol),
+      pistaGeneral: `El área bajo la ${A}–${T} es el cambio de velocidad Δ${V}; después ${V} = ${U} + Δ${V}.`,
+      explicacion: `El área bajo la ${A}–${T} da Δ${V} en cada tramo:` + listaHtml(partes) +
+        `${V} = ${U} + Δ${V} = ${fmt(def.u)} + (${fmt(dv)}) = <b>${fmt(resp)} m s⁻¹</b>.`
+    };
+  }
+
   // ---------- Ejercicios: interpretar ----------
   function ejRapidez(r) {
     const def = movAleatorio(r, { nMin: 2, nMax: 3, conAceleracion: true }); if (!def) return null;
@@ -526,6 +586,9 @@
     'distancia': (r) => ejArea(r, true),
     'pendiente-a': (r) => ejPendiente(r, false),
     'pendiente-v': (r) => ejPendiente(r, true),
+    'velocidad-media': (r) => ejMedia(r, false),
+    'rapidez-media': (r) => ejMedia(r, true),
+    'at-v': ejAtV,
     'rapidez': ejRapidez,
     'sentido': ejSentido,
     'descripcion': ejDescripcion,
@@ -534,7 +597,7 @@
   };
   const GRUPOS = {
     graficas: ['st-vt', 'vt-at', 'vt-st', 'mov-vt'],
-    calcular: ['desplazamiento', 'distancia', 'pendiente-a', 'pendiente-v'],
+    calcular: ['desplazamiento', 'distancia', 'pendiente-a', 'pendiente-v', 'velocidad-media', 'rapidez-media', 'at-v'],
     interpretar: ['rapidez', 'sentido', 'descripcion'],
     dibujar: ['dibujar', 'igualar']
   };
