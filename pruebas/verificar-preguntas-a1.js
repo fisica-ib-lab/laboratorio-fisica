@@ -11,7 +11,7 @@ const c3 = Guia.c3;
 
 const SIMS = [
   { nombre: 'Tres gráficas', ruta: '../sims/A.1-tres-graficas/preguntas.js',
-    esperado: { '1-1': 2, '1-4': -12, '2-1': 0.5, '2-5': 20, '2-6': 2, '3-2': 24, '3-4': 14, '3-5': 4, '3-6': 6 },
+    esperado: { '1-1': 2, '1-4': -12, '2-1': 0.5, '2-5': 20, '2-6': 2, '3-2': 24, '3-4': 14, '3-5': 4, '3-6': 6, '3-8': 6 },
     azar: (P, sit, r) => {   // otro contexto con deslizadores al azar del mismo nivel
       if (sit.nivel === 3) return null;
       const par = { s0: Math.round(r() * 20 - 10), v: Math.round((r() * 8 - 4) * 2) / 2, a: sit.nivel === 2 ? Math.round((r() * 2 - 1) * 10) / 10 : 0 };
@@ -41,7 +41,7 @@ const SIMS = [
       const par = Object.assign({}, sit.par);
       if (sit.nivel === 1) { par.h = Math.round((0.4 + r() * 1.6) * 10) / 10; par.puerta = Math.max(0.1, Math.floor((par.h - 0.1) * r() / 0.05) * 0.05); }
       else { par.u = 1 + 0.5 * Math.floor(r() * 9); par.h = sit.nivel === 2 ? Math.round(r() * 10) / 10 : Math.round(r() * 10) / 10; par.puerta = 0.1; }
-      return P.contextoDe(par, sit.nivel);
+      return P.contextoDe(par, sit.nivel, sit.ligera);
     } }
 ];
 const extra = process.argv.slice(2);

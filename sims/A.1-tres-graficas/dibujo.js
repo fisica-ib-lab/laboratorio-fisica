@@ -118,11 +118,12 @@
     n = n || 48;
     const pts = [];
     for (const tr of mov.tramos) {
-      if (mag === 'a') { pts.push([tr.t0, tr.a], [tr.t1, tr.a]); continue; }
-      const k = (mag === 's' && tr.a !== 0) ? n : 1, T = tr.t1 - tr.t0;
+      const j = tr.j || 0, T = tr.t1 - tr.t0;
+      if (mag === 'a') { pts.push([tr.t0, tr.a], [tr.t1, tr.a + j * T]); continue; }
+      const k = (mag === 's' && (tr.a !== 0 || j !== 0)) || (mag === 'v' && j !== 0) ? n : 1;
       for (let i = 0; i <= k; i++) {
         const d = T * i / k;
-        pts.push([tr.t0 + d, mag === 's' ? tr.s0 + tr.v0 * d + 0.5 * tr.a * d * d : tr.v0 + tr.a * d]);
+        pts.push([tr.t0 + d, mag === 's' ? tr.s0 + tr.v0 * d + 0.5 * tr.a * d * d + j * d * d * d / 6 : tr.v0 + tr.a * d + 0.5 * j * d * d]);
       }
     }
     return pts;

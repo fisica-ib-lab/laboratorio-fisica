@@ -61,14 +61,16 @@
         { html: 'Arranca y frena', def: { s0: -12, u: 0, tramos: [{ duracion: 4, a: 1 }, { duracion: 2, a: 0 }, { duracion: 4, a: -1 }] } },
         { html: 'Va, espera y vuelve', def: { s0: -5, u: 2, tramos: [{ duracion: 3, a: 0 }, { duracion: 1, a: -2 }, { duracion: 2, a: 0 }, { duracion: 1, a: -2 }, { duracion: 3, a: 0 }] } },
         { html: 'Frena y regresa', def: { s0: -5, u: 4, tramos: [{ duracion: 6, a: -1 }, { duracion: 4, a: 0 }] } },
-        { html: 'Dos aceleraciones', def: { s0: -20, u: 0, tramos: [{ duracion: 4, a: 0.5 }, { duracion: 4, a: 1 }, { duracion: 2, a: 0 }] } }
+        { html: 'Dos aceleraciones', def: { s0: -20, u: 0, tramos: [{ duracion: 4, a: 0.5 }, { duracion: 4, a: 1 }, { duracion: 2, a: 0 }] } },
+        { html: 'Aceleración no uniforme', def: { s0: -24, u: 0, tramos: [{ duracion: 6, a: 2, j: -1 / 3 }, { duracion: 4, a: 0 }] } }
       ],
       observar: [
         `Activa «Predecir», elige un movimiento y míralo. Dibuja en tu cuaderno sus tres gráficas y luego pulsa «Revelar».`,
         `¿Cómo se ve un tramo en reposo en la ${V}–${T}? ¿Y en la ${S}–${T}?`,
         'En «Va, espera y vuelve», compara el desplazamiento total con la distancia recorrida.',
         `¿En qué instantes cambia ${A}? ¿Cambia ${V} de golpe en esos instantes?`,
-        'Con «Área», halla el desplazamiento de cada tramo y compáralo con lo que ves en la pista.'
+        'Con «Área», halla el desplazamiento de cada tramo y compáralo con lo que ves en la pista.',
+        `En «Aceleración no uniforme», ${A} disminuye poco a poco. ¿Qué forma tiene la ${V}–${T}? ¿Siguen valiendo las pendientes y las áreas? ¿Y las ecuaciones de aceleración uniforme?`
       ]
     }
   };
@@ -315,7 +317,7 @@
   function pintarTablaTramos() {
     const cuerpo = $('tablaTramos').tBodies[0];
     cuerpo.innerHTML = estado.mov.tramos.map((tr, i) =>
-      `<tr><td>${LETRAS[i]}</td><td>${fmt(tr.t0)} – ${fmt(tr.t1)}</td><td>${fmt(tr.a)}</td></tr>`).join('');
+      `<tr><td>${LETRAS[i]}</td><td>${fmt(tr.t0)} – ${fmt(tr.t1)}</td><td>${tr.j ? fmt(tr.a) + ' → ' + fmt(tr.a + tr.j * (tr.t1 - tr.t0)) : fmt(tr.a)}</td></tr>`).join('');
     filaActual = -1;
   }
 

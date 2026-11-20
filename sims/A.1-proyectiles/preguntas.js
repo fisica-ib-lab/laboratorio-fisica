@@ -165,7 +165,7 @@
         ],
         explicacion: `Al subir, el arrastre se suma al peso (frena más deprisa); al bajar, se le opone (acelera menos). Por eso la bajada es más lenta y más empinada.`,
         verifica: (c) => bajadaConAire(c.pAire) - c.pAire.tCumbre > c.pAire.tCumbre },
-      { sit: 'aire', tipo: 'opcion', texto: `Durante el vuelo con aire, ¿qué fuerzas actúan sobre la bola?`,
+      { sit: 'aire', tipo: 'opcion', oculta: ['fuerzasAire'], texto: `Durante el vuelo con aire, ¿qué fuerzas actúan sobre la bola? (Al acertar verás su diagrama de fuerzas.)`,
         opciones: [
           ['El peso, hacia abajo, y el arrastre del aire, opuesto a la velocidad', true],
           ['El peso y una fuerza del lanzamiento en el sentido del movimiento', false, `La fuerza del lanzador solo actúa mientras lo toca. En el aire nada «empuja» a la bola hacia delante: por eso ${VX} disminuye.`],

@@ -13,14 +13,17 @@
 
   const SIT = {
     suelta: { nombre: 'Caída desde el reposo', nivel: 1, par: { u: 0, h: 1.5, puerta: 0.75 } },
+    espuma: { nombre: 'Acero y espuma, con aire', nivel: 1, par: { u: 0, h: 1.5, puerta: 0.75 }, ligera: true },
     sube:   { nombre: 'Lanzamiento hacia arriba', nivel: 2, par: { u: 4, h: 0, puerta: 0.5 } },
     ecu:    { nombre: 'Desde el lanzador elevado', nivel: 3, par: { u: 4, h: 0.5, puerta: 0.5 } }
   };
-  function contextoDe(par, nivel) {
+  const K_ESPUMA = 3;   // el mismo valor que sim.js
+  function contextoDe(par, nivel, ligera) {
     const p = nivel === 1 ? new Proyectil(par.h, 0, 0) : new Proyectil(par.h, par.u, 90);
-    return { par: Object.assign({}, par), p, cruces: p.crucesAltura(par.puerta), nivel };
+    return { par: Object.assign({}, par), p, cruces: p.crucesAltura(par.puerta), nivel,
+      pL: nivel === 1 && ligera ? new Proyectil(par.h, 0, 0, { k: K_ESPUMA }) : null };
   }
-  const contexto = (id) => contextoDe(SIT[id].par, SIT[id].nivel);
+  const contexto = (id) => contextoDe(SIT[id].par, SIT[id].nivel, SIT[id].ligera);
   const s = (c, t) => c.p.y(t) - c.p.h;
   const vF = (c) => c.p.vy(c.p.duracion);
 
@@ -66,7 +69,15 @@
           ['Sí: disminuye, porque está más lejos del suelo', false, `En un laboratorio la diferencia de altura es mínima: ${g} es la misma. Mira la gráfica ${A}–${T}.`]
         ],
         explicacion: `Sin aire, todos los cuerpos caen con la misma aceleración ${g}, desde cualquier altura del laboratorio.`,
-        verifica: (c) => new Proyectil(c.par.h + 0.5, 0, 0).ay(0.2) === c.p.ay(0.2) && c.p.ay(0.2) === -G }
+        verifica: (c) => new Proyectil(c.par.h + 0.5, 0, 0).ay(0.2) === c.p.ay(0.2) && c.p.ay(0.2) === -G },
+      { sit: 'espuma', tipo: 'opcion', texto: `Se sueltan a la vez una bola de acero y una de espuma (línea discontinua), con aire. ¿Cómo es la ${V}–${T} de la espuma?`,
+        opciones: [
+          ['Una curva que se aplana: su velocidad tiende a un valor constante', true],
+          ['Una recta, como la del acero pero menos inclinada', false, `Una recta sería aceleración constante. Mira la ${A}–${T} de la espuma: su aceleración va cambiando hasta casi 0.`],
+          ['Una recta igual a la del acero, porque g es la misma', false, `Sin aire caerían igual. Con aire, el arrastre crece con la rapidez y frena mucho más a la espuma, que es muy ligera.`]
+        ],
+        explicacion: `El arrastre del aire crece con la rapidez hasta igualar el peso: entonces la fuerza neta es 0, ${A} = 0 y la espuma cae con <b>velocidad terminal</b> constante. El acero, mucho más pesado, apenas lo nota en esta altura.`,
+        verifica: (c) => { const pl = c.pL, T = pl.duracion; return Math.abs(pl.ay(T)) < 0.2 * G && Math.abs(pl.vy(T) - pl.vy(0.8 * T)) < 0.05 * Math.abs(pl.vy(T)) && Math.abs(pl.vy(0.2)) < Math.abs(c.p.vy(0.2)); } }
     ],
     2: [
       { sit: 'sube', tipo: 'opcion', texto: `Pausa en el punto más alto. ¿Cuánto valen ahí ${V} y ${A}?`,

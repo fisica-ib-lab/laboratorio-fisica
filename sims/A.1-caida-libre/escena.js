@@ -153,6 +153,15 @@
         }
       }
       dibBola(y, '#C9D3DF');
+      // bola de espuma con aire (nivel 1, comparación cualitativa): a la izquierda, soltada a la vez desde la misma altura
+      if (E.ligera) {
+        const pl = E.ligera, xL = xb - 36 * k, yl = Y(pl.y(Math.min(E.t, pl.duracion))) - rBola, yi = yS - 2 * rBola;
+        ctx.lineWidth = 1.2; ctx.strokeStyle = COL.tinta;
+        rectRedondo(ctx, xL - 7 * k, yi - 11 * k, 14 * k, 11 * k, 3); ctx.fillStyle = MET.pizarra; ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(xL, yl, rBola, 0, 2 * Math.PI); ctx.fillStyle = '#FBEFD2'; ctx.fill(); ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.font = `12px ${LETRA}`; ctx.fillStyle = COL.suave; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        ctx.fillText('espuma', xL, yi - 22 * k);
+      }
 
       // ----- Vectores: velocidad (verde, a la izquierda) y aceleración (roja, a la derecha) -----
       const enVuelo = E.t < p.duracion - 1e-9;

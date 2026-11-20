@@ -16,7 +16,8 @@
     { s0: -12, u: 0, tramos: [{ duracion: 4, a: 1 }, { duracion: 2, a: 0 }, { duracion: 4, a: -1 }] },
     { s0: -5, u: 2, tramos: [{ duracion: 3, a: 0 }, { duracion: 1, a: -2 }, { duracion: 2, a: 0 }, { duracion: 1, a: -2 }, { duracion: 3, a: 0 }] },
     { s0: -5, u: 4, tramos: [{ duracion: 6, a: -1 }, { duracion: 4, a: 0 }] },
-    { s0: -20, u: 0, tramos: [{ duracion: 4, a: 0.5 }, { duracion: 4, a: 1 }, { duracion: 2, a: 0 }] }
+    { s0: -20, u: 0, tramos: [{ duracion: 4, a: 0.5 }, { duracion: 4, a: 1 }, { duracion: 2, a: 0 }] },
+    { s0: -24, u: 0, tramos: [{ duracion: 6, a: 2, j: -1 / 3 }, { duracion: 4, a: 0 }] }
   ];
   const SIT = {
     der:     { nombre: 'Velocidad constante hacia la derecha', nivel: 1, par: { s0: -10, v: 2, a: 0 } },
@@ -29,7 +30,8 @@
     arranca: { nombre: 'Arranca y frena', nivel: 3, caso: 0 },
     espera:  { nombre: 'Va, espera y vuelve', nivel: 3, caso: 1 },
     regresa: { nombre: 'Frena y regresa', nivel: 3, caso: 2 },
-    dosAce:  { nombre: 'Dos aceleraciones', nivel: 3, caso: 3 }
+    dosAce:  { nombre: 'Dos aceleraciones', nivel: 3, caso: 3 },
+    noUnif:  { nombre: 'Aceleración no uniforme', nivel: 3, caso: 4 }
   };
   // Movimiento de los niveles 1 y 2, igual que movimientoDe de sim.js (se corta al final de la pista)
   function movimientoPar(p, nivel) {
@@ -196,7 +198,21 @@
         texto: `<b>Determina</b> la velocidad en ${T} = 8 s con el área bajo la gráfica ${A}–${T}.`,
         unidad: 'm s⁻¹', respuesta: (ctx) => ctx.mov.v(8),
         pista: `El área bajo la ${A}–${T} es Δ${V}. Aquí son dos rectángulos (0–4 s y 4–8 s), y ${U} = 0.`,
-        resolucion: (ctx) => `Δ${V} = (0,5)(4) + (1)(4) = 2 + 4 = 6 m s⁻¹; como ${U} = 0, ${V} = <b>${c3(ctx.mov.v(8))} m s⁻¹</b>.` }
+        resolucion: (ctx) => `Δ${V} = (0,5)(4) + (1)(4) = 2 + 4 = 6 m s⁻¹; como ${U} = 0, ${V} = <b>${c3(ctx.mov.v(8))} m s⁻¹</b>.` },
+      { sit: 'noUnif', tipo: 'opcion', texto: `Un auto arranca y su aceleración disminuye poco a poco hasta cero (mira la ${A}–${T}). ¿Cómo es la ${V}–${T} en los primeros 6 s?`,
+        opciones: [
+          ['Una curva cada vez menos inclinada', true],
+          ['Una recta inclinada', false, `Una recta tendría pendiente constante, es decir, ${A} constante. Aquí ${A} va bajando.`],
+          ['Una curva cada vez más inclinada', false, `La pendiente de la ${V}–${T} es ${A}, y ${A} disminuye: la curva se va aplanando.`]
+        ],
+        explicacion: `La pendiente de la ${V}–${T} es ${A}: empieza grande y llega a 0 en ${T} = 6 s, donde la ${V}–${T} queda horizontal. Pendientes y áreas siguen valiendo; las ecuaciones de aceleración uniforme (${V} = ${U} + ${A}${T}…) <b>no</b>.`,
+        verifica: (ctx) => { const m = ctx.mov; return m.v(1) - m.v(0) > m.v(5) - m.v(4) && m.v(5) - m.v(4) > 0 && Math.abs(m.a(6 - 1e-9)) < 1e-6; } },
+      { sit: 'noUnif', tipo: 'valor', oculta: OCULTA_V,
+        texto: `<b>Determina</b> la velocidad del auto en ${T} = 6 s con el área bajo la gráfica ${A}–${T}.`,
+        unidad: 'm s⁻¹', respuesta: (ctx) => ctx.mov.v(6),
+        pista: `El área bajo la ${A}–${T} sigue siendo Δ${V}, aunque ${A} no sea constante. Aquí es un triángulo.`,
+        pistaExtra: (x) => Math.abs(x - 12) < 0.1 ? `Eso sería con ${A} = 2 m s⁻² constante (${V} = ${A}${T}). ${A} no es uniforme: usa el área del triángulo.` : null,
+        resolucion: (ctx) => `Área del triángulo = ½ × 6 s × 2 m s⁻² = 6 m s⁻¹ = Δ${V}; como ${U} = 0, ${V} = <b>${c3(ctx.mov.v(6))} m s⁻¹</b>. (${V} = ${U} + ${A}${T} no sirve: ${A} no es constante.)` }
     ]
   };
 

@@ -226,6 +226,24 @@
         if (E.ver.velocidad) { flecha(ctx, ox, oy, ox + vx * kv, oy - vy * kv, COL.vel, 3.5, 11); sub('v', '', ox + vx * kv + 5, oy - vy * kv - (vy >= 0 ? 6 : -6), COL.vel); }
       }
 
+      // ----- Diagrama de fuerzas de la bola con aire (cualitativo): peso y arrastre opuesto a la velocidad -----
+      // Las flechas salen del borde de la bola y, prolongadas, pasan por su centro (como en A.2).
+      if (E.fuerzasAire) {
+        const pa = E.fuerzasAire.p, ta = Math.min(t, pa.duracion);
+        if (ta < pa.duracion - 1e-9) {
+          const cx = X(pa.x(ta)), cy = Y(pa.y(ta)) - rBola, Lg = 38 * k;
+          const vx = pa.vx(ta), vy = pa.vy(ta), vel = Math.hypot(vx, vy);
+          const Ld = Lg * E.fuerzasAire.k * vel * vel / 9.81;       // F_d / F_g = k v² / g
+          const fz = (dx, dy, L, color, sub) => {
+            const x1 = cx + dx * (rBola + 1), y1 = cy + dy * (rBola + 1), x2 = x1 + dx * L, y2 = y1 + dy * L;
+            flecha(ctx, x1, y1, x2, y2, color, 3, Math.min(10, L));
+            textoRico(ctx, [['F', true], [sub, false, 'sub']], x2 + dx * 11, y2 + dy * 11, 14, color, 'center', true);
+          };
+          fz(0, 1, Lg, '#5B4B8A', 'g');                                         // peso: hacia abajo
+          if (vel > 1e-6 && Ld > 3) fz(-vx / vel, vy / vel, Ld, '#8C2D19', 'd');   // arrastre: opuesto a v (y del lienzo hacia abajo)
+        }
+      }
+
       // sentido positivo
       pildora(ctx, [['derecha + · arriba +', false]], 76, 14, 12, COL.azul, COL.azulFondo, COL.azulOsc);
       if (E.aviso) pildora(ctx, [[E.aviso, false]], w / 2, 14, 13, COL.ambar, COL.ambarFondo, COL.ambar, 160, w - 6);

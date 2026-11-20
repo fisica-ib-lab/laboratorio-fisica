@@ -61,7 +61,9 @@ controles: reproducir/pausar, ±0,1 s, velocidad ×0,25–×2, barra de tiempo, 
    calcular desplazamiento y distancia desde v–t (número + unidad, con tolerancia); calcular pendientes; elegir la descripción;
    desafío «iguala la gráfica». Distractores basados en errores típicos; explicación y botón «ver el movimiento».
 
-**Rigor:** cinemática exacta por tramos (aceleración uniforme), s y v continuas. Antes de publicar, verificar con código
+**Rigor:** cinemática exacta por tramos (aceleración uniforme), s y v continuas. Desde el 20 nov 2026 un tramo puede
+traer `j` (a lineal en el tiempo: aceleración no uniforme, también exacta); nivel 3 tiene el caso «Aceleración no uniforme»
+(auto cuya a baja de 2 a 0 m s⁻² en 6 s) con dos preguntas guiadas (las ecuaciones de a uniforme no valen; pendientes y áreas sí). Antes de publicar, verificar con código
 en todas las situaciones y en 1000 ejercicios aleatorios: pendiente s–t = v, pendiente v–t = a, área v–t = Δs,
 área a–t = Δv, distancia = suma de recorridos, respuesta correcta = cálculo.
 
@@ -90,6 +92,8 @@ Colores: componente horizontal naranja, vertical violeta, velocidad verde, g roj
    20 nov 2026: + desde una altura con ángulo: tiempo de vuelo (2.º grado, pista de raíz y de «misma altura»), v_y al llegar
    (negativa) y v_y en un instante (con signo); pistas de u vs u_y, signo de s y de a.
 
+Nivel 3 con aire (20 nov 2026): casilla «Fuerzas sobre la bola con aire» → peso F_g y arrastre F_d opuesto a v, desde el
+borde y alineadas con el centro; longitudes proporcionales (F_d/F_g = k v²/g), cualitativo, sin valores.
 Archivos: `comun/proyectil.js` (física exacta; con aire, Runge–Kutta 4 con k = 0,30 m⁻¹), `comun/graficas.js` (dibujo común
 para simulaciones nuevas), `escena.js`, `sim.js`, `ejercicios.js`, `practicar.js`.
 Antes de publicar cambios: `node pruebas/verificar-proyectiles.js` y `node pruebas/verificar-ejercicios-proyectiles.js` (0 fallos).
@@ -120,6 +124,12 @@ Verificación: `node pruebas/verificar-problemas-caida.js` (1000 por tipo: las c
 valores, la respuesta coincide con `comun/proyectil.js`, cada ecuación válida despejada da la respuesta; 0 fallos).
 Usa `comun/proyectil.js` (θ = 90° o u = 0). Verificación de Explorar: `node pruebas/verificar-caida-libre.js`.
 La tarjeta dice «A.1 · Aceleración uniforme» (falta saber los apartados de la ficha).
+**Añadidos (20 nov 2026)**, pendientes de revisión: nivel 1 casilla «Bola de espuma (con aire)» (k = 3 m⁻¹, se suelta a la
+vez; curvas grises discontinuas en s–t, v–t y a–t hasta la velocidad terminal; sin valores; una pregunta guiada) y
+**nivel 4 «Medir g»**: «Soltar y registrar» guarda s (±0,002 m) y t (±0,003 s, con dispersión aleatoria pequeña) al pasar
+la bola por la puerta; tabla con t² ± 2tΔt, gráfica s frente a t² con barras de error, recta de mínimos cuadrados y rectas de
+pendiente máxima y mínima (primer y último punto) ⇒ g = 2 × pendiente ± (con 1 cifra en la incertidumbre) y si 9,81 queda dentro.
+`experimento.js` (sin pantalla); verificación `node pruebas/verificar-experimento-caida.js` (2000 experimentos; 0 fallos).
 
 ## Cuarta simulación: «Diagramas de cuerpo libre y segunda ley» (A.2) — `sims/A.2-fuerzas/`
 

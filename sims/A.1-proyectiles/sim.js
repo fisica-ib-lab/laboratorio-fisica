@@ -153,7 +153,8 @@
     if (estado.pAire) bolas.push({ p: estado.pAire, etiqueta: 'con aire', color: COLOR_AIRE, relleno: '#E4E9EF', raya: [5, 4] });
     const E = {
       h: q.h, angulo: q.ang, bolas, t: estado.t, jugando: estado.jugando, disparo: estado.disparo,
-      ver: estado.ver, gemela: estado.gemela, cotas: exp && !window.Guia.oculto('cotas'), vista: vista(),
+      ver: estado.ver, gemela: estado.gemela, cotas: exp && !window.Guia.oculto('cotas'),
+      fuerzasAire: exp && estado.pAire && estado.verFuerzas && !window.Guia.oculto('fuerzasAire') ? { p: estado.pAire, k: K_AIRE } : null, vista: vista(),
       fantasmas: exp ? (estado.ver.anteriores ? estado.fantasmas : []) : estado.intentos.filter(i => !i.actual).slice(-3).map(i => ({ puntos: i.puntos })),
     };
     if (!exp) {
@@ -226,7 +227,7 @@
       const cont = $('casos');
       cont.hidden = !cfg.casos.length;
       cont.innerHTML = cfg.casos.map((c, i) => `<button type="button" class="boton caso" data-i="${i}">${c.html}</button>`).join('');
-      $('rotAire').hidden = n !== 3; $('notaAire').hidden = !(n === 3 && estado.aire);
+      $('rotAire').hidden = n !== 3; $('notaAire').hidden = !(n === 3 && estado.aire); $('rotFuerzas').hidden = !(n === 3 && estado.aire);
       $('chkAire').checked = estado.aire;
     } else {
       pon('desAng', [estado.blanco.h > 0 ? 0 : 10, 80, 5], q.ang);
@@ -281,9 +282,11 @@
     $(id).addEventListener('change', () => { arrastrando = false; if (estado.modo === 'explorar') reproducir(); });
   });
   $('chkAire').addEventListener('change', (e) => {
-    pausar(); estado.aire = e.target.checked; $('notaAire').hidden = !estado.aire;
+    pausar(); estado.aire = e.target.checked; $('notaAire').hidden = !estado.aire; $('rotFuerzas').hidden = !estado.aire;
     recalcular(); dibujarTodo(); reproducir();
   });
+  estado.verFuerzas = true;
+  $('chkFuerzas').addEventListener('change', (e) => { estado.verFuerzas = e.target.checked; dibujarTodo(); });
   [['chkComponentes', 'componentes'], ['chkVelocidad', 'velocidad'], ['chkAceleracion', 'aceleracion'], ['chkHuellas', 'huellas'], ['chkAnteriores', 'anteriores']].forEach(([id, k]) => {
     estado.ver[k] = $(id).checked;
     $(id).addEventListener('change', (e) => { estado.ver[k] = e.target.checked; dibujarTodo(); });

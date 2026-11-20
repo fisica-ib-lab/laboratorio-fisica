@@ -84,6 +84,23 @@ ok(cerca(ida.desplazamiento(4), 0, 1e-12), 'ida y vuelta: Δs = 0');
 ok(cerca(ida.distancia(4), 8, 1e-12), 'ida y vuelta: distancia = 8 m');
 ok(cerca(ida.distancia(2), 4, 1e-12), 'ida y vuelta: distancia a los 2 s = 4 m');
 
+// 3b) Aceleración no uniforme (tramos con j ≠ 0): mismas relaciones, con a(t) lineal dentro del tramo
+for (let i = 0; i < 1000; i++) {
+  const n = 1 + Math.floor(Math.random() * 4);
+  const tramos = [];
+  for (let k = 0; k < n; k++) tramos.push({ duracion: aleatorio(0.5, 4), a: aleatorio(-3, 3), j: Math.random() < 0.3 ? 0 : aleatorio(-1.5, 1.5) });
+  const m = new Movimiento(aleatorio(-10, 10), aleatorio(-5, 5), tramos);
+  comprobar(m, `no uniforme ${i}`);
+  // rangoS = extremos reales de s (muestreo fino)
+  const [mn, mx] = m.rangoS(); let lo = Infinity, hi = -Infinity;
+  for (let q = 0; q <= 4000; q++) { const x = m.s(m.duracion * q / 4000); lo = Math.min(lo, x); hi = Math.max(hi, x); }
+  ok(mn <= lo + 1e-9 && mx >= hi - 1e-9 && mn >= lo - 1e-3 && mx <= hi + 1e-3, `no uniforme ${i}: rangoS`);
+}
+// caso a mano: a baja de 2 a 0 m s⁻² en 6 s (j = −1/3): v(6) = 6 m s⁻¹, Δs = 24 m
+const auto = new Movimiento(0, 0, [{ duracion: 6, a: 2, j: -1 / 3 }]);
+ok(cerca(auto.v(6), 6, 1e-12) && cerca(auto.s(6), 24, 1e-12) && cerca(auto.a(6), 0, 1e-12), 'no uniforme a mano');
+console.log('1000 movimientos con aceleración no uniforme comprobados.');
+
 // 4) Formato de números
 ok(numero(-1.5, 1) === '−1,5', 'formato −1,5');
 ok(numero(25000, 0) === '25 000', 'formato 25 000');
